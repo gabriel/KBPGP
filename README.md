@@ -27,7 +27,20 @@ KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
 }];
 ```
 
-# Decrypt
+# Encrypt & Sign
+
+```objc
+KBKeyRing *keyRing = ...;
+KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
+
+[crypto encryptAndSignText:@"This is a secret signed message" encryptForKeyIds:@[@"89ae977e1bc670e5"] signForKeyIds:@[@"89ae977e1bc670e5"] success:^(NSString *messageArmored) {
+  NSLog(@"%@", messageArmored);
+} failure:^(NSError *error) {
+  NSLog(@"Error: %@", [error localizedDescription]);
+}];
+```
+
+# Decrypt & Verify
 
 ```objc
 KBKeyRing *keyRing = ...;
