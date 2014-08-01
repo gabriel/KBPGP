@@ -36,6 +36,8 @@
 		004BC8E8198B2CD5000C039B /* KBKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBKeyRing.m */; };
 		004BC8E9198B2CD5000C039B /* KBKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBKeyRing.m */; };
 		004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8EF198C187C000C039B /* KBJSCoreTest.m */; };
+		004BC949198C3D5F000C039B /* KBKeyBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC948198C3D5F000C039B /* KBKeyBundle.m */; };
+		004BC94A198C3D5F000C039B /* KBKeyBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC948198C3D5F000C039B /* KBKeyBundle.m */; };
 		1386930E3BF747888595A703 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F2E476D89B84695AB566D69 /* libPods-Tests.a */; };
 		72DD1174A39140F5A9354F3B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 662CBE1D64BA49118E226154 /* libPods.a */; };
 		CD4CD2BBDDAB456688663A8D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88ADA26297094C29A5043A0B /* main.m */; };
@@ -102,6 +104,8 @@
 		004BC8E7198B2CD5000C039B /* KBKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKeyRing.m; sourceTree = "<group>"; };
 		004BC8EF198C187C000C039B /* KBJSCoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBJSCoreTest.m; path = Tests/KBJSCoreTest.m; sourceTree = "<group>"; };
 		004BC8F1198C1C09000C039B /* KBCrypto.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = KBCrypto.podspec; sourceTree = "<group>"; };
+		004BC947198C3D5F000C039B /* KBKeyBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKeyBundle.h; sourceTree = "<group>"; };
+		004BC948198C3D5F000C039B /* KBKeyBundle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKeyBundle.m; sourceTree = "<group>"; };
 		3A46128C529E4E29AD414C3E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		662CBE1D64BA49118E226154 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F2E476D89B84695AB566D69 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -164,6 +168,8 @@
 				004BC898198B19D2000C039B /* KBCrypto.m */,
 				004BC8A9198B1A4D000C039B /* KBKey.h */,
 				004BC8AA198B1A4D000C039B /* KBKey.m */,
+				004BC947198C3D5F000C039B /* KBKeyBundle.h */,
+				004BC948198C3D5F000C039B /* KBKeyBundle.m */,
 				004BC899198B19D2000C039B /* KBJSCore.h */,
 				004BC89A198B19D2000C039B /* KBJSCore.m */,
 				004BC89B198B19D2000C039B /* KBKeyRing.h */,
@@ -403,6 +409,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				004BC8E8198B2CD5000C039B /* KBKeyRing.m in Sources */,
+				004BC949198C3D5F000C039B /* KBKeyBundle.m in Sources */,
 				004BC8AB198B1A4D000C039B /* KBKey.m in Sources */,
 				004BC8A4198B19D2000C039B /* KBJSCore.m in Sources */,
 				004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */,
@@ -415,6 +422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				004BC94A198C3D5F000C039B /* KBKeyBundle.m in Sources */,
 				004BC8DD198B20F0000C039B /* KBKey.m in Sources */,
 				004BC8DF198B20F5000C039B /* KBKeyRings.m in Sources */,
 				004BC8E1198B2102000C039B /* KBCrypto.m in Sources */,

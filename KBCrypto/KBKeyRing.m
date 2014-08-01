@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)addKey:(KBKey *)key {
+- (void)addKey:(id<KBKey>)key {
   NSString *keyId = [key.keyId lowercaseString];
   NSMutableArray *keys = _keys[keyId];
   if (!keys) {

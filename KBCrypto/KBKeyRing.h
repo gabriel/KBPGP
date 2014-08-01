@@ -37,6 +37,6 @@
 /*!
  Add key to key ring.
  */
-- (void)addKey:(KBKey *)key;
+- (void)addKey:(id<KBKey>)key;
 
 @end

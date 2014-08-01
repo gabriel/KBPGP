@@ -1,7 +1,7 @@
 KBCrypto
 ===========
 
-PGP for iOS/OSX, using [kbgpg](https://github.com/keybase/kbpgp).
+PGP for iOS/OSX, using [kbpgp](https://github.com/keybase/kbpgp).
 
 # Install
 

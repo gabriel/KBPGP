@@ -8,6 +8,8 @@
 
 #import "KBKeyRing.h"
 #import "KBMessage.h"
+#import "KBKeyBundle.h"
+#import "KBSigner.h"
 
 typedef void (^KBCryptoPasswordCompletionBlock)(NSString *password);
 typedef void (^KBCryptoPasswordBlock)(id<KBKey> key, KBCryptoPasswordCompletionBlock completionBlock);

@@ -4,7 +4,6 @@
 @end
 
 #import "KBCrypto.h"
-#import "KBKeyRing.h"
 
 #import <GHKit/GHKit.h>
 
@@ -27,13 +26,13 @@
 - (id<KBKeyRing>)testKeyRing {
   KBKeyRing *keyRing = [[KBKeyRing alloc] init];
   
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"gabrielhlocal2_public.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify passwordProtected:NO]];
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"d53374f55303d0ea" bundle:[self loadFile:@"gabrielhlocal2_private.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"gabrielhlocal2_private.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"gabrielhlocal2_public.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify passwordProtected:NO]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"d53374f55303d0ea" bundle:[self loadFile:@"gabrielhlocal2_private.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"gabrielhlocal2_private.asc"]  userName:@"gabrielhlocal2" capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
   
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gabrielhgpg2_public.asc"]  userName:nil capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify  passwordProtected:NO]];
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"49d182780818ea2d" bundle:[self loadFile:@"gabrielhgpg2_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
-  [keyRing addKey:[[KBKey alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gabrielhgpg2_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gabrielhgpg2_public.asc"]  userName:nil capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify  passwordProtected:NO]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"49d182780818ea2d" bundle:[self loadFile:@"gabrielhgpg2_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
+  [keyRing addKey:[[KBKeyBundle alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gabrielhgpg2_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
   
   return keyRing;
 }

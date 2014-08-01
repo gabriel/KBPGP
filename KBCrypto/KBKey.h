@@ -28,12 +28,3 @@ NSString *KBKeyIdFromFingerprint(NSString *fingerprint);
 NSString *KBKeyDisplayDescription(NSString *fingerprint);
 
 NSString *KBKeyCapabilitiesDescription(KBKeyCapabilities capabilities);
-
-/*!
- Default key implementation.
- */
-@interface KBKey : NSObject <KBKey>
-
-- (instancetype)initWithKeyId:(NSString *)keyId bundle:(NSString *)bundle userName:(NSString *)userName capabilities:(KBKeyCapabilities)capabilities passwordProtected:(BOOL)passwordProtected;
-
-@end
