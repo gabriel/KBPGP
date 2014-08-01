@@ -1,0 +1,26 @@
+PODS:
+  - GHKit (1.0.5)
+  - GHUnit (0.6.1)
+  - libsodium (0.6.1)
+  - NAChloride (1.0.8):
+    - libsodium
+  - ObjectiveSugar (1.1.0)
+
+DEPENDENCIES:
+  - GHKit
+  - GHUnit (from `../gh-unit/`)
+  - NAChloride
+  - ObjectiveSugar
+
+EXTERNAL SOURCES:
+  GHUnit:
+    :path: ../gh-unit/
+
+SPEC CHECKSUMS:
+  GHKit: 737b2d495cd7f389194e2798e219c5688ded7fce
+  GHUnit: e7e0edbbe22070918b276ce56ec4ab505fc34f45
+  libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
+  NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
+  ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
+
+COCOAPODS: 0.33.1

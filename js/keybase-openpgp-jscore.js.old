@@ -1,0 +1,119 @@
+
+//
+// This is old and doesn't currently work with KBCrypto.
+//
+
+var openpgp = require('openpgp');
+
+openpgp.crypto.random.getRandomValues = function(buf) {
+  //console.log('Random values (' + buf.length + ')');
+  var hex = jscore.getRandomHexString(buf.length);
+  for (var i = 0; i < buf.length; i += 1) {
+    var r = parseInt(hex.substr(i*2, 2), 16);
+    buf[i] = r;
+  }
+};
+
+var armor = openpgp.armor;
+var util = openpgp.util;
+var enums = openpgp.enums;
+var cleartext = openpgp.cleartext;
+
+jscore.encrypt = function(publicKeyArmored, text, success, failure) {
+  var publicKey = openpgp.key.readArmored(publicKeyArmored).keys[0];
+  if (!publicKey) {
+    failure("Couldn't decode public key");
+    return;
+  }
+  var messageArmored = openpgp.encryptMessage(publicKey, text);
+  success(messageArmored);
+};
+
+jscore.decrypt = function(privateKeyArmored, keyPassword, messageArmored, success, failure) {
+  var privateKey = openpgp.key.readArmored(privateKeyArmored).keys[0];
+  if (!privateKey) {
+    failure("Couldn't decode private key");
+    return;
+  }
+  if (!privateKey.decrypt(keyPassword)) {
+    failure("Couldn't decrypt private key with password");
+    return;
+  }
+  var message = openpgp.message.readArmored(messageArmored);
+  var plainText = openpgp.decryptMessage(privateKey, message);
+  success(plainText);
+};
+
+jscore.armorPublicKey = function(hex, success, failure) {
+  // TODO: Handle failure
+  var data = util.hex2bin(hex);
+  success(armor.encode(enums.armor.public_key, data));
+};
+
+jscore.armorPrivateKey = function(hex, success, failure) {
+  // TODO: Handle failure
+  var data = util.hex2bin(hex);
+  success(armor.encode(enums.armor.private_key, data));
+};
+
+jscore.dearmor = function(armored, success, failure) {
+  // TODO: Handle failure
+  var result = armor.decode(armored);
+  success(util.hexstrdump(result.data));
+};
+
+jscore.getPrivateKeyPacket = function(key) {
+  var keys = key.getAllKeyPackets();
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].tag == enums.packet.secretKey || keys[i].tag == enums.packet.secretSubkey) return keys[i];
+  }
+  return null;
+};
+
+jscore.generateKeyPair = function(numBits, userId, passphrase, success, failure) {
+  // Unlocked is important, otherwise the privateKey data is invalid
+  var result = openpgp.generateKeyPair({numBits: numBits, userId: userId, passphrase: passphrase, unlocked: true});
+  var key = result.key;
+  var publicKeyArmored = result.publicKeyArmored;
+  var privateKeyArmored = result.privateKeyArmored;
+  var publicKeyHex = util.hexstrdump(armor.decode(publicKeyArmored).data);
+  var privateKeyHex = util.hexstrdump(armor.decode(privateKeyArmored).data);
+  var privateKeyId = jscore.getPrivateKeyPacket(key).getKeyId().toHex();
+
+  var publicKey = openpgp.key.readArmored(publicKeyArmored).keys[0];
+  var publicKeyId = publicKey.getKeyIds()[0].toHex();
+
+  success(publicKeyHex, privateKeyHex, publicKeyId);
+};
+
+jscore.sign = function(privateKeyArmored, keyPassword, text, success, failure) {
+  var privateKey = openpgp.key.readArmored(privateKeyArmored).keys[0];
+  if (!privateKey.decrypt(keyPassword)) {
+    failure("Failure to decrypt private key");
+    return;
+  }
+  var messageArmored = openpgp.signClearMessage(privateKey, text);
+  success(messageArmored);
+};
+
+// jscore.clearText = {};
+// jscore.clearText.readArmored = function(clearTextArmored) {
+//   var cleartextMessage = openpgp.cleartext.readArmored(clearTextArmored);
+//   var signingKeyIds = cleartextMessage.getSigningKeyIds().map(function(keyId) { return keyId.toHex(); });
+//   return {text: cleartextMessage.getText(), signingKeyIds: signingKeyIds};
+// };
+
+jscore.verify = function(publicKeyArmored, clearTextArmored) {
+  var publicKeys = [];
+  if (publicKeyArmored) publicKeys = openpgp.key.readArmored(publicKeyArmored).keys;
+
+  var cleartextMessage = openpgp.cleartext.readArmored(clearTextArmored);
+  var result = openpgp.verifyClearSignedMessage(publicKeys, cleartextMessage)
+  var cleartextSigs = result.signatures;
+  for (var i = 0; i < cleartextSigs.length; i++) {
+    var cleartextSig = cleartextSigs[i];
+    if (!cleartextSig.valid) return null;
+  }
+  return result.text;
+};
+

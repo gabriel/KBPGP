@@ -1,0 +1,620 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBCrypto.m */; };
+		004BC8A4198B19D2000C039B /* KBJSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89A198B19D2000C039B /* KBJSCore.m */; };
+		004BC8A5198B19D2000C039B /* KBKeyRings.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89D198B19D2000C039B /* KBKeyRings.m */; };
+		004BC8A7198B19D2000C039B /* KBSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8A2198B19D2000C039B /* KBSigner.m */; };
+		004BC8AB198B1A4D000C039B /* KBKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8AA198B1A4D000C039B /* KBKey.m */; };
+		004BC8CC198B1C3D000C039B /* gabrielhgpg2_clearsign_gpg2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BC198B1C3D000C039B /* gabrielhgpg2_clearsign_gpg2.asc */; };
+		004BC8CD198B1C3D000C039B /* gabrielhgpg2_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BD198B1C3D000C039B /* gabrielhgpg2_private.asc */; };
+		004BC8CE198B1C3D000C039B /* gabrielhgpg2_public.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BE198B1C3D000C039B /* gabrielhgpg2_public.asc */; };
+		004BC8CF198B1C3D000C039B /* gabrielhlocal2_clearsign_fail.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BF198B1C3D000C039B /* gabrielhlocal2_clearsign_fail.asc */; };
+		004BC8D0198B1C3D000C039B /* gabrielhlocal2_clearsign_gpg1.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C0198B1C3D000C039B /* gabrielhlocal2_clearsign_gpg1.asc */; };
+		004BC8D1198B1C3D000C039B /* gabrielhlocal2_clearsign_kb.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C1198B1C3D000C039B /* gabrielhlocal2_clearsign_kb.asc */; };
+		004BC8D2198B1C3D000C039B /* gabrielhlocal2_message_gpg1.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C2198B1C3D000C039B /* gabrielhlocal2_message_gpg1.asc */; };
+		004BC8D3198B1C3D000C039B /* gabrielhlocal2_message_gpg2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C3198B1C3D000C039B /* gabrielhlocal2_message_gpg2.asc */; };
+		004BC8D4198B1C3D000C039B /* gabrielhlocal2_message_kb.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C4198B1C3D000C039B /* gabrielhlocal2_message_kb.asc */; };
+		004BC8D5198B1C3D000C039B /* gabrielhlocal2_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C5198B1C3D000C039B /* gabrielhlocal2_private.asc */; };
+		004BC8D6198B1C3D000C039B /* gabrielhlocal2_public.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C6198B1C3D000C039B /* gabrielhlocal2_public.asc */; };
+		004BC8D7198B1C3D000C039B /* gabrielhlocal2_sign_gpg1.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C7198B1C3D000C039B /* gabrielhlocal2_sign_gpg1.asc */; };
+		004BC8D8198B1C3D000C039B /* gabrielhlocal2_sign_gpg2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C8198B1C3D000C039B /* gabrielhlocal2_sign_gpg2.asc */; };
+		004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8C9198B1C3D000C039B /* KBCryptoTest.m */; };
+		004BC8DD198B20F0000C039B /* KBKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8AA198B1A4D000C039B /* KBKey.m */; };
+		004BC8DE198B20F2000C039B /* KBJSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89A198B19D2000C039B /* KBJSCore.m */; };
+		004BC8DF198B20F5000C039B /* KBKeyRings.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89D198B19D2000C039B /* KBKeyRings.m */; };
+		004BC8E0198B20F8000C039B /* KBSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8A2198B19D2000C039B /* KBSigner.m */; };
+		004BC8E1198B2102000C039B /* KBCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBCrypto.m */; };
+		004BC8E4198B2B41000C039B /* keybase-kbpgp-jscore.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */; };
+		004BC8E5198B2B44000C039B /* keybase.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 004BC8B5198B1B13000C039B /* keybase.js */; };
+		004BC8E8198B2CD5000C039B /* KBKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBKeyRing.m */; };
+		004BC8E9198B2CD5000C039B /* KBKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBKeyRing.m */; };
+		004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8EF198C187C000C039B /* KBJSCoreTest.m */; };
+		1386930E3BF747888595A703 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F2E476D89B84695AB566D69 /* libPods-Tests.a */; };
+		72DD1174A39140F5A9354F3B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 662CBE1D64BA49118E226154 /* libPods.a */; };
+		CD4CD2BBDDAB456688663A8D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88ADA26297094C29A5043A0B /* main.m */; };
+		F255F5988CDD4FF999B5EE2A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A46128C529E4E29AD414C3E /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		85F7D4C86BE648F48D273181 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004BC875198B192B000C039B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 004BC87C198B192B000C039B;
+			remoteInfo = KBCrypto;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		004BC87B198B192B000C039B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				004BC8E4198B2B41000C039B /* keybase-kbpgp-jscore.js in CopyFiles */,
+				004BC8E5198B2B44000C039B /* keybase.js in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		004BC87D198B192B000C039B /* libKBCrypto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKBCrypto.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		004BC897198B19D2000C039B /* KBCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCrypto.h; sourceTree = "<group>"; };
+		004BC898198B19D2000C039B /* KBCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCrypto.m; sourceTree = "<group>"; };
+		004BC899198B19D2000C039B /* KBJSCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBJSCore.h; sourceTree = "<group>"; };
+		004BC89A198B19D2000C039B /* KBJSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBJSCore.m; sourceTree = "<group>"; };
+		004BC89B198B19D2000C039B /* KBKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKeyRing.h; sourceTree = "<group>"; };
+		004BC89C198B19D2000C039B /* KBKeyRings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKeyRings.h; sourceTree = "<group>"; };
+		004BC89D198B19D2000C039B /* KBKeyRings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKeyRings.m; sourceTree = "<group>"; };
+		004BC8A0198B19D2000C039B /* KBMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMessage.h; sourceTree = "<group>"; };
+		004BC8A1198B19D2000C039B /* KBSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSigner.h; sourceTree = "<group>"; };
+		004BC8A2198B19D2000C039B /* KBSigner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSigner.m; sourceTree = "<group>"; };
+		004BC8A8198B19E0000C039B /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = Podfile; sourceTree = "<group>"; };
+		004BC8A9198B1A4D000C039B /* KBKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKey.h; sourceTree = "<group>"; };
+		004BC8AA198B1A4D000C039B /* KBKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKey.m; sourceTree = "<group>"; };
+		004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "keybase-kbpgp-jscore.js"; sourceTree = "<group>"; };
+		004BC8B5198B1B13000C039B /* keybase.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = keybase.js; sourceTree = "<group>"; };
+		004BC8B9198B1B13000C039B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		004BC8BC198B1C3D000C039B /* gabrielhgpg2_clearsign_gpg2.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhgpg2_clearsign_gpg2.asc; sourceTree = "<group>"; };
+		004BC8BD198B1C3D000C039B /* gabrielhgpg2_private.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhgpg2_private.asc; sourceTree = "<group>"; };
+		004BC8BE198B1C3D000C039B /* gabrielhgpg2_public.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhgpg2_public.asc; sourceTree = "<group>"; };
+		004BC8BF198B1C3D000C039B /* gabrielhlocal2_clearsign_fail.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_clearsign_fail.asc; sourceTree = "<group>"; };
+		004BC8C0198B1C3D000C039B /* gabrielhlocal2_clearsign_gpg1.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_clearsign_gpg1.asc; sourceTree = "<group>"; };
+		004BC8C1198B1C3D000C039B /* gabrielhlocal2_clearsign_kb.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_clearsign_kb.asc; sourceTree = "<group>"; };
+		004BC8C2198B1C3D000C039B /* gabrielhlocal2_message_gpg1.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_message_gpg1.asc; sourceTree = "<group>"; };
+		004BC8C3198B1C3D000C039B /* gabrielhlocal2_message_gpg2.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_message_gpg2.asc; sourceTree = "<group>"; };
+		004BC8C4198B1C3D000C039B /* gabrielhlocal2_message_kb.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_message_kb.asc; sourceTree = "<group>"; };
+		004BC8C5198B1C3D000C039B /* gabrielhlocal2_private.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_private.asc; sourceTree = "<group>"; };
+		004BC8C6198B1C3D000C039B /* gabrielhlocal2_public.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_public.asc; sourceTree = "<group>"; };
+		004BC8C7198B1C3D000C039B /* gabrielhlocal2_sign_gpg1.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_sign_gpg1.asc; sourceTree = "<group>"; };
+		004BC8C8198B1C3D000C039B /* gabrielhlocal2_sign_gpg2.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gabrielhlocal2_sign_gpg2.asc; sourceTree = "<group>"; };
+		004BC8C9198B1C3D000C039B /* KBCryptoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBCryptoTest.m; path = Tests/KBCryptoTest.m; sourceTree = "<group>"; };
+		004BC8DB198B1DB0000C039B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		004BC8E7198B2CD5000C039B /* KBKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKeyRing.m; sourceTree = "<group>"; };
+		004BC8EF198C187C000C039B /* KBJSCoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBJSCoreTest.m; path = Tests/KBJSCoreTest.m; sourceTree = "<group>"; };
+		3A46128C529E4E29AD414C3E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		662CBE1D64BA49118E226154 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F2E476D89B84695AB566D69 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		88ADA26297094C29A5043A0B /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Tests/main.m; sourceTree = "<group>"; };
+		91F6C6EF890E495EA678C79D /* Tests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		952C299E57A5446FB4346DD6 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.xcconfig"; path = "Pods/Pods-Tests.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		004BC87A198B192B000C039B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				72DD1174A39140F5A9354F3B /* libPods.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9B8D0F36F0904B24AD7B7FA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F255F5988CDD4FF999B5EE2A /* Foundation.framework in Frameworks */,
+				1386930E3BF747888595A703 /* libPods-Tests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		004BC874198B192B000C039B = {
+			isa = PBXGroup;
+			children = (
+				004BC8DB198B1DB0000C039B /* README.md */,
+				004BC8A8198B19E0000C039B /* Podfile */,
+				004BC8B0198B1B13000C039B /* js */,
+				004BC87F198B192B000C039B /* KBCrypto */,
+				2E0105EBA54D4C8A9A158921 /* Tests */,
+				004BC87E198B192B000C039B /* Products */,
+				3746E1830062493083C021D6 /* Frameworks */,
+				952C299E57A5446FB4346DD6 /* Pods.xcconfig */,
+				F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */,
+			);
+			sourceTree = "<group>";
+		};
+		004BC87E198B192B000C039B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004BC87D198B192B000C039B /* libKBCrypto.a */,
+				91F6C6EF890E495EA678C79D /* Tests.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004BC87F198B192B000C039B /* KBCrypto */ = {
+			isa = PBXGroup;
+			children = (
+				004BC897198B19D2000C039B /* KBCrypto.h */,
+				004BC898198B19D2000C039B /* KBCrypto.m */,
+				004BC8A9198B1A4D000C039B /* KBKey.h */,
+				004BC8AA198B1A4D000C039B /* KBKey.m */,
+				004BC899198B19D2000C039B /* KBJSCore.h */,
+				004BC89A198B19D2000C039B /* KBJSCore.m */,
+				004BC89B198B19D2000C039B /* KBKeyRing.h */,
+				004BC8E7198B2CD5000C039B /* KBKeyRing.m */,
+				004BC89C198B19D2000C039B /* KBKeyRings.h */,
+				004BC89D198B19D2000C039B /* KBKeyRings.m */,
+				004BC8A0198B19D2000C039B /* KBMessage.h */,
+				004BC8A1198B19D2000C039B /* KBSigner.h */,
+				004BC8A2198B19D2000C039B /* KBSigner.m */,
+			);
+			path = KBCrypto;
+			sourceTree = "<group>";
+		};
+		004BC8B0198B1B13000C039B /* js */ = {
+			isa = PBXGroup;
+			children = (
+				004BC8B9198B1B13000C039B /* README.md */,
+				004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */,
+				004BC8B5198B1B13000C039B /* keybase.js */,
+			);
+			path = js;
+			sourceTree = "<group>";
+		};
+		004BC8BB198B1C3D000C039B /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				004BC8BC198B1C3D000C039B /* gabrielhgpg2_clearsign_gpg2.asc */,
+				004BC8BD198B1C3D000C039B /* gabrielhgpg2_private.asc */,
+				004BC8BE198B1C3D000C039B /* gabrielhgpg2_public.asc */,
+				004BC8BF198B1C3D000C039B /* gabrielhlocal2_clearsign_fail.asc */,
+				004BC8C0198B1C3D000C039B /* gabrielhlocal2_clearsign_gpg1.asc */,
+				004BC8C1198B1C3D000C039B /* gabrielhlocal2_clearsign_kb.asc */,
+				004BC8C2198B1C3D000C039B /* gabrielhlocal2_message_gpg1.asc */,
+				004BC8C3198B1C3D000C039B /* gabrielhlocal2_message_gpg2.asc */,
+				004BC8C4198B1C3D000C039B /* gabrielhlocal2_message_kb.asc */,
+				004BC8C5198B1C3D000C039B /* gabrielhlocal2_private.asc */,
+				004BC8C6198B1C3D000C039B /* gabrielhlocal2_public.asc */,
+				004BC8C7198B1C3D000C039B /* gabrielhlocal2_sign_gpg1.asc */,
+				004BC8C8198B1C3D000C039B /* gabrielhlocal2_sign_gpg2.asc */,
+			);
+			name = Data;
+			path = Tests/Data;
+			sourceTree = "<group>";
+		};
+		2E0105EBA54D4C8A9A158921 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				004BC8BB198B1C3D000C039B /* Data */,
+				004BC8C9198B1C3D000C039B /* KBCryptoTest.m */,
+				004BC8EF198C187C000C039B /* KBJSCoreTest.m */,
+				88ADA26297094C29A5043A0B /* main.m */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		3746E1830062493083C021D6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				83DF827E781644F18959ECFF /* iOS */,
+				662CBE1D64BA49118E226154 /* libPods.a */,
+				7F2E476D89B84695AB566D69 /* libPods-Tests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		83DF827E781644F18959ECFF /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				3A46128C529E4E29AD414C3E /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		004BC87C198B192B000C039B /* KBCrypto */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBCrypto" */;
+			buildPhases = (
+				3D682FA1C1784FFFA1640DB6 /* Check Pods Manifest.lock */,
+				004BC879198B192B000C039B /* Sources */,
+				004BC87A198B192B000C039B /* Frameworks */,
+				004BC87B198B192B000C039B /* CopyFiles */,
+				BBB2C214326E49B399E5734E /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KBCrypto;
+			productName = KBCrypto;
+			productReference = 004BC87D198B192B000C039B /* libKBCrypto.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		E98A237DB3874BD88840AA16 /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E0E735B0A7F4364BA24AF8A /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				8D6BD428972741C1B870D5E2 /* Check Pods Manifest.lock */,
+				5FBA89C160F24707BE0D7524 /* Sources */,
+				9B8D0F36F0904B24AD7B7FA8 /* Frameworks */,
+				A4E7B379AE4E4EA88F14060A /* Resources */,
+				B75EFE47F3204354AF763AA1 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5F23953B314B4CDE85C7A84F /* PBXTargetDependency */,
+			);
+			name = Tests;
+			productName = Tests;
+			productReference = 91F6C6EF890E495EA678C79D /* Tests.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		004BC875198B192B000C039B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Gabriel Handford";
+				TargetAttributes = {
+					004BC87C198B192B000C039B = {
+						CreatedOnToolsVersion = 6.0;
+					};
+				};
+			};
+			buildConfigurationList = 004BC878198B192B000C039B /* Build configuration list for PBXProject "KBCrypto" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 004BC874198B192B000C039B;
+			productRefGroup = 004BC87E198B192B000C039B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				004BC87C198B192B000C039B /* KBCrypto */,
+				E98A237DB3874BD88840AA16 /* Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A4E7B379AE4E4EA88F14060A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				004BC8D1198B1C3D000C039B /* gabrielhlocal2_clearsign_kb.asc in Resources */,
+				004BC8CC198B1C3D000C039B /* gabrielhgpg2_clearsign_gpg2.asc in Resources */,
+				004BC8D3198B1C3D000C039B /* gabrielhlocal2_message_gpg2.asc in Resources */,
+				004BC8CF198B1C3D000C039B /* gabrielhlocal2_clearsign_fail.asc in Resources */,
+				004BC8D0198B1C3D000C039B /* gabrielhlocal2_clearsign_gpg1.asc in Resources */,
+				004BC8D2198B1C3D000C039B /* gabrielhlocal2_message_gpg1.asc in Resources */,
+				004BC8D7198B1C3D000C039B /* gabrielhlocal2_sign_gpg1.asc in Resources */,
+				004BC8D5198B1C3D000C039B /* gabrielhlocal2_private.asc in Resources */,
+				004BC8D6198B1C3D000C039B /* gabrielhlocal2_public.asc in Resources */,
+				004BC8CD198B1C3D000C039B /* gabrielhgpg2_private.asc in Resources */,
+				004BC8CE198B1C3D000C039B /* gabrielhgpg2_public.asc in Resources */,
+				004BC8D8198B1C3D000C039B /* gabrielhlocal2_sign_gpg2.asc in Resources */,
+				004BC8D4198B1C3D000C039B /* gabrielhlocal2_message_kb.asc in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3D682FA1C1784FFFA1640DB6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		8D6BD428972741C1B870D5E2 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B75EFE47F3204354AF763AA1 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-Tests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BBB2C214326E49B399E5734E /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		004BC879198B192B000C039B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				004BC8E8198B2CD5000C039B /* KBKeyRing.m in Sources */,
+				004BC8AB198B1A4D000C039B /* KBKey.m in Sources */,
+				004BC8A4198B19D2000C039B /* KBJSCore.m in Sources */,
+				004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */,
+				004BC8A5198B19D2000C039B /* KBKeyRings.m in Sources */,
+				004BC8A7198B19D2000C039B /* KBSigner.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5FBA89C160F24707BE0D7524 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				004BC8DD198B20F0000C039B /* KBKey.m in Sources */,
+				004BC8DF198B20F5000C039B /* KBKeyRings.m in Sources */,
+				004BC8E1198B2102000C039B /* KBCrypto.m in Sources */,
+				CD4CD2BBDDAB456688663A8D /* main.m in Sources */,
+				004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */,
+				004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */,
+				004BC8E9198B2CD5000C039B /* KBKeyRing.m in Sources */,
+				004BC8E0198B20F8000C039B /* KBSigner.m in Sources */,
+				004BC8DE198B20F2000C039B /* KBJSCore.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5F23953B314B4CDE85C7A84F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 004BC87C198B192B000C039B /* KBCrypto */;
+			targetProxy = 85F7D4C86BE648F48D273181 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		004BC88F198B192B000C039B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		004BC890198B192B000C039B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		004BC892198B192B000C039B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		004BC893198B192B000C039B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		7EDB9D63F0F8486683F92A4F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/xcodeproj.dst;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		F74EE1D981DD41A4AB469418 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DSTROOT = /tmp/xcodeproj.dst;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				OTHER_CFLAGS = (
+					"-DNS_BLOCK_ASSERTIONS=1",
+					"$(inherited)",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-DNS_BLOCK_ASSERTIONS=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		004BC878198B192B000C039B /* Build configuration list for PBXProject "KBCrypto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				004BC88F198B192B000C039B /* Debug */,
+				004BC890198B192B000C039B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBCrypto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				004BC892198B192B000C039B /* Debug */,
+				004BC893198B192B000C039B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4E0E735B0A7F4364BA24AF8A /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F74EE1D981DD41A4AB469418 /* Release */,
+				7EDB9D63F0F8486683F92A4F /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 004BC875198B192B000C039B /* Project object */;
+}
