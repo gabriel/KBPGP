@@ -1,6 +1,6 @@
 //
 //  KBJSCore.m
-//  Keybase
+//  KBCrypto
 //
 //  Created by Gabriel on 7/1/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -44,7 +44,7 @@
       });
     };
     
-    [_context evaluateScript:@"var jscore = {}"];
+    [_context evaluateScript:@"var jscore = jscore || {}"];
     _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
       return [blockSelf randomHexString:[numBytes toUInt32]];

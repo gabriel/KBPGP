@@ -15,6 +15,6 @@
  */
 @interface KBKeyBundle : NSObject <KBKey>
 
-- (instancetype)initWithKeyId:(NSString *)keyId bundle:(NSString *)bundle userName:(NSString *)userName capabilities:(KBKeyCapabilities)capabilities passwordProtected:(BOOL)passwordProtected;
+- (instancetype)initWithBundle:(NSString *)bundle userName:(NSString *)userName fingerprint:(NSString *)fingerprint secret:(BOOL)secret;
 
 @end

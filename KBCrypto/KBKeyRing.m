@@ -1,13 +1,12 @@
 //
 //  KBKeyRing.m
-//  Keybase
+//  KBCrypto
 //
 //  Created by Gabriel on 7/29/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
 //
 
 #import "KBKeyRing.h"
-#import "KBSigner.h"
 #import "KBCrypto.h"
 
 #import <ObjectiveSugar/ObjectiveSugar.h>
@@ -26,14 +25,18 @@
   return self;
 }
 
-- (void)addKey:(id<KBKey>)key {
-  NSString *keyId = [key.keyId lowercaseString];
-  NSMutableArray *keys = _keys[keyId];
-  if (!keys) {
-    keys = [NSMutableArray array];
-    _keys[keyId] = keys;
+- (void)addKey:(id<KBKey>)key keyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities {
+  for (NSString *keyId in keyIds) {
+    NSMutableArray *keys = _keys[[keyId lowercaseString]];
+    if (!keys) {
+      keys = [NSMutableArray array];
+      _keys[keyId] = keys;
+    }
+    [keys addObject:@{
+                      @"key": key,
+                      @"capabilities": @(capabilities)
+                      }];
   }
-  [keys addObject:key];
 }
 
 - (void)lookupKeyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure {
@@ -41,9 +44,9 @@
   for (NSString *keyId in keyIds) {
     NSArray *keys = _keys[[keyId lowercaseString]];
     if (keys) {
-      for (id<KBKey> key in keys) {
-        if ((key.capabilities & capabilities) != 0) {
-          [found addObject:key];
+      for (NSDictionary *key in keys) {
+        if (([key[@"capabilities"] unsignedIntegerValue] & capabilities) != 0) {
+          [found addObject:key[@"key"]];
         }
       }
     }
@@ -56,25 +59,6 @@
   } else {
     failure(KBCNSError(-1, NSStringWithFormat(@"No key for ids: %@", keyIds)));
   }
-}
-
-// This doesn't actually verify yet
-- (void)verifySigners:(NSArray *)signers success:(void (^)(NSArray *verified, NSArray *failed))success failure:(void (^)(NSError *error))failure {
-  NSMutableArray *verified = [NSMutableArray array];
-  NSMutableArray *failed = [NSMutableArray array];
-  for (KBSigner *signer in signers) {
-    NSArray *keys = _keys[[signer.keyId lowercaseString]];
-    if (keys) {
-      for (id<KBKey> key in keys) {
-        if ([signer.userName isEqual:key.userName]) {
-          [verified addObject:signer];
-          break;
-        }
-      }
-      [failed addObject:signer];
-    }
-  }
-  success(verified, failed);
 }
 
 @end

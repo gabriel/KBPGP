@@ -1,6 +1,6 @@
 //
 //  KBKeyRing.h
-//  Keybase
+//  KBCrypto
 //
 //  Created by Gabriel on 7/31/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -8,7 +8,7 @@
 
 #import "KBKey.h"
 
-@protocol KBKeyRing
+@protocol KBKeyRing <NSObject>
 
 /*!
  Lookup keys.
@@ -19,12 +19,13 @@
  */
 - (void)lookupKeyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray */*of id<KBKey>*/keys))success failure:(void (^)(NSError *error))failure;
 
+@optional
 
 /*!
  Verify signers.
- @param signers Array of [KBSigner]
+ @param signers Array of []
  */
-- (void)verifySigners:(NSArray *)signers success:(void (^)(NSArray *verified, NSArray *failed))success failure:(void (^)(NSError *error))failure;
+- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *verified, NSArray *failed))success failure:(void (^)(NSError *error))failure;
 
 @end
 
@@ -35,8 +36,8 @@
 @interface KBKeyRing : NSObject <KBKeyRing>
 
 /*!
- Add key to key ring.
+ Add bundle to key ring.
  */
-- (void)addKey:(id<KBKey>)key;
+- (void)addKey:(id<KBKey>)key keyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities;
 
 @end

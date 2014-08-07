@@ -1,6 +1,6 @@
 //
 //  KBKey.m
-//  Keybase
+//  KBCrypto
 //
 //  Created by Gabriel on 7/31/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -11,6 +11,7 @@
 #import <GHKit/GHKit.h>
 
 NSString *KBKeyIdFromFingerprint(NSString *fingerprint) {
+  if (!fingerprint) return nil;
   if ([fingerprint length] < 16) return fingerprint;
   return [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];
 }

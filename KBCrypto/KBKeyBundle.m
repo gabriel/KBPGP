@@ -11,29 +11,27 @@
 #import <GHKit/GHKit.h>
 
 @interface KBKeyBundle ()
-@property NSString *keyId;
 @property NSString *bundle;
 @property NSString *userName;
-@property KBKeyCapabilities capabilities;
-@property (getter=isPasswordProtected) BOOL passwordProtected;
+@property NSString *fingerprint;
+@property (getter=isSecret) BOOL secret;
 @end
 
 
 @implementation KBKeyBundle
 
-- (instancetype)initWithKeyId:(NSString *)keyId bundle:(NSString *)bundle userName:(NSString *)userName capabilities:(KBKeyCapabilities)capabilities passwordProtected:(BOOL)passwordProtected {
+- (instancetype)initWithBundle:(NSString *)bundle userName:(NSString *)userName fingerprint:(NSString *)fingerprint secret:(BOOL)secret {
   if ((self = [super init])) {
-    _keyId = keyId;
     _bundle = bundle;
     _userName = userName;
-    _capabilities = capabilities;
-    _passwordProtected = passwordProtected;
+    _fingerprint = fingerprint;
+    _secret = secret;
   }
   return self;
 }
 
 - (NSString *)description {
-  return GHDescription(@"keyId", @"userName", @"capabilities", @"passwordProtected");
+  return GHDescription(@"userName", @"fingerprint", @"secret");
 }
 
 @end

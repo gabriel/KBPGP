@@ -1,6 +1,6 @@
 //
 //  KBKey.h
-//  Keybase
+//  KBCrypto
 //
 //  Created by Gabriel on 7/31/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -16,11 +16,17 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
 };
 
 @protocol KBKey
-@property (readonly) NSString *keyId;
 @property (readonly) NSString *bundle;
 @property (readonly) NSString *userName;
-@property (readonly) KBKeyCapabilities capabilities;
-- (BOOL)isPasswordProtected;
+@property (readonly) NSString *fingerprint;
+- (BOOL)isSecret;
+
+@optional
+// If secret
+- (NSData *)decryptKeyWithPassword:(NSString *)password error:(NSError * __autoreleasing *)error;
+
+// For verifying public keys
+- (BOOL)verifyUserName:(NSString *)userName;
 @end
 
 NSString *KBKeyIdFromFingerprint(NSString *fingerprint);

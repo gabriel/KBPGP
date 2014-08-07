@@ -13,4 +13,6 @@ Pod::Spec.new do |s|
   s.source_files = 'KBCrypto/**/*.{c,h,m}'
   s.requires_arc = true
 
+  s.resources = ["js/*.js"]
+
 end

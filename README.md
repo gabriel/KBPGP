@@ -17,10 +17,8 @@ pod "KBCrypto"
 # Encrypt
 
 ```objc
-KBKeyRing *keyRing = ...;
-KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
-
-[crypto encryptText:@"This is a secret message" keyIds:@[@"89ae977e1bc670e5"] success:^(NSString *messageArmored) {
+KBCrypto *crypto = [[KBCrypto alloc] init];
+[crypto encryptText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -30,28 +28,19 @@ KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
 # Encrypt & Sign
 
 ```objc
-KBKeyRing *keyRing = ...;
-KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
-
-[crypto encryptAndSignText:@"This is a secret signed message" encryptForKeyIds:@[@"89ae977e1bc670e5"] signForKeyIds:@[@"89ae977e1bc670e5"] success:^(NSString *messageArmored) {
+KBCrypto *crypto = [[KBCrypto alloc] init];
+[crypto encryptText:@"This is a secret signed message" keyBundle:@"-----BEGIN PGP PUBLIC KEY..." keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
 }];
 ```
 
-# Decrypt & Verify
+# Decrypt
 
 ```objc
-KBKeyRing *keyRing = ...;
-KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
-
-crypto.passwordBlock = ^(id<KBKey> key, KBCryptoPasswordCompletionBlock completionBlock) { 
-  NSString *password = ...;
-  completionBlock(password); 
-};
-
-[crypto decryptMessageArmored:messageArmored success:^(NSString *plainText, NSArray *verifiedSigners) {
+KBCrypto *crypto = [[KBCrypto alloc] init];
+[crypto decryptMessageArmored:messageArmored keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *plainText, NSArray *verifiedSigners) {
   NSLog(@"Decrypted: %@", plainText);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -62,15 +51,8 @@ crypto.passwordBlock = ^(id<KBKey> key, KBCryptoPasswordCompletionBlock completi
 # Sign
 
 ```objc
-KBKeyRing *keyRing = ...;
-KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
-
-crypto.passwordBlock = ^(id<KBKey> key, KBCryptoPasswordCompletionBlock completionBlock) { 
-  NSString *password = ...;
-  completionBlock(password); 
-};
-
-[crypto signText:@"This is a secret message" keyIds:@[@"89ae977e1bc670e5"] success:^(NSString *clearTextArmored) {
+KBCrypto *crypto = [[KBCrypto alloc] init];
+[crypto signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
   NSLog(@"%@", clearTextArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -95,13 +77,8 @@ KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
 ```objc
 KBKeyRing *keyRing = [[KBKeyRing alloc] init];
 
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"kbuser_public.asc"]  userName:@"kbuser" capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify passwordProtected:NO]];
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"d53374f55303d0ea" bundle:[self loadFile:@"kbuser_private.asc"]  userName:@"kbuser" capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"89ae977e1bc670e5" bundle:[self loadFile:@"kbuser_private.asc"]  userName:@"kbuser" capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
-
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gpguser_public.asc"]  userName:nil capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify  passwordProtected:NO]];
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"49d182780818ea2d" bundle:[self loadFile:@"gpguser_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesDecrypt passwordProtected:YES]];
-[keyRing addKey:[[KBKey alloc] initWithKeyId:@"4bf812991a9c76ab" bundle:[self loadFile:@"gpguser_private.asc"]  userName:nil capabilities:KBKeyCapabilitiesSign passwordProtected:YES]];
+KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userName:@"gabrielhlocal2" fingerprint:@"AFB10F6A5895F5B1D67851861296617A289D5C6B" secret:NO];
+[keyRing addKey:publicKey1 keyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
 
 return keyRing;
 ```

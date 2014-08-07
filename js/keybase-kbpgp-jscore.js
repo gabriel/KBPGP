@@ -20,10 +20,14 @@ var kblog = function(obj) {
               return
           seen.push(val)
       }
-      return val
+      return val;
   }, 2);
 
   console.log('\n' + obj.constructor.name + ': ' + desc);
+};
+
+var kberr = function(err) {
+  return err.fileName + ":" + err.lineNumber + ", " + err.message;
 };
 
 var kbpgp = require("kbpgp");
@@ -34,8 +38,9 @@ var kbpgp = require("kbpgp");
 // do with how JSContent works.
 //
 
+var jscore = jscore || {};
+
 // Encrypt
-// text, encrypt_for, sign_with, passphrase, success, failure
 jscore.encrypt = function(params) {
   var encrypt_for = params["encrypt_for"],
     sign_with = params["sign_with"],
@@ -56,16 +61,14 @@ jscore.encrypt = function(params) {
   }, failure);
 };
 
-// Sign
-// text, private_key_armored, passphrase, success, failure
 jscore.sign = function(params) {
-  var private_key_armored = params["private_key_armored"],
+  var sign_with = params["sign_with"],
     passphrase = params["passphrase"],
     text = params["text"],
     success = params["success"],
     failure = params["failure"];
 
-  jscore._decodePrivateKey(private_key_armored, passphrase, function(key) {
+  jscore._decodePrivateKey(sign_with, passphrase, function(key) {
     var params = {
       msg: text,
       sign_with: key
@@ -74,34 +77,32 @@ jscore.sign = function(params) {
     kbpgp.burn(params, function(err, result_string, result_buffer) {
       if (err) { failure(err.message); return; }
       if (!result_string) { failure("No result string"); return; }
-            
+
       success(result_string);
     });
   }, failure);
 };
 
-// Key fetch for decrypt/verify
-jscore.keyfetch = {}
-jscore.keyfetch.fetch = function(key_ids, ops, callback) {    
-  var hex_key_ids = key_ids.map(function(k) { return k.toString("hex"); })
-  jscore.kbcrypto.keyfetch(hex_key_ids, ops, function(bundle, username, passphrase) {
+function RemoteKeyFetch(keyring) {
+  this.keyring = keyring;
+};
+
+RemoteKeyFetch.prototype.fetchRemote = function(key_ids, ops, callback) {
+  var keyring = this.keyring;
+  var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
+  jscore.kbcrypto.keyfetch(hexkeyids, ops, function(bundle) { //, passphrase) {
     kbpgp.KeyManager.import_from_armored_pgp({raw: bundle}, function(err, km) {
+      if (err) { callback(err); return; }
 
-      if (passphrase && km.is_pgp_locked()) {
-        km.unlock_pgp({
-          passphrase: passphrase
-        }, function(err) {
-          if (err) { failure(err.message); return; }
-        });
-      }
+      // if (passphrase && km.is_pgp_locked()) {
+      //   km.unlock_pgp({
+      //     passphrase: passphrase
+      //   }, function(err) {
+      //     if (err) { callback(err); return; }
+      //   });
+      // }
 
-      // Attach info to key, used to verify it later
-      // in _process_literals.
-      km.kbcrypto = {
-        username: username
-      };
-
-      var keyring = new kbpgp.keyring.PgpKeyRing();
+      //var keyring = new kbpgp.keyring.PgpKeyRing();
       keyring.add_key_manager(km);
       keyring.fetch(key_ids, ops, callback);
     });
@@ -110,22 +111,63 @@ jscore.keyfetch.fetch = function(key_ids, ops, callback) {
   });
 };
 
+// Check local keyring and then fetch remote if not found
+RemoteKeyFetch.prototype.fetch = function(key_ids, ops, callback) {  
+  var fetcher = this;
+  this.keyring.fetch(key_ids, ops, function(err, key, index) {
+    if (err) {
+      fetcher.fetchRemote(key_ids, ops, callback);
+    } else {
+      callback(err, key, index);
+    }
+  });
+};
+
 jscore.unbox = function(params) {
   var message_armored = params["message_armored"],
     success = params["success"],
     failure = params["failure"];
 
+  var keyring = new kbpgp.keyring.PgpKeyRing();
   var kparams = {
     armored: message_armored,
-    keyfetch: jscore.keyfetch,
+    keyfetch: new RemoteKeyFetch(keyring),
   };
   kbpgp.processor.do_message(kparams, function(err, literals) {
     if (err) { failure(err.message); return; }
     jscore._process_literals(literals, success);
   });
 };
-jscore.decrypt = jscore.unbox;
 jscore.verify = jscore.unbox;
+//jscore.decrypt = jscore.unbox;
+
+jscore.decrypt = function(params) {
+  var message_armored = params["message_armored"],
+    decrypt_with = params["decrypt_with"],
+    passphrase = params["passphrase"],
+    success = params["success"],
+    failure = params["failure"];
+  
+  if (!decrypt_with) {
+    //jscore.unbox(params);
+    failure("Must specify decrypt_with");
+    return;
+  }
+
+  jscore._decodePrivateKey(decrypt_with, passphrase, function(private_key) {
+    var keyring = new kbpgp.keyring.PgpKeyRing();
+    keyring.add_key_manager(private_key);
+
+    var kparams = {
+      armored: message_armored,
+      keyfetch: new RemoteKeyFetch(keyring),
+    };
+    kbpgp.processor.do_message(kparams, function(err, literals) {            
+      if (err) { failure(err.message); return; }
+      jscore._process_literals(literals, success);
+    });    
+  }, failure);
+};
 
 // Process literals from decrypt/verify
 jscore._process_literals = function(literals, cb) {
@@ -135,13 +177,9 @@ jscore._process_literals = function(literals, cb) {
   var signers = [];      
   for (var i = 0; i < data_signers.length; i++) {
     var data_signer = data_signers[i];
-    var key = data_signer.sig.keyfetch_obj.km;
-    var signer = {
-      username: key.kbcrypto.username,
-      key_id: key.get_pgp_key_id().toString("hex")
-    };
-    signers.push(signer);
-  }  
+    var key = data_signer.sig.keyfetch_obj.km;    
+    signers.push(key.get_pgp_fingerprint().toString("hex"));
+  }
   cb(text, signers);
 };
 
@@ -203,7 +241,7 @@ jscore.armorPrivateKey = function(params) {
   jscore._armor(C.message_types.private_key, params);
 };
 
-jscore.dearmor = function(armored, success, failure) {
+jscore.dearmor = function(params) {
   var armored = params["armored"],
     success = params["success"],
     failure = params["failure"];
@@ -215,8 +253,6 @@ jscore.dearmor = function(armored, success, failure) {
     success(msg.body.toString("hex"));
   }
 };
-
-// ---
 
 jscore._armor = function(message_type, params) {
   var data = params["data"],
@@ -267,27 +303,3 @@ jscore._decodeKeys = function(public_key_armored, private_key_armored, passphras
     }, failure);
   }, failure);
 };
-
-
-
-// jscore.decrypt = function(params) {
-//   var message_armored = params["message_armored"],
-//     private_key_armored = params["private_key_armored"],
-//     passphrase = params["passphrase"],
-//     success = params["success"],
-//     failure = params["failure"];  
-  
-//   jscore._decodePrivateKey(private_key_armored, passphrase, function(private_key) {
-//     var keyring = new kbpgp.keyring.PgpKeyRing();
-//     keyring.add_key_manager(private_key);
-
-//     var kparams = {
-//       armored: message_armored,
-//       keyfetch: keyring,
-//     };
-//     kbpgp.processor.do_message(kparams, function(err, literals) {            
-//       if (err) { failure(err.message); return; }
-//       jscore._process_literals(literals, success);
-//     });    
-//   }, failure);
-// };
