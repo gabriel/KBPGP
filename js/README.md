@@ -10,10 +10,10 @@
 
 # Using openpgp.js
 
-**This isn't currently supported**
-
 1. Clone openpgp.js repo
 1. Remove crypto from external arrays in Gruntfile
 1. Run grunt
 1. Copy generated openpgp.js file here
-1. Generate keybase.js
+
+
+To use openpgp.js as the backend, change `main.js` to require openpgp instance of kbpgp.
