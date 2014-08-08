@@ -1,17 +1,21 @@
+# Generating keybase.js
+
+    node r.js -o baseUrl=. name=almond.js include=main out=keybase.js optimize=none
 
 
-== Generating keybase.js
+# Testing
 
-How to create keybase.js:
-
-  node r.js -o baseUrl=. name=almond.js include=main out=keybase.js optimize=none
+    mocha test
 
 
-== OpenPGP.js
+# Using openpgp.js
 
 **This isn't currently supported**
 
-- Clone openpgp.js repo
-- Remove crypto from external arrays in Gruntfile
-- Run grunt
-- Copy generated openpgp.js file here
+1. Clone openpgp.js repo
+1. Remove crypto from external arrays in Gruntfile
+1. Run grunt
+1. Copy generated openpgp.js file here
+
+
+    node r.js -o baseUrl=. name=almond.js include=main out=openpgp.js optimize=none
