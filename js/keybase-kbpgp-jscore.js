@@ -283,18 +283,23 @@ jscore._decodeKey = function(bundle, passphrase, success, failure) {
       }, function(err) {
         if (err) { failure(err.message); return; }
       });
+    } else {
+      // Workaround bug where you need to call unlock on unlocked key, will be fixed soon.
+      key.unlock_pgp({}, function(err) {});
     }
     
     success(key);
-
-    // key.sign({}, function(err) {
-    //   key.export_pgp_private_to_client({}, function(err, msg) {
-    //     console.log(err);
-    //     console.log(msg);        
-    //   });
-    // });
   });
 };
+
+//Export
+// key.sign({}, function(err) {
+//   key.export_pgp_private_to_client({}, function(err, msg) {
+//     console.log(err);
+//     console.log(msg);        
+//   });
+// });
+
 
 // jscore._decodeP3SKBKey = function(bundle, passphrase, success, failure) {
 //   kbpgp.KeyManager.import_from_p3skb({

@@ -67,9 +67,8 @@
 
       id<KBKey> key = keys[0];
       
-      // Key fetch should return secret keys
       if ([key isSecret]) {
-        [failure callWithArguments:@[NSStringWithFormat(@"Key fetch returned a secret key")]];
+        [failure callWithArguments:@[NSStringWithFormat(@"Key fetch doesn't support secret keys")]];
         return;
       }
       
@@ -99,6 +98,7 @@
 }
 
 - (void)_callback:(dispatch_block_t)callback {
+  // TODO: Clear params from JS context
   //_context[@"params"] = nil;
   dispatch_async(dispatch_get_main_queue(), callback);
 }
@@ -114,22 +114,24 @@
 
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.encrypt" params:@{@"encrypt_for": keyBundle, @"sign_with": KBCOrNull(keyBundleForSign), @"passphrase": passwordForSign, @"text": text, @"success": ^(NSString *messageArmored) {
-    [blockSelf _callback:^{ success(messageArmored); }];
-  }, @"failure": ^(NSString *error) {
-    [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
-  }}];
+  [self _armorBundle:keyBundleForSign password:passwordForSign success:^(NSString *armoredBundleForSign, NSString *passwordForSignForArmor) {
+    [self _call:@"jscore.encrypt" params:@{@"encrypt_for": keyBundle, @"sign_with": KBCOrNull(armoredBundleForSign), @"passphrase": KBCOrNull(passwordForSignForArmor), @"text": text, @"success": ^(NSString *messageArmored) {
+      [blockSelf _callback:^{ success(messageArmored); }];
+    }, @"failure": ^(NSString *error) {
+      [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
+    }}];
+  } failure:failure];
 }
 
 - (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *clearTextArmored))success failure:(void (^)(NSError *error))failure {
-  NSParameterAssert(keyBundle);
-  
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.sign" params:@{@"sign_with": keyBundle, @"passphrase": password, @"text": text, @"success": ^(NSString *clearTextArmored) {
-    [blockSelf _callback:^{ success(clearTextArmored); }];
-  }, @"failure": ^(NSString *error) {
-    [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
-  }}];
+  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, NSString *passwordForArmor) {
+    [self _call:@"jscore.sign" params:@{@"sign_with": armoredBundle, @"passphrase": passwordForArmor, @"text": text, @"success": ^(NSString *clearTextArmored) {
+      [blockSelf _callback:^{ success(clearTextArmored); }];
+    }, @"failure": ^(NSString *error) {
+      [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
+    }}];
+  } failure:failure];
 }
 
 - (void)_verifyKeyFingerprints:(NSArray *)keyFingerprints plainText:(NSString *)plainText success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {

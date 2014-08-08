@@ -137,7 +137,7 @@
   }
 }
 
-- (void)_testDecryptWithP3SKB:(dispatch_block_t)completion {
+- (void)testDecryptWithP3SKB:(dispatch_block_t)completion {
   KBCrypto *crypto = [self crypto];
   [crypto decryptMessageArmored:[self loadFile:@"user1_message_kb.asc"] keyBundle:[self loadFile:@"user1_private.p3skb"] password:TEST_PASSWORD success:^(NSString *plainText, NSArray *signers) {
     GRAssertEqualStrings(plainText, @"this is a test message to gabrielhlocal2");
