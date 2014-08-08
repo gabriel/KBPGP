@@ -1,26 +1,33 @@
 PODS:
   - GHKit (1.0.5)
-  - GHUnit (0.6.1)
+  - GRUnit (1.0.3)
   - libsodium (0.6.1)
+  - MPMessagePack (0.1.7)
   - NAChloride (1.0.8):
     - libsodium
   - ObjectiveSugar (1.1.0)
+  - TSTripleSec (0.1.5):
+    - MPMessagePack
+    - NAChloride
 
 DEPENDENCIES:
   - GHKit
-  - GHUnit (from `../gh-unit/`)
+  - GRUnit (from `../GRUnit`)
   - NAChloride
   - ObjectiveSugar
+  - TSTripleSec
 
 EXTERNAL SOURCES:
-  GHUnit:
-    :path: ../gh-unit/
+  GRUnit:
+    :path: ../GRUnit
 
 SPEC CHECKSUMS:
   GHKit: 737b2d495cd7f389194e2798e219c5688ded7fce
-  GHUnit: e7e0edbbe22070918b276ce56ec4ab505fc34f45
+  GRUnit: bf25f3ec6b48740501ba122e4d4b732931aeb7eb
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
+  MPMessagePack: 7e6c5ff1e582272a34c6c2a24460b910605012ef
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
+  TSTripleSec: 70197b9118b91fa63e99767790adeffb4e06f8cf
 
 COCOAPODS: 0.33.1

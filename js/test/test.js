@@ -13,7 +13,7 @@ jscore.kbcrypto.keyfetch = function(hex_key_ids, ops, success, failure) {
   if (hex_key_ids[0] == "4bf812991a9c76ab" && (ops & 4) != 0) {    
     success(datafile("user2_public.asc"));
   } else {
-    failure(new Error("No key for " + hex_key_ids));
+    failure(new Error("No key for " + hex_key_ids + ", ops: " + ops));
   }
 };
 
@@ -26,23 +26,10 @@ var datafile = function(path) {
   return fs.readFileSync("../Tests/Data/" + path).toString();
 };
 
-describe("JSCore", function() {
-  
-  // Only supporting decrypt_with for now
-  // it("should decrypt", function(done) {   
-  //   var params = {
-  //     message_armored: datafile("user1_message_kb.asc"),
-  //     success: function(plainText, signers) {
-  //       assert.equal(plainText, "this is a test message to gabrielhlocal2");          
-  //       done();
-  //     },
-  //     failure: function(err) {
-  //       throw new Error(err);
-  //     },
-  //   };
+var failure = function(msg) { throw new Error(msg); };
 
-  //   jscore.decrypt(params);
-  // });
+describe("JSCore", function() {
+  this.timeout(10000);
 
   it("should decrypt with private key", function(done) {   
     jscore.decrypt({
@@ -53,15 +40,24 @@ describe("JSCore", function() {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
         done();
       },
-      failure: function(err) {
-        throw new Error(err);
-      },
+      failure:failure
     });
-  });
+  });  
+
+  it("should decrypt with private key (gpg2)", function(done) {   
+    jscore.decrypt({
+      message_armored: datafile("user1_message_gpg2.asc"),
+      decrypt_with: datafile("user1_private.asc"),
+      passphrase: "toomanysecrets",
+      success: function(plain_text, signers) {
+        assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+        done();
+      },
+      failure:failure
+    });
+  });  
 
   it("should encrypt/sign/decrypt/verify", function(done) {    
-    this.timeout(10000);
-
     // Encrypt and sign
     jscore.encrypt({
       encrypt_for: datafile("user1_public.asc"),
@@ -80,15 +76,80 @@ describe("JSCore", function() {
             assert.deepEqual(signers, ["664cf3d7151ed6e38aa051c54bf812991a9c76ab"]);
             done();
           },
-          failure: function(err) {
-            throw new Error(err);
-          },
+          failure:failure
         });
+
       },
-      failure: function(err) {
-        throw new Error(err);
-      },
+      failure:failure
     });
   });
+
+  // it("should decrypt with private key unlocked", function(done) {   
+  //   jscore.decrypt({
+  //     message_armored: datafile("user1_message_kb.asc"),
+  //     decrypt_with: datafile("user1_private_unlocked.asc"),
+  //     success: function(plain_text, signers) {
+  //       assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+  //       done();
+  //     },
+  //     failure:failure
+  //   });
+  // });
+
+  // it("should be in keyring", function(done) {
+  //   var decrypt_with = datafile("user1_private_unlocked.asc");
+  //   kbpgp.KeyManager.import_from_armored_pgp({
+  //     raw: decrypt_with
+  //   }, function(err, key) {
+      
+  //     console.log("PGP locked: " + key.is_pgp_locked());      
+  //     console.log("Has private: " + key.has_pgp_private());
+
+  //     console.log("Fingerprint: " + key.get_pgp_fingerprint().toString("hex"));
+      
+  //     var exported = key.export_pgp_keys_to_keyring()
+  //     console.log("Exporting: ")
+  //     for (var i = 0; i < exported.length; i++) {
+  //       var k = exported[i];
+  //       console.log("  Key id: " + k.key_material.get_key_id().toString("hex"));
+  //       console.log("  Flags: " + k.key_material.flags);
+  //       console.log("  Has private: " + k.key.has_private());        
+  //     }
+
+  //     var keyring = new kbpgp.keyring.PgpKeyRing();
+  //     keyring.add_key_manager(key);
+
+  //     var key_id = new Buffer("D53374F55303D0EA", "hex");                  
+  //     //"89AE977E1BC670E5"
+  //     //"D53374F55303D0EA" 
+      
+  //     keyring.fetch([key_id], 0x2, function(err, k, i) {
+  //       if (err) {
+  //         console.log(err);
+  //       } else {
+  //         console.log("Key: " + key_id.toString("hex"));
+  //         console.log("  Flags: " + k.key_material.flags);          
+  //         console.log("  Key id: " + k.key_material.get_key_id().toString("hex"));          
+  //         console.log("  Has private: " + k.key.has_private());
+  //         console.log("  Can perform ops decrypt 0x2: " + k.key.can_perform(0x2));
+  //         console.log("  Can perform ops verify 0x4: " + k.key.can_perform(0x4));
+  //       }
+  //       done();
+  //     });
+  //   });
+  // });
+
+  // it("should decrypt with p3skb bundle", function(done) {    
+  //   jscore.decrypt({
+  //     message_armored: datafile("user1_message_kb.asc"),
+  //     decrypt_with: datafile("user1_private.p3skb"),
+  //     passphrase: "toomanysecrets",
+  //     success: function(plain_text, signers) {
+  //       assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+  //       done();
+  //     },
+  //     failure:failure
+  //   });
+  // });
 
 });

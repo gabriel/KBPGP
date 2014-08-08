@@ -12,6 +12,7 @@
 #import <GHKit/GHKit.h>
 #import <ObjectiveSugar/ObjectiveSugar.h>
 #import <NAChloride/NAChloride.h>
+#import <TSTripleSec/P3SKB.h>
 
 @interface KBCrypto ()
 @property dispatch_queue_t queue;
@@ -58,12 +59,12 @@
   //
   context[@"jscore"][@"kbcrypto"][@"keyfetch"] = ^(NSArray *keyIds, KBKeyCapabilities capabilites, JSValue *success, JSValue *failure) {
     NSAssert(blockSelf.keyRing, @"No key rings");
-    [blockSelf.keyRing lookupKeyIds:keyIds capabilities:capabilites success:^(NSArray *keys) {
+    [blockSelf.keyRing lookupPGPKeyIds:keyIds capabilities:capabilites success:^(NSArray *keys) {
       if ([keys count] == 0) {
         [failure callWithArguments:@[NSStringWithFormat(@"No keys found for %@", keyIds)]];
         return;
       }
-      
+
       id<KBKey> key = keys[0];
       
       // Key fetch should return secret keys
@@ -131,12 +132,12 @@
   }}];
 }
 
-- (void)_verifySigners:(NSArray *)signers plainText:(NSString *)plainText success:(void (^)(NSString *plainText, NSArray *verified))success failure:(void (^)(NSError *error))failure {
+- (void)_verifyKeyFingerprints:(NSArray *)keyFingerprints plainText:(NSString *)plainText success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
   
   if ([_keyRing respondsToSelector:@selector(verifyKeyFingerprints:success:failure:)]) {
-    [_keyRing verifyKeyFingerprints:signers success:^(NSArray *verified, NSArray *failed) {
-      [blockSelf _callback:^{ success(plainText, verified); }];
+    [_keyRing verifyKeyFingerprints:keyFingerprints success:^(NSArray *signers) {
+      [blockSelf _callback:^{ success(plainText, signers); }];
     } failure:^(NSError *error) {
       [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
     }];
@@ -145,19 +146,45 @@
   }
 }
 
-- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signedWithKeyFingerprints))success failure:(void (^)(NSError *error))failure {
-  GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": keyBundle, @"passphrase": password, @"success": ^(NSString *plainText, NSArray *signedWithKeyFingerprints) {
-    [blockSelf _verifySigners:signedWithKeyFingerprints plainText:plainText success:success failure:failure];
-  }, @"failure": ^(NSString *error) {
-    [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
-  }}];
+- (void)_armorBundle:(NSString *)bundle password:(NSString *)password success:(void (^)(NSString *armoredBundle, NSString *passwordForArmor))success failure:(void (^)(NSError *error))failure {
+  if ([bundle gh_startsWith:@"-----BEGIN PGP"]) {
+    success(bundle, password);
+  } else {
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:bundle options:0];
+    if (!data) {
+      failure(GHNSError(-1, @"Not a valid bundle"));
+      return;
+    }
+    
+    NSError *error = nil;
+    NSData *decryptedKeyData = [[P3SKB P3SKBFromData:data error:&error] decryptPrivateKeyWithPassword:password error:&error];
+    if (!decryptedKeyData) {
+      failure(error);
+      return;
+    }
+    
+    [self armor:decryptedKeyData messageType:KBMessageTypePrivateKey success:^(NSString *encoded) {
+      success(encoded, nil);
+    } failure:failure];
+  }
 }
 
-- (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signedWithKeyFingerprints))success failure:(void (^)(NSError *failure))failure {
+- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *signedWithKeyFingerprints) {
-    [blockSelf _verifySigners:signedWithKeyFingerprints plainText:plainText success:success failure:failure];
+  
+  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, NSString *passwordForArmor) {
+    [self _call:@"jscore.decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(passwordForArmor), @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+      [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
+    }, @"failure": ^(NSString *error) {
+      [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
+    }}];
+  } failure:failure];
+}
+
+- (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *failure))failure {
+  GHWeakSelf blockSelf = self;
+  [self _call:@"jscore.verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+    [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
   }}];
@@ -194,11 +221,11 @@
   }}];
 }
 
-- (void)generateKeyWithNumBits:(NSUInteger)numBits numBitsSubKeys:(NSUInteger)numBitsSubKeys userName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure {
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure {
   
   GHWeakSelf blockSelf = self;
   NSString *userId = NSStringWithFormat(@"%@ <%@>", userName, userEmail);
-  [self _call:@"jscore.generateKeyPair" params:@{@"nbits": @(numBits), @"nbits_subkeys": @(numBitsSubKeys), @"userid": userId, @"passphrase": password, @"success": ^(NSString *publicKeyArmored, NSString *privateKeyArmored, NSString *keyId) {
+  [self _call:@"jscore.generateKeyPair" params:@{@"nbits": @(4096), @"nbits_subkeys": @(2048), @"userid": userId, @"passphrase": password, @"success": ^(NSString *publicKeyArmored, NSString *privateKeyArmored, NSString *keyId) {
     [blockSelf _callback:^{ success(publicKeyArmored, privateKeyArmored, keyId); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];

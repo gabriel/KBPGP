@@ -15,7 +15,7 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
   KBKeyCapabilitiesSign = 1 << 3,
 };
 
-@protocol KBKey
+@protocol KBKey <NSObject>
 @property (readonly) NSString *bundle;
 @property (readonly) NSString *userName;
 @property (readonly) NSString *fingerprint;
@@ -29,7 +29,7 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
 - (BOOL)verifyUserName:(NSString *)userName;
 @end
 
-NSString *KBKeyIdFromFingerprint(NSString *fingerprint);
+NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint);
 
 NSString *KBKeyDisplayDescription(NSString *fingerprint);
 

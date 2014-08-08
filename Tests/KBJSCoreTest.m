@@ -1,6 +1,6 @@
-#import <GHUnit/GHUnit.h>
+#import <GRUnit/GRUnit.h>
 
-@interface KBJSCoreTest : GHTestCase
+@interface KBJSCoreTest : GRTestCase
 @end
 
 #import "KBCrypto.h"
@@ -22,7 +22,7 @@
   
   [context evaluateScript:@"var randomHex = jscore.getRandomHexString(32);"];
   NSString *randomHex = [context[@"randomHex"] toString];
-  GHAssertEquals([randomHex length], (NSUInteger)64, nil);
+  GRAssertEquals([randomHex length], (NSUInteger)64);
 }
 
 @end

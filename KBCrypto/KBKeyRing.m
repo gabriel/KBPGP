@@ -8,6 +8,7 @@
 
 #import "KBKeyRing.h"
 #import "KBCrypto.h"
+#import "KBSigner.h"
 
 #import <ObjectiveSugar/ObjectiveSugar.h>
 #import <GHKit/GHKit.h>
@@ -25,8 +26,8 @@
   return self;
 }
 
-- (void)addKey:(id<KBKey>)key keyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities {
-  for (NSString *keyId in keyIds) {
+- (void)addKey:(id<KBKey>)key PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities {
+  for (NSString *keyId in PGPKeyIds) {
     NSMutableArray *keys = _keys[[keyId lowercaseString]];
     if (!keys) {
       keys = [NSMutableArray array];
@@ -39,9 +40,14 @@
   }
 }
 
-- (void)lookupKeyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure {
+- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure {
+  if ((capabilities & KBKeyCapabilitiesDecrypt) != 0 || (capabilities & KBKeyCapabilitiesSign) != 0) {
+    failure(KBCNSError(-1, NSStringWithFormat(@"Secret keys not supported: %@", PGPKeyIds)));
+    return;
+  }
+  
   NSMutableArray *found = [NSMutableArray array];
-  for (NSString *keyId in keyIds) {
+  for (NSString *keyId in PGPKeyIds) {
     NSArray *keys = _keys[[keyId lowercaseString]];
     if (keys) {
       for (NSDictionary *key in keys) {
@@ -52,13 +58,21 @@
     }
   }
   
-  GHDebug(@"Lookup key ids: %@, %@; %@", keyIds, KBKeyCapabilitiesDescription(capabilities), found);
+  GHDebug(@"Lookup key ids: %@, %@; %@", PGPKeyIds, KBKeyCapabilitiesDescription(capabilities), found);
   
   if ([found count] > 0) {
     success(found);
   } else {
-    failure(KBCNSError(-1, NSStringWithFormat(@"No key for ids: %@", keyIds)));
+    failure(KBCNSError(-1, NSStringWithFormat(@"No key for ids: %@", PGPKeyIds)));
   }
 }
+
+- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure {
+  NSArray *signers = [keyFingerprints map:^id(NSString *keyFingerprint) {
+    return [[KBSigner alloc] initWithKeyFingerprint:keyFingerprint verified:NO];
+  }];
+  success(signers);
+}
+
 
 @end

@@ -10,7 +10,7 @@
 
 #import <GHKit/GHKit.h>
 
-NSString *KBKeyIdFromFingerprint(NSString *fingerprint) {
+NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint) {
   if (!fingerprint) return nil;
   if ([fingerprint length] < 16) return fingerprint;
   return [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];

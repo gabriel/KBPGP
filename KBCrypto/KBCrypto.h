@@ -56,14 +56,14 @@
  @param success
   
     - *plainText*: Decrypted/verified text
-    - *signedWithKeyFingerprints*: Signed with key fingerprints
+    - *signers*: Signed with key fingerprints
  
  @param failure
  
     - *error*: Error
  
  */
-- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signedWithKeyFingerprints))success failure:(void (^)(NSError *error))failure;
+- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Verify.
@@ -72,14 +72,14 @@
  @param success
  
     - *plainText*: Verified text
-    - *signedWithKeyFingerprints*: Signed with key fingerprints
+    - *signers*: Signed with key fingerprints
  
  @param failure
  
     - *error*: Error
  
  */
-- (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signedWithKeyFingerprints))success failure:(void (^)(NSError *error))failure;
+- (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark -
 
@@ -97,9 +97,9 @@
 //- (void)readClearTextMessageArmored:(NSString *)clearTextMessageArmored completion:(void (^)(NSString *plainText, NSArray *keySigningIds))completion;
 
 /*!
- Generates public/private key pair with 2 subkeys for encrypting and signing.
+ Generates public/private key pair.
  */
-- (void)generateKeyWithNumBits:(NSUInteger)numBits numBitsSubKeys:(NSUInteger)numBitsSubKeys userName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure;
 
 @end
 

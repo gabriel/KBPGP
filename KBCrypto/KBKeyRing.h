@@ -12,20 +12,19 @@
 
 /*!
  Lookup keys.
- @param keyIds PGP key ids
+ @param PGPKeyIds PGP key ids
  @param capabilities Capabilities bitmask
  @param success Array of [id<KBKey>] (KBPublicKey/KBPrivateKey)
  @param failure Failure if no keys found
  */
-- (void)lookupKeyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray */*of id<KBKey>*/keys))success failure:(void (^)(NSError *error))failure;
-
-@optional
+- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keys))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Verify signers.
- @param signers Array of []
+ @param signers List of key fingerprints to verify
+ @param success Array of [KBSigner]
  */
-- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *verified, NSArray *failed))success failure:(void (^)(NSError *error))failure;
+- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
 @end
 
@@ -38,6 +37,6 @@
 /*!
  Add bundle to key ring.
  */
-- (void)addKey:(id<KBKey>)key keyIds:(NSArray *)keyIds capabilities:(KBKeyCapabilities)capabilities;
+- (void)addKey:(id<KBKey>)key PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities;
 
 @end
