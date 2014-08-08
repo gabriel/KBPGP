@@ -16,6 +16,4 @@
 1. Remove crypto from external arrays in Gruntfile
 1. Run grunt
 1. Copy generated openpgp.js file here
-
-
-    node r.js -o baseUrl=. name=almond.js include=main out=openpgp.js optimize=none
+1. Generate keybase.js
