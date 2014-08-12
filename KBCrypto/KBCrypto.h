@@ -13,6 +13,12 @@
 
 #import <TSTripleSec/P3SKB.h>
 
+typedef NS_ENUM (NSUInteger, KBCryptoErrorCode) {
+  KBCryptoErrorCodeDefault = -1,
+  KBCryptoErrorCodeCancelled = -2,
+};
+
+
 /*!
  Keybase PGP.
  */
@@ -27,29 +33,34 @@
 /*!
  Encrypt.
  @param text Text to encrypt
- @param keyBundle Bundle to encrypt with
+ @param keyBundle Bundle to encrypt with. Key bundle can be amrored public PGP key.
  */
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Encrypt and sign.
  @param text Text to encrypt
- @param keyBundle Bundle to encrypt with
- @param keyBundleForSign
+ @param keyBundle Bundle to encrypt with. Key bundle can be amrored public PGP key.
+ @param keyBundleForSign Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param passwordForSign Password for keyBundleForSign
  */
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Sign (clearsign).
+ @param text
+ @param keyBundle Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
+ @param password Password for keyBundle
  */
 - (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *clearTextArmored))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Decrypt (and verify if signed).
  
+ The key ring will be used to lookup keys to verify signatures if present.
+ 
  @param messageArmored
- @param keyBundle
+ @param keyBundle Bundle to decrypt with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param password
  @param success
   
@@ -65,6 +76,8 @@
 
 /*!
  Verify.
+ 
+ The key ring will be used to lookup keys to verify signatures.
  
  @param messageArmored
  @param success
@@ -93,7 +106,7 @@
  Generates key pair.
  Uses RSA with appropriate defaults.
  */
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
 
 @end
 

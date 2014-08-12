@@ -72,7 +72,7 @@ jscore.encrypt = function(params) {
     kbpgp.box(kparams, function(err, result_string, result_buffer) {
       success(result_string);
     });
-  }, failure.handle);
+  }, failure);
 };
 
 jscore.sign = function(params) {
@@ -257,7 +257,8 @@ jscore.generateKeyPair = function(params) {
           var pgp_private_hex = armor.decode(pgp_private);
           if (pgp_private_hex[0]) { failure.handle(pgp_private_hex[0]); return; }
 
-          success(pgp_public_hex[1], pgp_private_hex[1], key.get_pgp_fingerprint().toString("hex"));
+          success(pgp_public_hex[1].body.toString("hex"), pgp_private_hex[1].body.toString("hex"), 
+            key.get_pgp_fingerprint().toString("hex"));
         });
       });
     });

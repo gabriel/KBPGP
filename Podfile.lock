@@ -1,6 +1,6 @@
 PODS:
   - GHKit (1.0.5)
-  - GRUnit (1.0.3)
+  - GRUnit (1.0.4)
   - libsodium (0.6.1)
   - MPMessagePack (0.1.7)
   - NAChloride (1.0.8):
@@ -23,7 +23,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   GHKit: 737b2d495cd7f389194e2798e219c5688ded7fce
-  GRUnit: bf25f3ec6b48740501ba122e4d4b732931aeb7eb
+  GRUnit: 64a0d8350e955a43b571bd5554fe90b9230ff95d
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
   MPMessagePack: 7e6c5ff1e582272a34c6c2a24460b910605012ef
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd

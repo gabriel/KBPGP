@@ -198,14 +198,24 @@
 
 - (void)testGenerateKey:(dispatch_block_t)completion {
   KBCrypto *crypto = [[KBCrypto alloc] init];
-  [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
+  [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"Setec Astronomy" progress:^(KBKeygenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return YES;
-  } success:^(P3SKB *privateKey, NSString *keyFingerprint) {
+  } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
+    GRAssertNotNil([secretKey decryptPrivateKeyWithPassword:@"Setec Astronomy" error:nil]);
     
-    GRAssertNotNil([privateKey decryptPrivateKeyWithPassword:@"toomanysecrets" error:nil]);
+    NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
+    NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
     
-    completion();
+    [crypto encryptText:text keyBundle:publicKeyArmored keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
+      
+      [crypto decryptMessageArmored:messageArmored keyBundle:keyBundleAsP3SKB password:@"Setec Astronomy" success:^(NSString *plainText, NSArray *signers) {
+        
+        GRAssertEqualStrings(text, plainText);
+        
+        completion();
+      } failure:GRUErrorHandler(self)];
+    } failure:GRUErrorHandler(self)];
   } failure:GRUErrorHandler(self)];
 }
 
@@ -214,10 +224,11 @@
   KBCrypto *crypto = [[KBCrypto alloc] init];
   [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^BOOL(KBKeygenProgress *progress) {
     return (iter++ < 10);
-  } success:^(P3SKB *privateKey, NSString *keyFingerprint) {
+  } success:^(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
     GRFail(@"Should have cancelled");
   } failure:^(NSError *error) {
     GRTestLog(@"Failed ok: %@", error);
+    GRAssertEquals(error.code, KBCryptoErrorCodeCancelled);
     completion();
   }];
 }
