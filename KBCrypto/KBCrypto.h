@@ -7,18 +7,16 @@
 //
 
 #import "KBKeyRing.h"
-#import "KBMessage.h"
 #import "KBKeyBundle.h"
+#import "KBMessage.h"
+#import "KBKeygenProgress.h"
 
-//typedef void (^KBCryptoPasswordCompletionBlock)(NSString *password);
-//typedef void (^KBCryptoPasswordBlock)(id<KBKey> key, KBCryptoPasswordCompletionBlock completionBlock);
+#import <TSTripleSec/P3SKB.h>
 
 /*!
  Keybase PGP.
  */
 @interface KBCrypto : NSObject
-
-//@property (copy) KBCryptoPasswordBlock passwordBlock;
 
 /*!
  Create with key ring.
@@ -81,8 +79,6 @@
  */
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
-#pragma mark -
-
 /*!
  Armor.
  */
@@ -93,13 +89,11 @@
  */
 - (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure;
 
-//
-//- (void)readClearTextMessageArmored:(NSString *)clearTextMessageArmored completion:(void (^)(NSString *plainText, NSArray *keySigningIds))completion;
-
 /*!
- Generates public/private key pair.
+ Generates key pair.
+ Uses RSA with appropriate defaults.
  */
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
 
 @end
 

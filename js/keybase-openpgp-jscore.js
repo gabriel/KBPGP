@@ -125,9 +125,7 @@ jscore._privateKeyPacket = function(key) {
 };
 
 jscore.generateKeyPair = function(params) {
-  var nbits = params["nbits"],
-    nbits_subkeys = params["nbits_subkeys"],
-    userid = params["userid"],
+  var userid = params["userid"],
     passphrase = params["passphrase"],
     success = params["success"],
     failure = params["failure"];

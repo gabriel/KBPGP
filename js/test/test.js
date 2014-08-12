@@ -96,6 +96,35 @@ describe("JSCore", function() {
     });
   });
 
+  it("should generate key", function(done) {
+    this.timeout(100000);
+    jscore.generateKeyPair({
+      userid: "keybase.io/testuser <testuser@keybase.io>",
+      passphrase: "toomanysecrets",      
+      success: function(public_key_hex, private_key_hex, key_fingerprint) {        
+        done();
+      },
+      failure:failure
+    })
+  });
+
+  it("should cancel generate key", function(done) {
+    this.timeout(100000);
+    jscore.generateKeyPair({
+      userid: "keybase.io/testuser <testuser@keybase.io>",
+      passphrase: "toomanysecrets",      
+      progress: function(o) {
+        return false;
+      },
+      success: function(public_key_hex, private_key_hex, key_fingerprint) {
+        assert.ok(false, "should cancel");
+      },
+      failure: function(err) {        
+        done();
+      }
+    })
+  });
+
   // it("should be in keyring", function(done) {
   //   var decrypt_with = datafile("user1_private_unlocked.asc");
   //   kbpgp.KeyManager.import_from_armored_pgp({

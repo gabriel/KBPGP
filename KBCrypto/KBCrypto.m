@@ -126,7 +126,7 @@
 - (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *clearTextArmored))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
   [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, NSString *passwordForArmor) {
-    [self _call:@"jscore.sign" params:@{@"sign_with": armoredBundle, @"passphrase": passwordForArmor, @"text": text, @"success": ^(NSString *clearTextArmored) {
+    [self _call:@"jscore.sign" params:@{@"sign_with": armoredBundle, @"passphrase": KBCOrNull(passwordForArmor), @"text": text, @"success": ^(NSString *clearTextArmored) {
       [blockSelf _callback:^{ success(clearTextArmored); }];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
@@ -223,12 +223,32 @@
   }}];
 }
 
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password success:(void (^)(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId))success failure:(void (^)(NSError *error))failure {
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure {
   
   GHWeakSelf blockSelf = self;
   NSString *userId = NSStringWithFormat(@"%@ <%@>", userName, userEmail);
-  [self _call:@"jscore.generateKeyPair" params:@{@"nbits": @(4096), @"nbits_subkeys": @(2048), @"userid": userId, @"passphrase": password, @"success": ^(NSString *publicKeyArmored, NSString *privateKeyArmored, NSString *keyId) {
-    [blockSelf _callback:^{ success(publicKeyArmored, privateKeyArmored, keyId); }];
+  __block BOOL ok = YES;
+  [self _call:@"jscore.generateKeyPair" params:@{@"userid": userId, @"passphrase": password, @"progress": ^BOOL(NSDictionary *progressDict) {
+    if (!ok) return NO;
+    if (progress) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        KBKeygenProgress *p = [[KBKeygenProgress alloc] initFromJSONDictionary:progressDict];
+        if (progress) {
+          ok = progress(p);
+        }
+      });
+    }
+    return ok;
+  }, @"success": ^(NSString *publicKeyHex, NSString *privateKeyHex, NSString *keyFingerprint) {
+
+    NSError *error = nil;
+    P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:[privateKeyHex na_dataFromHexString] password:password publicKey:[publicKeyHex na_dataFromHexString] error:&error];
+    if (!secretKey) {
+      [blockSelf _callback:^{ failure(error); }];
+      return;
+    }
+
+    [blockSelf _callback:^{ success(secretKey, keyFingerprint); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(GHNSError(-1, error)); }];
   }}];

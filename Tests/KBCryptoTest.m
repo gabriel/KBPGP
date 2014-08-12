@@ -191,22 +191,35 @@
   [crypto verifyMessageArmored:messageArmored success:^(NSString *plainText, NSArray *verifiedSigners) {
     GRFail(@"Should fail");
   } failure:^(NSError *error) {
-    NSLog(@"Failed ok: %@", error);
+    GRTestLog(@"Failed ok: %@", error);
     completion();
   }];
 }
 
 - (void)testGenerateKey:(dispatch_block_t)completion {
   KBCrypto *crypto = [[KBCrypto alloc] init];
-  [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" success:^(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId) {
-  
-    GRTestLog(@"privateKeyArmored: %@", privateKeyArmored);
-    //GRTestLog(@"publicKeyArmored: %@", publicKeyArmored);
-    GRTestLog(@"keyId: %@", keyId);
+  [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
+    GRTestLog(@"Progress: %@", [progress progressDescription]);
+    return YES;
+  } success:^(P3SKB *privateKey, NSString *keyFingerprint) {
+    
+    GRAssertNotNil([privateKey decryptPrivateKeyWithPassword:@"toomanysecrets" error:nil]);
     
     completion();
-    
   } failure:GRUErrorHandler(self)];
+}
+
+- (void)testGenerateKeyCancel:(dispatch_block_t)completion {
+  __block NSInteger iter = 0;
+  KBCrypto *crypto = [[KBCrypto alloc] init];
+  [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^BOOL(KBKeygenProgress *progress) {
+    return (iter++ < 10);
+  } success:^(P3SKB *privateKey, NSString *keyFingerprint) {
+    GRFail(@"Should have cancelled");
+  } failure:^(NSError *error) {
+    GRTestLog(@"Failed ok: %@", error);
+    completion();
+  }];
 }
 
 - (void)testDearmorArmorPrivate:(dispatch_block_t)completion {

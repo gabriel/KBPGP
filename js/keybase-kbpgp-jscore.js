@@ -1,4 +1,4 @@
-window = {}
+window = {};
 window.crypto = {};
 window.crypto.getRandomValues = function(buf) {
   //console.log("Random values (" + buf.length + ")");
@@ -10,18 +10,18 @@ window.crypto.getRandomValues = function(buf) {
 };
 
 var kblog = function(obj) {
-  seen = []
+  seen = [];
   if (obj === undefined) return "undefined";
   if (obj === null) return "null";
 
   var desc = JSON.stringify(obj, function(key, val) {
-     if (val != null && typeof val == "object") {
+     if (val !== null && typeof val == "object") {
           if (seen.indexOf(val) >= 0)
-              return
-          seen.push(val)
+              return;
+          seen.push(val);
       }
-      if (val && val["type"] == "Buffer") {
-        var buf = new Buffer(val["data"]);
+      if (val && val.type == "Buffer") {
+        var buf = new Buffer(val.data);
         return "<Buffer:0x" + buf.toString("hex") + ">";
       }      
       return val;
@@ -34,6 +34,17 @@ var kberr = function(err) {
   return err.fileName + ":" + err.lineNumber + ", " + err.message;
 };
 
+var failure = function() {
+  return err.message;
+};
+
+function ErrorHandler(failure) {
+  this.failure = failure;
+}
+ErrorHandler.prototype.handle = function(err) {  
+  this.failure(err.message);
+};
+
 var kbpgp = require("kbpgp");
 
 //
@@ -44,33 +55,32 @@ var kbpgp = require("kbpgp");
 
 var jscore = jscore || {};
 
-// Encrypt
 jscore.encrypt = function(params) {
-  var encrypt_for = params["encrypt_for"],
-    sign_with = params["sign_with"],
-    passphrase = params["passphrase"],    
-    text = params["text"],
-    success = params["success"],
-    failure = params["failure"];
+  var encrypt_for = params.encrypt_for,
+    sign_with = params.sign_with,
+    passphrase = params.passphrase,    
+    text = params.text,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
 
   jscore._decodeKeys(encrypt_for, sign_with, passphrase, function(public_key, private_key) {
     var kparams = {
       msg: text,
       encrypt_for: public_key
     };
-    if (private_key) kparams["sign_with"] = private_key;
-    kbpgp.burn(kparams, function(err, result_string, result_buffer) {
+    if (private_key) kparams.sign_with = private_key;
+    kbpgp.box(kparams, function(err, result_string, result_buffer) {
       success(result_string);
     });
-  }, failure);
+  }, failure.handle);
 };
 
 jscore.sign = function(params) {
-  var sign_with = params["sign_with"],
-    passphrase = params["passphrase"],
-    text = params["text"],
-    success = params["success"],
-    failure = params["failure"];
+  var sign_with = params.sign_with,
+    passphrase = params.passphrase,
+    text = params.text,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
 
   jscore._decodeKey(sign_with, passphrase, function(key) {
     var params = {
@@ -78,9 +88,9 @@ jscore.sign = function(params) {
       sign_with: key
     };
 
-    kbpgp.burn(params, function(err, result_string, result_buffer) {
-      if (err) { failure(err.message); return; }
-      if (!result_string) { failure("No result string"); return; }
+    kbpgp.box(params, function(err, result_string, result_buffer) {
+      if (err) { failure.handle(err); return; }
+      if (!result_string) { failure.handle(new Error("No result string")); return; }
 
       success(result_string);
     });
@@ -89,7 +99,7 @@ jscore.sign = function(params) {
 
 function RemoteKeyFetch(keyring) {
   this.keyring = keyring;
-};
+}
 
 RemoteKeyFetch.prototype.fetchRemote = function(key_ids, ops, callback) {
   var keyring = this.keyring;
@@ -128,17 +138,17 @@ RemoteKeyFetch.prototype.fetch = function(key_ids, ops, callback) {
 };
 
 jscore.unbox = function(params) {
-  var message_armored = params["message_armored"],
-    success = params["success"],
-    failure = params["failure"];
+  var message_armored = params.message_armored,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
 
   var keyring = new kbpgp.keyring.PgpKeyRing();
   var kparams = {
     armored: message_armored,
     keyfetch: new RemoteKeyFetch(keyring),
   };
-  kbpgp.processor.do_message(kparams, function(err, literals) {
-    if (err) { failure(err.message); return; }
+  kbpgp.unbox(kparams, function(err, literals) {
+    if (err) { failure.handle(err); return; }
     jscore._process_literals(literals, success);
   });
 };
@@ -146,15 +156,15 @@ jscore.verify = jscore.unbox;
 //jscore.decrypt = jscore.unbox;
 
 jscore.decrypt = function(params) {
-  var message_armored = params["message_armored"],
-    decrypt_with = params["decrypt_with"],
-    passphrase = params["passphrase"],
-    success = params["success"],
-    failure = params["failure"];
+  var message_armored = params.message_armored,
+    decrypt_with = params.decrypt_with,
+    passphrase = params.passphrase,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
   
   if (!decrypt_with) {
     //jscore.unbox(params);
-    failure("Must specify decrypt_with");
+    failure.handle(new Error("Must specify decrypt_with"));
     return;
   }
 
@@ -166,8 +176,8 @@ jscore.decrypt = function(params) {
       armored: message_armored,
       keyfetch: new RemoteKeyFetch(keyring),
     };
-    kbpgp.processor.do_message(kparams, function(err, literals) {            
-      if (err) { failure(err.message); return; }
+    kbpgp.unbox(kparams, function(err, literals) {
+      if (err) { failure.handle(err); return; }
       jscore._process_literals(literals, success);
     });    
   }, failure);
@@ -182,51 +192,72 @@ jscore._process_literals = function(literals, cb) {
   for (var i = 0; i < data_signers.length; i++) {
     var data_signer = data_signers[i];    
     var key = data_signer.sig.key_manager;
-    signers.push(key.get_pgp_fingerprint().toString("hex"));
+    if (key) {
+      signers.push(key.get_pgp_fingerprint().toString("hex"));
+    }
   }
   cb(text, signers);
 };
 
 jscore.generateKeyPair = function(params) {
-  var nbits = params["nbits"],
-    nbits_subkeys = params["nbits_subkeys"],
-    userid = params["userid"],
-    passphrase = params["passphrase"],
-    success = params["success"],
-    failure = params["failure"];
+  var userid = params.userid,
+    passphrase = params.passphrase,
+    progress = params.progress,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
 
-  var F = kbpgp["const"].openpgp;
-  var opts = {
+  var opts = { 
     userid: userid,
-    primary: {
-      nbits: nbits,
-      flags: F.certify_keys | F.sign_data | F.auth | F.encrypt_comm | F.encrypt_storage,
-      expire_in: 86400 * 365 * 5
-    }, subkeys: [
-    {
-      nbits: nbits_subkeys,
-      flags: F.sign_data,
-      expire_in: 86400 * 365 * 2
-    }, {
-      nbits: nbits_subkeys,
-      flags: F.encrypt_comm | F.encrypt_storage,
-      expire_in: 86400 * 365 * 2
-    }]
   };
 
-  kbpgp.KeyManager.generate(opts, function(err, key) {
-    if (err) { failure(err.message); return; }
+  if (progress) {
+    opts.asp = new kbpgp.ASP({
+      progress_hook: function(o) {
+        var ok = true;
+        if (o.what == "fermat" && o.section == "p") {
+          ok = progress({
+            type: "find_prime_p",
+            prime: o.p.toString(),
+            amount: -1
+          });
+        } else if (o.what == "fermat" && o.section == "q") {
+          ok = progress({
+            type: "find_prime_q",
+            prime: o.p.toString(),
+            amount: -1
+          });
+        } else if (o.what == "mr") {
+          ok = progress({
+            type: "testing",
+            prime: o.p.toString(),
+            amount: o.i / o.total
+          });
+        }
+        if (!ok) {
+          this.canceler().cancel();
+        }
+      }
+    });  
+  }
+
+  kbpgp.KeyManager.generate_rsa(opts, function(err, key) {    
+    if (err) { failure.handle(err); return; }
     key.sign({}, function(err) {
-      if (err) { failure(err.message); return; }
+      if (err) { failure.handle(err); return; }
       key.export_pgp_private_to_client({
         passphrase: passphrase
       }, function(err, pgp_private) {
-        if (err) { failure(err.message); return; }
+        if (err) { failure.handle(err); return; }
 
         key.export_pgp_public({}, function(err, pgp_public) {
-          if (err) { failure(err.message); return; }
+          if (err) { failure.handle(err); return; }
 
-          success(pgp_public, pgp_private, key.get_pgp_key_id().toString("hex"));
+          var pgp_public_hex = armor.decode(pgp_public);
+          if (pgp_public_hex[0]) { failure.handle(pgp_public_hex[0]); return; }
+          var pgp_private_hex = armor.decode(pgp_private);
+          if (pgp_private_hex[0]) { failure.handle(pgp_private_hex[0]); return; }
+
+          success(pgp_public_hex[1], pgp_private_hex[1], key.get_pgp_fingerprint().toString("hex"));
         });
       });
     });
@@ -246,28 +277,28 @@ jscore.armorPrivateKey = function(params) {
 };
 
 jscore.dearmor = function(params) {
-  var armored = params["armored"],
-    success = params["success"],
-    failure = params["failure"];
+  var armored = params.armored,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
   var result = armor.decode(armored);
   var err = result[0], msg = result[1];
   if (err) {
-    failure(err.message);
+    failure.handle(err);
   } else {
     success(msg.body.toString("hex"));
   }
 };
 
 jscore._armor = function(message_type, params) {
-  var data = params["data"],
-    success = params["success"],
-    failure = params["failure"];
+  var data = params.data,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
   var buffer = new kbpgp.Buffer(data, "hex");
   var armored = armor.encode(message_type, buffer);
   if (armored) {
     success(armored);
   } else {
-    failure("Unable to armor.encode");
+    failure.handle(new Error("Unable to armor.encode"));
   }
 };
 
@@ -275,13 +306,13 @@ jscore._decodeKey = function(bundle, passphrase, success, failure) {
   kbpgp.KeyManager.import_from_armored_pgp({
     raw: bundle
   }, function(err, key) {
-    if (err) { failure(err.message); return; }
+    if (err) { failure.handle(err); return; }
 
     if (passphrase && key.is_pgp_locked()) {
       key.unlock_pgp({
         passphrase: passphrase
       }, function(err) {
-        if (err) { failure(err.message); return; }
+        if (err) { failure.handle(err); return; }
       });
     } else {
       // Workaround bug where you need to call unlock on unlocked key, will be fixed soon.
@@ -291,6 +322,19 @@ jscore._decodeKey = function(bundle, passphrase, success, failure) {
     success(key);
   });
 };
+
+jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase, success, failure) {
+  jscore._decodeKey(public_key_bundle, null, function(public_key) {
+    if (!private_key_bundle) {
+      success(public_key, null);
+      return;
+    }
+    jscore._decodeKey(private_key_bundle, passphrase, function(private_key) {
+      success(public_key, private_key);
+    }, failure);
+  }, failure);
+};
+
 
 //Export
 // key.sign({}, function(err) {
@@ -305,7 +349,7 @@ jscore._decodeKey = function(bundle, passphrase, success, failure) {
 //   kbpgp.KeyManager.import_from_p3skb({
 //     raw: bundle
 //   }, function(err, key) {
-//     if (err) { failure(err.message); return; }
+//     if (err) { failure.handle(err); return; }
 //     if (passphrase && key.is_p3skb_locked()) {
 //       var tsenc = new kbpgp.Encryptor({
 //         key: kbpgp.util.bufferify(passphrase),
@@ -314,21 +358,9 @@ jscore._decodeKey = function(bundle, passphrase, success, failure) {
 //       key.unlock_p3skb({
 //         tsenc: tsenc        
 //       }, function(err) {
-//         if (err) { failure(err.message); return; }
+//         if (err) { failure.handle(err); return; }
 //       });
 //     }
 //     success(key);
 //   });
 // };
-
-jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase, success, failure) {
-  jscore._decodeKey(public_key_bundle, null, function(public_key) {
-    if (!private_key_bundle) {
-      success(public_key, null);
-      return;
-    }
-    jscore._decodeKey(private_key_bundle, passphrase, function(private_key) {
-      success(public_key, private_key);
-    }, failure);
-  }, failure);
-};
