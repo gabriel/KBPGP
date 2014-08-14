@@ -537,6 +537,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -546,6 +547,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

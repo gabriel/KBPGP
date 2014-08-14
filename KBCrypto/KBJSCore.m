@@ -10,6 +10,7 @@
 
 #import <GHKit/GHKit.h>
 #import <NAChloride/NAChloride.h>
+#import <libextobjc/EXTScope.h>
 
 @interface KBJSCore ()
 @property dispatch_queue_t queue;
@@ -39,15 +40,23 @@
     _queue = dispatch_queue_create("KBJSCore", NULL);
     
     _context[@"setTimeout"] = ^(JSValue *function, JSValue *timeout) {
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeout toInt32] * NSEC_PER_MSEC)), blockSelf.queue, ^{
-        [function callWithArguments:@[]];
-      });
+      dispatch_queue_t queue = blockSelf.queue;
+      if (queue) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeout toInt32] * NSEC_PER_MSEC)), queue, ^{
+          [function callWithArguments:@[]];
+        });
+      }
     };
     
     [_context evaluateScript:@"var jscore = jscore || {}"];
     _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
-      return [blockSelf randomHexString:[numBytes toUInt32]];
+      NSError *error = nil;
+      NSString *hexString = [[NARandom randomData:[numBytes toUInt32] error:&error] na_hexString];
+      if (!hexString) {
+        [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
+      }
+      return hexString;
     };
   }
   return self;

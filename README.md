@@ -76,7 +76,7 @@ KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
 
 For public keys, only an armored PGP string is accepted.
 
-For private keyBundle, you can specify either a armored PGP string, or P3SKB data base64 encoded string.
+For private keyBundle, you can specify either a armored PGP string, or [P3SKB](https://github.com/gabriel/TSTripleSec#p3skb) data base64 encoded string.
 
 ```objc
 P3SKB *secretKey = ...;
@@ -96,21 +96,16 @@ return keyRing;
 
 # Generate Keys
 
-```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
-[crypto generateKeyWithNumBits:4096 numBitsSubKeys:2048 userName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" success:^(NSString *privateKeyArmored, NSString *publicKeyArmored, NSString *keyId) {
-  
-} failure:^(NSError *error) {
-  NSLog(@"Error: %@", [error localizedDescription]);
-}];
+Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
+```objc
 KBCrypto *crypto = [[KBCrypto alloc] init];
 [crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error
   return YES;
-} success:^(P3SKB *privateKey, NSString *keyFingerprint) {
-  // Generated private key (P3SKB format, encrypted using TripleSec
+} success:^(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
+  // Generated private key (P3SKB format, encrypted using TripleSec)
 
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);

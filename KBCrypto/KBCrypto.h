@@ -13,7 +13,7 @@
 
 #import <TSTripleSec/P3SKB.h>
 
-typedef NS_ENUM (NSUInteger, KBCryptoErrorCode) {
+typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   KBCryptoErrorCodeDefault = -1,
   KBCryptoErrorCodeCancelled = -2,
 };
@@ -23,6 +23,9 @@ typedef NS_ENUM (NSUInteger, KBCryptoErrorCode) {
  Keybase PGP.
  */
 @interface KBCrypto : NSObject
+
+// Defaults to main queue
+@property dispatch_queue_t completionQueue;
 
 /*!
  Create with key ring.
@@ -106,7 +109,7 @@ typedef NS_ENUM (NSUInteger, KBCryptoErrorCode) {
  Generates key pair.
  Uses RSA with appropriate defaults.
  */
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
 
 @end
 

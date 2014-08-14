@@ -1,8 +1,43 @@
 PODS:
   - GHKit (1.0.5)
-  - GRUnit (1.0.4)
+  - GRUnit (1.0.8)
+  - libextobjc (0.4):
+    - libextobjc/EXTADT
+    - libextobjc/EXTConcreteProtocol
+    - libextobjc/EXTKeyPathCoding
+    - libextobjc/EXTNil
+    - libextobjc/EXTSafeCategory
+    - libextobjc/EXTScope
+    - libextobjc/EXTSelectorChecking
+    - libextobjc/EXTSynthesize
+    - libextobjc/NSInvocation+EXT
+    - libextobjc/NSMethodSignature+EXT
+    - libextobjc/RuntimeExtensions
+    - libextobjc/UmbrellaHeader
+  - libextobjc/EXTADT (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTConcreteProtocol (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTKeyPathCoding (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTNil (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSafeCategory (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTScope (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSelectorChecking (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSynthesize (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/NSInvocation+EXT (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/NSMethodSignature+EXT (0.4):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/RuntimeExtensions (0.4)
+  - libextobjc/UmbrellaHeader (0.4)
   - libsodium (0.6.1)
-  - MPMessagePack (0.1.7)
+  - MPMessagePack (0.1.8)
   - NAChloride (1.0.8):
     - libsodium
   - ObjectiveSugar (1.1.0)
@@ -13,6 +48,7 @@ PODS:
 DEPENDENCIES:
   - GHKit
   - GRUnit (from `../GRUnit`)
+  - libextobjc
   - NAChloride
   - ObjectiveSugar
   - TSTripleSec
@@ -23,9 +59,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   GHKit: 737b2d495cd7f389194e2798e219c5688ded7fce
-  GRUnit: 64a0d8350e955a43b571bd5554fe90b9230ff95d
+  GRUnit: 022f58a2da768f5977255c799fba02fd15bffe98
+  libextobjc: ba42e4111f433273a886cd54f0ddaddb7f62f82f
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
-  MPMessagePack: 7e6c5ff1e582272a34c6c2a24460b910605012ef
+  MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
   TSTripleSec: 70197b9118b91fa63e99767790adeffb4e06f8cf

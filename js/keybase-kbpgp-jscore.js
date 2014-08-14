@@ -1,8 +1,8 @@
 window = {};
 window.crypto = {};
-window.crypto.getRandomValues = function(buf) {
-  //console.log("Random values (" + buf.length + ")");
+window.crypto.getRandomValues = function(buf) {  
   var hex = jscore.getRandomHexString(buf.length);
+  //console.log("Random values (" + buf.length + "): " + hex);
   for (var i = 0; i < buf.length; i += 1) {
     var r = parseInt(hex.substr(i*2, 2), 16);
     buf[i] = r;
@@ -161,7 +161,8 @@ jscore.decrypt = function(params) {
     passphrase = params.passphrase,
     success = params.success,
     failure = new ErrorHandler(params.failure);
-  
+
+
   if (!decrypt_with) {
     //jscore.unbox(params);
     failure.handle(new Error("Must specify decrypt_with"));
@@ -203,6 +204,7 @@ jscore.generateKeyPair = function(params) {
   var userid = params.userid,
     passphrase = params.passphrase,
     progress = params.progress,
+    algorithm = params.algorithm,
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
@@ -232,6 +234,8 @@ jscore.generateKeyPair = function(params) {
             prime: o.p.toString(),
             amount: o.i / o.total
           });
+        } else {
+          //console.log("what: " + o.what);
         }
         if (!ok) {
           this.canceler().cancel();
@@ -240,7 +244,16 @@ jscore.generateKeyPair = function(params) {
     });  
   }
 
-  kbpgp.KeyManager.generate_rsa(opts, function(err, key) {    
+  var generate;
+  if (algorithm == "ecc") {
+    generate = kbpgp.KeyManager.generate_ecc;
+  } else if (algorithm == "rsa") {
+    generate = kbpgp.KeyManager.generate_rsa;
+  } else {
+    generate = kbpgp.KeyManager.generate_rsa;
+  }
+
+  generate(opts, function(err, key) {    
     if (err) { failure.handle(err); return; }
     key.sign({}, function(err) {
       if (err) { failure.handle(err); return; }

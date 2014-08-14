@@ -15,6 +15,12 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
   KBKeyCapabilitiesSign = 1 << 3,
 };
 
+typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
+  KBKeyAlgorithmRSA = 1,
+  KBKeyAlgorithmECC = 2 
+};
+
+
 @protocol KBKey <NSObject>
 @property (readonly) NSString *bundle;
 @property (readonly) NSString *userName;
