@@ -31,10 +31,10 @@
   
   [keyRing addVerifiedKeyFingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b"];
   
-  KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userName:@"gabrielhlocal2" fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:NO];
+  KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:NO];
   [keyRing addKey:publicKey1 PGPKeyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
   
-  KBKeyBundle *publicKey2 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user2_public.asc"] userName:nil fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:NO];
+  KBKeyBundle *publicKey2 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user2_public.asc"] fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:NO];
   [keyRing addKey:publicKey2 PGPKeyIds:@[@"4bf812991a9c76ab"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
 
   //  KBKeyBundle *privateKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_private.asc"] userName:@"gabrielhlocal2" fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:YES];
@@ -221,13 +221,18 @@
 
 - (void)testGenerateKeyECC:(dispatch_block_t)completion {
   _crypto = [[KBCrypto alloc] init];
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECC password:@"Setec Astronomy" progress:^BOOL(KBKeygenProgress *progress) {
+  NSString *password = @"Setec Astronomy";
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECC password:password progress:^BOOL(KBKeygenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
   } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
-    GRAssertNotNil([secretKey decryptPrivateKeyWithPassword:@"Setec Astronomy" error:nil]);
+    GRAssertNotNil([secretKey decryptPrivateKeyWithPassword:password error:nil]);
     
-    GRTestLog(@"%@", publicKeyArmored);
+    //GRTestLog(@"%@", publicKeyArmored);
+    
+    [_crypto armorPrivateKey:secretKey password:password success:^(NSString *privateKeyArmored) {
+      //GRTestLog(privateKeyArmored);
+    } failure:GRErrorHandler];
     
     NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
     NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
@@ -260,10 +265,12 @@
   NSString *privateKeyArmored = [self loadFile:@"user1_private.asc"];
   
   [_crypto dearmor:privateKeyArmored success:^(NSData *privateKeyData) {
-    [_crypto armor:privateKeyData messageType:KBMessageTypePrivateKey success:^(NSString *privateKeyRearmored) {
-      NSString *key1 = [privateKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
-      NSString *key2 = [privateKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
-      GRAssertEqualStrings(key1, key2);
+    P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:privateKeyData password:@"toomanysecrets" publicKey:nil error:nil];
+    [_crypto armorPrivateKey:secretKey password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
+//      NSString *key1 = [privateKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
+//      NSString *key2 = [privateKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
+//      GRAssertEqualStrings(key1, key2);
+      GRTestLog(privateKeyRearmored);
       completion();
     } failure:GRErrorHandler];
   } failure:GRErrorHandler];
@@ -273,7 +280,7 @@
   _crypto = [self loadCrypto];
   NSString *publicKeyArmored = [self loadFile:@"user1_public.asc"];
   [_crypto dearmor:publicKeyArmored success:^(NSData *publicKeyData) {
-    [_crypto armor:publicKeyData messageType:KBMessageTypePublicKey success:^(NSString *publicKeyRearmored) {
+    [_crypto armorPublicKey:publicKeyData success:^(NSString *publicKeyRearmored) {
       NSString *key1 = [publicKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
       NSString *key2 = [publicKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
       GRAssertEqualStrings(key1, key2);

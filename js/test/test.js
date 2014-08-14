@@ -125,6 +125,54 @@ describe("JSCore", function() {
     })
   });
 
+  it("should get info for private key", function(done) {
+    armored = datafile("user1_private.asc")
+    jscore.keyInfo({
+      armored: armored, 
+      success: function(info) {
+        //kblog(info);      
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should get info for public key", function(done) {
+    armored = datafile("user1_public.asc")
+    jscore.keyInfo({
+      armored: armored,
+      success: function(info) {
+        //kblog(info);      
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should get info for gpg key", function(done) {
+    armored = datafile("user2_private.asc")
+    jscore.keyInfo({
+      armored: armored,
+      success: function(info) {
+        //kblog(info);      
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should get info for ecc key", function(done) {
+    armored = datafile("user3_ecc_private.asc")
+    jscore.keyInfo({
+      armored: armored,
+      success: function(info) {
+        //kblog(info);      
+        done();
+      },
+      failure:failure
+    });
+  });
+
   // it("should be in keyring", function(done) {
   //   var decrypt_with = datafile("user1_private_unlocked.asc");
   //   kbpgp.KeyManager.import_from_armored_pgp({

@@ -88,7 +88,7 @@ NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0]
 ```objc
 KBKeyRing *keyRing = [[KBKeyRing alloc] init];
 
-KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userName:@"gabrielhlocal2" fingerprint:@"AFB10F6A5895F5B1D67851861296617A289D5C6B" secret:NO];
+KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userId:@"gabrielhlocal2" fingerprint:@"AFB10F6A5895F5B1D67851861296617A289D5C6B" secret:NO];
 [keyRing addKey:publicKey1 keyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
 
 return keyRing;
@@ -100,7 +100,7 @@ Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
 ```objc
 KBCrypto *crypto = [[KBCrypto alloc] init];
-[crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
+[crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error
   return YES;
@@ -115,9 +115,9 @@ KBCrypto *crypto = [[KBCrypto alloc] init];
 # Armor/Dearmor
 
 ```objc
-NSData *privateKeyData = ...;
-[crypto armor:privateKeyData messageType:KBMessageTypePrivateKey success:^(NSString *privateKeyArmored) {
-  // Private key as PGP armored text
+NSData *data = ...;
+[crypto armorPublicKey:data success:^(NSString *publicKeyArmored) {
+  
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
 }];

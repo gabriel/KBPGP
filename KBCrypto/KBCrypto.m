@@ -16,7 +16,7 @@
 #import <libextobjc/EXTScope.h>
 
 @interface KBCrypto ()
-//@property dispatch_queue_t queue;
+@property dispatch_queue_t queue;
 @property JSContext *context;
 @property KBJSCore *JSCore;
 @property id<KBKeyRing> keyRing;
@@ -26,7 +26,7 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    //_queue = dispatch_queue_create("KBCrypto", NULL);
+    _queue = dispatch_queue_create("KBCrypto", NULL);
     [self generateContext];
   }
   return self;
@@ -97,29 +97,22 @@
 }
 
 - (void)_call:(NSString *)method params:(NSDictionary *)params {
-//  GHWeakSelf blockSelf = self;
-//  dispatch_async(_queue, ^{
-//    blockSelf.context[@"params"] = params;
-//    [blockSelf.context evaluateScript:NSStringWithFormat(@"%@(params)", method)];
-//  });
-  
-  _context[@"params"] = params;
-  [_context evaluateScript:NSStringWithFormat(@"%@(params)", method)];
+  GHWeakSelf blockSelf = self;
+  dispatch_async(_queue, ^{
+    JSValue *function = blockSelf.context[@"jscore"][method];
+    [function callWithArguments:@[params]];
+  });
 }
 
 - (void)_callback:(dispatch_block_t)callback {
-  // TODO: Clear params from JS context
-  //_context[@"params"] = nil;
-  
-//  dispatch_queue_t completionQueue = _completionQueue;
-//  if (!completionQueue) completionQueue = dispatch_get_main_queue();
-//  dispatch_async(completionQueue, callback);
-  callback();
+  dispatch_queue_t completionQueue = _completionQueue;
+  if (!completionQueue) completionQueue = dispatch_get_main_queue();
+  dispatch_async(completionQueue, callback);
 }
 
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.encrypt" params:@{@"encrypt_for": keyBundle, @"text": text, @"success": ^(NSString *messageArmored) {
+  [self _call:@"encrypt" params:@{@"encrypt_for": keyBundle, @"text": text, @"success": ^(NSString *messageArmored) {
     [blockSelf _callback:^{ success(messageArmored); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -128,8 +121,8 @@
 
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _armorBundle:keyBundleForSign password:passwordForSign success:^(NSString *armoredBundleForSign, NSString *passwordForSignForArmor) {
-    [blockSelf _call:@"jscore.encrypt" params:@{@"encrypt_for": keyBundle, @"sign_with": KBCOrNull(armoredBundleForSign), @"passphrase": KBCOrNull(passwordForSignForArmor), @"text": text, @"success": ^(NSString *messageArmored) {
+  [self _armorBundle:keyBundleForSign password:passwordForSign success:^(NSString *armoredBundleForSign) {
+    [blockSelf _call:@"encrypt" params:@{@"encrypt_for": keyBundle, @"sign_with": KBCOrNull(armoredBundleForSign), @"passphrase": KBCOrNull(passwordForSign), @"text": text, @"success": ^(NSString *messageArmored) {
       [blockSelf _callback:^{ success(messageArmored); }];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -139,8 +132,8 @@
 
 - (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *clearTextArmored))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, NSString *passwordForArmor) {
-    [blockSelf _call:@"jscore.sign" params:@{@"sign_with": armoredBundle, @"passphrase": KBCOrNull(passwordForArmor), @"text": text, @"success": ^(NSString *clearTextArmored) {
+  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle) {
+    [blockSelf _call:@"sign" params:@{@"sign_with": armoredBundle, @"passphrase": KBCOrNull(password), @"text": text, @"success": ^(NSString *clearTextArmored) {
       [blockSelf _callback:^{ success(clearTextArmored); }];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -163,9 +156,9 @@
   }
 }
 
-- (void)_armorBundle:(NSString *)bundle password:(NSString *)password success:(void (^)(NSString *armoredBundle, NSString *passwordForArmor))success failure:(void (^)(NSError *error))failure {
+- (void)_armorBundle:(NSString *)bundle password:(NSString *)password success:(void (^)(NSString *armoredBundle))success failure:(void (^)(NSError *error))failure {
   if ([bundle gh_startsWith:@"-----BEGIN PGP"]) {
-    success(bundle, password);
+    success(bundle);
   } else {
     NSData *data = [[NSData alloc] initWithBase64EncodedString:bundle options:0];    
     if (!data) {
@@ -174,22 +167,22 @@
     }
     
     NSError *error = nil;
-    NSData *decryptedKeyData = [[P3SKB P3SKBFromData:data error:&error] decryptPrivateKeyWithPassword:password error:&error];
-    if (!decryptedKeyData) {
+    P3SKB *keyData = [P3SKB P3SKBFromData:data error:&error];
+    if (!keyData) {
       failure(error);
       return;
     }
     
-    [self armor:decryptedKeyData messageType:KBMessageTypePrivateKey success:^(NSString *encoded) {
-      success(encoded, nil);
+    [self armorPrivateKey:keyData password:password success:^(NSString *encoded) {
+      success(encoded);
     } failure:failure];
   }
 }
 
 - (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
-  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, NSString *passwordForArmor) {
-    [blockSelf _call:@"jscore.decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(passwordForArmor), @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle) {
+    [blockSelf _call:@"decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(password), @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
       [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -199,28 +192,33 @@
 
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *failure))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+  [self _call:@"verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
     [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];
 }
 
-- (void)armor:(NSData *)data messageType:(KBMessageType)messageType success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure {
-  NSString *methodName;
-  switch (messageType) {
-    case KBMessageTypePrivateKey: {
-      methodName = @"jscore.armorPrivateKey";
-      break;
-    }
-    case KBMessageTypePublicKey: {
-      methodName = @"jscore.armorPublicKey";
-      break;
-    }
+- (void)armorPublicKey:(NSData *)data success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure {
+  GHWeakSelf blockSelf = self;
+  [self _call:@"armorPublicKey" params:@{@"data": [data na_hexString], @"success": ^(NSString *encoded) {
+    [blockSelf _callback:^{ success(encoded); }];
+  }, @"failure": ^(NSString *error) {
+    [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
+  }}];
+}
+
+- (void)armorPrivateKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure {
+  NSParameterAssert(secretKey);
+  NSError *error = nil;
+  NSData *data = [secretKey decryptPrivateKeyWithPassword:password error:&error];
+  if (!data) {
+    failure(error);
+    return;
   }
   
   GHWeakSelf blockSelf = self;
-  [self _call:methodName params:@{@"data": [data na_hexString], @"success": ^(NSString *encoded) {
+  [self _call:@"armorPrivateKey" params:@{@"data": [data na_hexString], @"passphrase": password, @"success": ^(NSString *encoded) {
     [blockSelf _callback:^{ success(encoded); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -229,7 +227,7 @@
 
 - (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"jscore.dearmor" params:@{@"armored": armored, @"success": ^(NSString *hex) {
+  [self _call:@"dearmor" params:@{@"armored": armored, @"success": ^(NSString *hex) {
     NSData *data = [hex na_dataFromHexString];
     [blockSelf _callback:^{ success(data); }];
   }, @"failure": ^(NSString *error) {
@@ -276,7 +274,7 @@
       return;
     }
     
-    [blockSelf armor:[secretKey publicKey] messageType:KBMessageTypePublicKey success:^(NSString *publicKeyArmored) {
+    [blockSelf armorPublicKey:[secretKey publicKey] success:^(NSString *publicKeyArmored) {
       [blockSelf _callback:^{ success(secretKey, publicKeyArmored, keyFingerprint); }];
     } failure:failure];
   };
@@ -286,7 +284,7 @@
   };
   
   // We do not send in a passphrase to generateKeyPair because we will use the P3SKB encrypted format with the passphrase instead.
-  [self _call:@"jscore.generateKeyPair" params:params];
+  [self _call:@"generateKeyPair" params:params];
 }
 
 NSError *KBCryptoError(NSString *message) {

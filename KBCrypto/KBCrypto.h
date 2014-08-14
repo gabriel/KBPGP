@@ -8,7 +8,6 @@
 
 #import "KBKeyRing.h"
 #import "KBKeyBundle.h"
-#import "KBMessage.h"
 #import "KBKeygenProgress.h"
 
 #import <TSTripleSec/P3SKB.h>
@@ -96,12 +95,24 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
 /*!
- Armor.
+ Armor public key.
+ @param data
+ @param success
+ @param failure
  */
-- (void)armor:(NSData *)data messageType:(KBMessageType)messageType success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+- (void)armorPublicKey:(NSData *)data success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
 
 /*!
- Dearmor.
+ Armor private key.
+ @param secretKey
+ @param password Password
+ @param success
+ @param failure
+ */
+- (void)armorPrivateKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+
+/*!
+ Dearmor message.
  */
 - (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure;
 

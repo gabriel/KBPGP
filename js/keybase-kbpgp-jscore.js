@@ -281,13 +281,44 @@ jscore.generateKeyPair = function(params) {
 var armor = kbpgp.armor;
 
 jscore.armorPublicKey = function(params) {
+  var data = params.data,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
   var C = kbpgp["const"].openpgp;
-  jscore._armor(C.message_types.public_key, params);
+  var buffer = new kbpgp.Buffer(data, "hex");
+  var armored = armor.encode(C.message_types.public_key, buffer);
+  if (armored) {
+    success(armored);
+  } else {
+    failure.handle(new Error("Unable to armor.encode"));
+  }
 };
 
 jscore.armorPrivateKey = function(params) {
+  var data = params.data,
+    passphrase = params.passphrase,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
   var C = kbpgp["const"].openpgp;
-  jscore._armor(C.message_types.private_key, params);
+  var buffer = new kbpgp.Buffer(data, "hex");
+  var armored = armor.encode(C.message_types.private_key, buffer);
+  if (armored) {
+    jscore._decodeKey(armored, null, function(key) {
+      key.sign({}, function(err) {
+        if (err) { failure.handle(err); return; }
+        key.export_pgp_private_to_client({
+          passphrase: passphrase,
+        }, function(err, armored) {
+          if (err) { failure.handle(err); return; }
+          success(armored);
+        });
+      });
+    }, failure);
+  } else {
+    failure.handle(new Error("Unable to armor"));
+  }
 };
 
 jscore.dearmor = function(params) {
@@ -300,19 +331,6 @@ jscore.dearmor = function(params) {
     failure.handle(err);
   } else {
     success(msg.body.toString("hex"));
-  }
-};
-
-jscore._armor = function(message_type, params) {
-  var data = params.data,
-    success = params.success,
-    failure = new ErrorHandler(params.failure);
-  var buffer = new kbpgp.Buffer(data, "hex");
-  var armored = armor.encode(message_type, buffer);
-  if (armored) {
-    success(armored);
-  } else {
-    failure.handle(new Error("Unable to armor.encode"));
   }
 };
 
@@ -346,6 +364,76 @@ jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase,
     jscore._decodeKey(private_key_bundle, passphrase, function(private_key) {
       success(public_key, private_key);
     }, failure);
+  }, failure);
+};
+
+jscore.keyInfo = function(params) {
+  var armored = params.armored,
+    passphrase = params.passphrase,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
+  jscore._decodeKey(armored, passphrase, function(key) {
+
+    var info = {};
+    info.id = key.get_pgp_key_id().toString("hex");
+    info.short_id = key.get_pgp_short_key_id().toString("hex");
+    info.fingerprint = key.get_pgp_fingerprint().toString("hex");
+    
+    // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
+
+    var lifespan = key.lifespan;     
+
+    var keymat = key.get_all_pgp_key_materials(); 
+
+    var primary = key.primary; // KeyWrapper (Primary/Subkey);  .key is Pair
+    var pkeymat = keymat[0][0];
+
+    // RSA:1, ECDSA:19
+
+    info.primary = {
+      id: pkeymat.get_key_id().toString("hex"),
+      flags: pkeymat.flags,      
+      type: primary.key.type, 
+      timestamp: pkeymat.timestamp,
+      is_locked: pkeymat.is_locked(),
+      has_private: pkeymat.has_private() ? true : false,
+      self_signed: pkeymat.is_self_signed(),        
+    };
+
+    if (primary.key.pub.nbits) info.primary.nbits = primary.key.pub.nbits();
+
+    // userids: pkeymat.get_signed_userids()[0].userid.toString("utf8")
+
+    info.subkeys = [];
+
+    var subkeys = key.subkeys;
+    for (var i = 0; i < subkeys.length; i++) {
+      var subkeymat = keymat[i+1][0];
+      var subinfo = {
+        id: subkeymat.get_key_id().toString("hex"),
+        flags: subkeymat.flags,
+        timestamp: subkeymat.timestamp,
+      };
+
+      if (subkeys[i].key.pub.nbits) subinfo.nbits = subkeys[i].key.pub.nbits();
+
+      info.subkeys.push(subinfo);
+    }      
+
+    info.userids = [];
+    var userids = key.get_userids_mark_primary();
+    for (var i = 0; i < userids.length; i++) {
+      info.userids.push({
+        is_primary: userids[i].primary,
+        username: userids[i].get_username(),
+        email: userids[i].get_email(),
+        comment: userids[i].get_comment(),
+        //most_recent_sig: userids[i].most_recent_sig,
+      });
+    }
+
+    success(info);      
   }, failure);
 };
 

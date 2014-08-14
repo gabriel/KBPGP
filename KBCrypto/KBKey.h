@@ -20,19 +20,24 @@ typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
   KBKeyAlgorithmECC = 2 
 };
 
+typedef NS_ENUM (NSUInteger, KBKeyFlags) {
+  KBKeyFlagsCertifyKeys = 0x1,
+  KBKeyFlagsSighData = 0x2,
+  KBKeyFlagsEncryptComm = 0x4,
+  KBKeyFlagsStorage = 0x8,
+  KBKeyFlagsPrivateSplit = 0x10,
+  KBKeyFlagsAuth = 0x20,
+  KBKeyFlagsShared = 0x80,
+};
 
 @protocol KBKey <NSObject>
 @property (readonly) NSString *bundle;
-@property (readonly) NSString *userName;
 @property (readonly) NSString *fingerprint;
 - (BOOL)isSecret;
 
 @optional
 // If secret
 - (NSData *)decryptKeyWithPassword:(NSString *)password error:(NSError * __autoreleasing *)error;
-
-// For verifying public keys
-- (BOOL)verifyUserName:(NSString *)userName;
 @end
 
 NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint);

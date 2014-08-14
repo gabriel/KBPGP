@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0007D3D8199D4DC3008EF782 /* user3_ecc_public.asc in Resources */ = {isa = PBXBuildFile; fileRef = 0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */; };
+		0007D3DA199D56FD008EF782 /* user3_ecc_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */; };
 		0042E39119918E9400C8676B /* keybase.js in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8B5198B1B13000C039B /* keybase.js */; };
 		0042E39219918E9600C8676B /* keybase-kbpgp-jscore.js in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */; };
 		004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBCrypto.m */; };
@@ -61,13 +63,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_ecc_public.asc; sourceTree = "<group>"; };
+		0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_ecc_private.asc; sourceTree = "<group>"; };
 		004BC87D198B192B000C039B /* libKBCrypto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKBCrypto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		004BC897198B19D2000C039B /* KBCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCrypto.h; sourceTree = "<group>"; };
 		004BC898198B19D2000C039B /* KBCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCrypto.m; sourceTree = "<group>"; };
 		004BC899198B19D2000C039B /* KBJSCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBJSCore.h; sourceTree = "<group>"; };
 		004BC89A198B19D2000C039B /* KBJSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBJSCore.m; sourceTree = "<group>"; };
 		004BC89B198B19D2000C039B /* KBKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKeyRing.h; sourceTree = "<group>"; };
-		004BC8A0198B19D2000C039B /* KBMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMessage.h; sourceTree = "<group>"; };
 		004BC8A8198B19E0000C039B /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		004BC8A9198B1A4D000C039B /* KBKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBKey.h; sourceTree = "<group>"; };
 		004BC8AA198B1A4D000C039B /* KBKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBKey.m; sourceTree = "<group>"; };
@@ -173,7 +176,6 @@
 				004BC89A198B19D2000C039B /* KBJSCore.m */,
 				004BC89B198B19D2000C039B /* KBKeyRing.h */,
 				004BC8E7198B2CD5000C039B /* KBKeyRing.m */,
-				004BC8A0198B19D2000C039B /* KBMessage.h */,
 				00AEEEFC1993FC3F00D9A741 /* KBSigner.h */,
 				00AEEEFD1993FC3F00D9A741 /* KBSigner.m */,
 				00AEEF0A1999867300D9A741 /* KBKeygenProgress.h */,
@@ -203,15 +205,17 @@
 				004BC8C4198B1C3D000C039B /* user1_message_kb.asc */,
 				00AEEF001994133700D9A741 /* user1_message_gpgui.asc */,
 				004BC8C5198B1C3D000C039B /* user1_private.asc */,
+				0054F14E1990503700908F74 /* user1_private.p3skb */,
 				004BC8C6198B1C3D000C039B /* user1_public.asc */,
 				004BC8C7198B1C3D000C039B /* user1_sign_gpg1.asc */,
 				004BC8C8198B1C3D000C039B /* user1_sign_gpg2.asc */,
-				0054F14E1990503700908F74 /* user1_private.p3skb */,
 				004BC8BC198B1C3D000C039B /* user2_clearsign_gpg2.asc */,
 				004BC8BE198B1C3D000C039B /* user2_public.asc */,
 				004BC8BD198B1C3D000C039B /* user2_private.asc */,
 				00AEEF0219942D3400D9A741 /* user1_private_unlocked.asc */,
 				00AEEF04199436B800D9A741 /* user1_private_unlocked2.asc */,
+				0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */,
+				0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */,
 			);
 			name = Data;
 			path = Tests/Data;
@@ -331,6 +335,7 @@
 				0042E39219918E9600C8676B /* keybase-kbpgp-jscore.js in Resources */,
 				004BC8D1198B1C3D000C039B /* user1_clearsign_kb.asc in Resources */,
 				004BC8CC198B1C3D000C039B /* user2_clearsign_gpg2.asc in Resources */,
+				0007D3DA199D56FD008EF782 /* user3_ecc_private.asc in Resources */,
 				0054F14F1990503700908F74 /* user1_private.p3skb in Resources */,
 				004BC8D3198B1C3D000C039B /* user1_message_gpg2.asc in Resources */,
 				004BC8CF198B1C3D000C039B /* user1_clearsign_fail.asc in Resources */,
@@ -346,6 +351,7 @@
 				004BC8CE198B1C3D000C039B /* user2_public.asc in Resources */,
 				00AEEF0319942D3400D9A741 /* user1_private_unlocked.asc in Resources */,
 				004BC8D8198B1C3D000C039B /* user1_sign_gpg2.asc in Resources */,
+				0007D3D8199D4DC3008EF782 /* user3_ecc_public.asc in Resources */,
 				004BC8D4198B1C3D000C039B /* user1_message_kb.asc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
