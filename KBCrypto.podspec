@@ -11,6 +11,7 @@ Pod::Spec.new do |s|
   s.dependency 'ObjectiveSugar'
   s.dependency 'GHKit'
   s.dependency 'Mantle'
+  s.dependency 'libextobjc/EXTScope'
   s.source_files = 'KBCrypto/**/*.{c,h,m}'
   s.requires_arc = true
 
