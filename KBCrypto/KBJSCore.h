@@ -20,8 +20,6 @@
 
 @interface KBJSCore : NSObject <KBJSCore>
 
-- (instancetype)initWithContext:(JSContext *)context;
-
 @property (readonly) JSContext *context;
 
 - (NSString *)randomHexString:(NSUInteger)numBytes;

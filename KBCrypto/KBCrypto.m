@@ -18,60 +18,50 @@
 
 @interface KBCrypto ()
 @property dispatch_queue_t queue;
-@property JSContext *context;
 @property KBJSCore *JSCore;
 @property id<KBKeyRing> keyRing;
 @end
 
 @implementation KBCrypto
 
-- (instancetype)init {
-  return [self initWithKeyRing:nil];
-}
-
 - (instancetype)initWithKeyRing:(id<KBKeyRing>)keyRing {
-  if ((self = [super init])) {
-    _queue = dispatch_queue_create("KBCrypto", NULL);
+  if ((self = [self init])) {
     _keyRing = keyRing;
-    
-    [self generateContext];
   }
   return self;
 }
 
 - (void)generateContext {
-  JSContext *context = [[JSContext alloc] initWithVirtualMachine:[[JSVirtualMachine alloc] init]];
-  context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
-    id obj = [exception toObject];
-    GHDebug(@"Exception: %@, %@", [exception description], obj);
-    [NSException raise:NSGenericException format:@"JS Exception"];
-  };
-  
-  KBJSCore *JSCore = [[KBJSCore alloc] initWithContext:context];
+  KBJSCore *JSCore = [[KBJSCore alloc] init];
   
   [JSCore load:@"keybase.js"];
   [JSCore load:@"keybase-kbpgp-jscore.js"];
   
   _JSCore = JSCore;
-  _context = context;
   
-  _context[@"jscore"][@"KeyRing"] = _keyRing;
+  _JSCore.context[@"jscore"][@"KeyRing"] = _keyRing;
+}
+
+- (void)clearContext {
+  _JSCore = nil;
 }
 
 - (void)_call:(NSString *)method params:(NSDictionary *)params {
+  //_queue = dispatch_queue_create("KBCrypto", NULL);
 //  @weakify(self)
 //  dispatch_async(_queue, ^{
 //    @strongify(self)
 //    [self.context[@"jscore"][method] callWithArguments:@[params]];
 //  });
-  [self.context[@"jscore"][method] callWithArguments:@[params]];
+  
+  if (!_JSCore) [self generateContext];
+  [_JSCore.context[@"jscore"][method] callWithArguments:@[params]];
 }
 
 - (void)_callback:(dispatch_block_t)callback {
-//  dispatch_queue_t completionQueue = _completionQueue;
-//  if (!completionQueue) completionQueue = dispatch_get_main_queue();
-//  dispatch_async(completionQueue, callback);
-  callback();
+  dispatch_queue_t completionQueue = _completionQueue;
+  if (!completionQueue) completionQueue = dispatch_get_main_queue();
+  dispatch_async(completionQueue, callback);
 }
 
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure {

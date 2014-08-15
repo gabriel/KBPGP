@@ -20,6 +20,10 @@
   return self;
 }
 
+- (void)tearDown {
+  [_crypto clearContext];
+}
+
 - (NSData *)loadBase64Data:(NSString *)file {
   NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
   return [[NSData alloc] initWithBase64EncodedData:[[NSData alloc] initWithContentsOfFile:path] options:0];

@@ -128,6 +128,10 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  */
 - (void)PGPKeyForBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
 
+#pragma mark Debugging
+
+- (void)clearContext;
+
 @end
 
 

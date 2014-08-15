@@ -12,15 +12,18 @@
 #import <NAChloride/NAChloride.h>
 #import <libextobjc/EXTScope.h>
 
-@interface KBJSCore ()
-@end
-
 @implementation KBJSCore
 
-- (instancetype)initWithContext:(JSContext *)context {
+- (instancetype)init {
   if ((self = [super init])) {
-    _context = context;
-    [_context evaluateScript:@"var console = {}"];
+    _context = [[JSContext alloc] initWithVirtualMachine:[[JSVirtualMachine alloc] init]];
+    _context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+      id obj = [exception toObject];
+      GHDebug(@"Exception: %@, %@", [exception description], obj);
+      [NSException raise:NSGenericException format:@"JS Exception"];
+    };
+    
+    _context[@"console"] = @{};
     _context[@"console"][@"log"] = ^(id obj) {
       GHDebug(@"Console: %@", obj);
     };
@@ -34,7 +37,7 @@
       GHDebug(@"Alert: %@", msg);
     };
     
-    [_context evaluateScript:@"var document = {}"];
+    _context[@"document"] = @{};
     _context[@"document"][@"write"] = ^(NSString *msg) {
       GHDebug(@"Document write: %@", msg);
     };
@@ -47,17 +50,14 @@
       });
     };
     
-//    _context[@"process"] = @{};
-//    _context[@"process"][@"nextTick"] = ^(JSValue *function) {
-//      @strongify(self)
-//      dispatch_queue_t queue = self.queue;
-//      GHDebug(@"Next tick");
-//      dispatch_async(queue, ^{
-//        [function callWithArguments:@[]];
-//      });
-//    };
+    _context[@"process"] = @{};
+    _context[@"process"][@"nextTick"] = ^(JSValue *function) {
+      dispatch_async(dispatch_get_current_queue(), ^{
+        [function callWithArguments:@[]];
+      });
+    };
     
-    [_context evaluateScript:@"var jscore = jscore || {}"];
+    _context[@"jscore"] = @{};
     _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
       NSError *error = nil;

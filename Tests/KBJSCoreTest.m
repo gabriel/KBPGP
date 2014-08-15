@@ -8,17 +8,11 @@
 
 #import <GHKit/GHKit.h>
 
-
-@interface KBCrypto ()
-@property (readonly) KBJSCore *JSCore;
-@end
-
-
 @implementation KBJSCoreTest
 
 - (void)testJSRandom {
-  KBCrypto *crypto = [[KBCrypto alloc] init];
-  JSContext *context = crypto.JSCore.context;
+  KBJSCore *JSCore = [[KBJSCore alloc] init];
+  JSContext *context = JSCore.context;
   
   [context evaluateScript:@"var randomHex = jscore.getRandomHexString(32);"];
   NSString *randomHex = [context[@"randomHex"] toString];
