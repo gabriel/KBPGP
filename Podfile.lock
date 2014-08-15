@@ -1,42 +1,13 @@
 PODS:
   - GHKit (1.0.5)
   - GRUnit (1.0.8)
-  - libextobjc (0.4):
-    - libextobjc/EXTADT
-    - libextobjc/EXTConcreteProtocol
-    - libextobjc/EXTKeyPathCoding
-    - libextobjc/EXTNil
-    - libextobjc/EXTSafeCategory
-    - libextobjc/EXTScope
-    - libextobjc/EXTSelectorChecking
-    - libextobjc/EXTSynthesize
-    - libextobjc/NSInvocation+EXT
-    - libextobjc/NSMethodSignature+EXT
-    - libextobjc/RuntimeExtensions
-    - libextobjc/UmbrellaHeader
-  - libextobjc/EXTADT (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/EXTConcreteProtocol (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/EXTKeyPathCoding (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/EXTNil (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/EXTSafeCategory (0.4):
-    - libextobjc/RuntimeExtensions
   - libextobjc/EXTScope (0.4):
     - libextobjc/RuntimeExtensions
-  - libextobjc/EXTSelectorChecking (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/EXTSynthesize (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/NSInvocation+EXT (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/NSMethodSignature+EXT (0.4):
-    - libextobjc/RuntimeExtensions
   - libextobjc/RuntimeExtensions (0.4)
-  - libextobjc/UmbrellaHeader (0.4)
   - libsodium (0.6.1)
+  - Mantle (1.5):
+    - Mantle/extobjc
+  - Mantle/extobjc (1.5)
   - MPMessagePack (0.1.8)
   - NAChloride (1.0.8):
     - libsodium
@@ -48,7 +19,8 @@ PODS:
 DEPENDENCIES:
   - GHKit
   - GRUnit (from `../GRUnit`)
-  - libextobjc
+  - libextobjc/EXTScope
+  - Mantle
   - NAChloride
   - ObjectiveSugar
   - TSTripleSec
@@ -62,6 +34,7 @@ SPEC CHECKSUMS:
   GRUnit: 022f58a2da768f5977255c799fba02fd15bffe98
   libextobjc: ba42e4111f433273a886cd54f0ddaddb7f62f82f
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
+  Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2

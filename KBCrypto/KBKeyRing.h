@@ -8,6 +8,8 @@
 
 #import "KBKey.h"
 
+#import <JavaScriptCore/JavaScriptCore.h>
+
 @protocol KBKeyRing <NSObject>
 
 /*!
@@ -29,10 +31,17 @@
 @end
 
 
+@protocol KBKeyRingExport <JSExport>
+JSExportAs(fetch,
+- (void)fetch:(NSArray *)keyIds ops:(NSUInteger)ops success:(JSValue *)success failure:(JSValue *)failure
+);
+@end
+
+
 /*!
  Default key ring implementation.
  */
-@interface KBKeyRing : NSObject <KBKeyRing>
+@interface KBKeyRing : NSObject <KBKeyRing, KBKeyRingExport>
 
 /*!
  Add bundle to key ring.

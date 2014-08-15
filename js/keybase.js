@@ -379,7 +379,7 @@ var requirejs, require, define;
             //that works in almond on the global level, but not guaranteed and
             //unlikely to work in other AMD implementations.
             setTimeout(function () {
-                main(undef, deps, callback, relName);
+              main(undef, deps, callback, relName);
             }, 4);
         }
 
@@ -42626,7 +42626,6 @@ module.exports = Point
 
   PRNG = (function() {
     function PRNG() {
-      this.meg = new more_entropy.Generator();
       this.adrbg = new ADRBG(((function(_this) {
         return function(n, cb) {
           return _this.gen_seed(n, cb);
@@ -42651,41 +42650,18 @@ module.exports = Point
       ___iced_passed_deferral = iced.findDeferral(arguments);
       nbytes = nbits / 8;
       bufs = [];
+      bufs.push(native_rng(nbytes));
       bufs.push(this.now_to_buffer());
-      (function(_this) {
-        return (function(__iced_k) {
-          __iced_deferrals = new iced.Deferrals(__iced_k, {
-            parent: ___iced_passed_deferral,
-            filename: "/home/max/src/keybase/triplesec/src/prng.iced",
-            funcname: "PRNG.gen_seed"
-          });
-          _this.meg.generate(nbits, __iced_deferrals.defer({
-            assign_fn: (function() {
-              return function() {
-                return words = arguments[0];
-              };
-            })(),
-            lineno: 83
-          }));
-          __iced_deferrals._fulfill();
-        });
-      })(this)((function(_this) {
-        return function() {
-          var _i, _len;
-          bufs.push(_this.now_to_buffer());
-          bufs.push(new Buffer(words));
-          bufs.push(native_rng(nbytes));
-          bufs.push(_this.now_to_buffer());
-          cat = Buffer.concat(bufs);
-          wa = WordArray.from_buffer(cat);
-          util.scrub_buffer(cat);
-          for (_i = 0, _len = bufs.length; _i < _len; _i++) {
-            b = bufs[_i];
-            util.scrub_buffer(b);
-          }
-          return cb(wa);
-        };
-      })(this));
+      bufs.push(native_rng(nbytes));
+      bufs.push(this.now_to_buffer());
+      cat = Buffer.concat(bufs);
+      wa = WordArray.from_buffer(cat);
+      util.scrub_buffer(cat);
+      for (_i = 0, _len = bufs.length; _i < _len; _i++) {
+        b = bufs[_i];
+        util.scrub_buffer(b);
+      }
+      return cb(wa);
     };
 
     PRNG.prototype.generate = function(n, cb) {

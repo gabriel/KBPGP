@@ -5,6 +5,7 @@
 #import "KBSigner.h"
 
 #import <GHKit/GHKit.h>
+#import <libextobjc/EXTScope.h>
 
 @interface KBCryptoTest : GRTestCase
 @property KBCrypto *crypto;
@@ -124,7 +125,7 @@
 - (void)testDecrypt:(dispatch_block_t)completion {
   _crypto = [self loadCrypto];
   
-  NSArray *files = @[@"user1_message_kb.asc", @"user1_message_gpg1.asc", @"user1_message_gpg2.asc"];
+  NSArray *files = @[@"user1_message_kb.asc"]; //, @"user1_message_gpg1.asc", @"user1_message_gpg2.asc"];
   __block NSInteger index = 0;
   for (NSString *file in files) {
     GRTestLog(@"Testing file: %@", file);
@@ -198,7 +199,7 @@
 }
 
 - (void)testGenerateKeyRSA:(dispatch_block_t)completion {
-  _crypto = [[KBCrypto alloc] init];
+  _crypto = [self loadCrypto];
   [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"Setec Astronomy" progress:^BOOL(KBKeygenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
@@ -220,9 +221,9 @@
 }
 
 - (void)testGenerateKeyECC:(dispatch_block_t)completion {
-  _crypto = [[KBCrypto alloc] init];
+  _crypto = [self loadCrypto];
   NSString *password = @"Setec Astronomy";
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECC password:password progress:^BOOL(KBKeygenProgress *progress) {
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECDSA password:password progress:^BOOL(KBKeygenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
   } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
@@ -261,12 +262,12 @@
 }
 
 - (void)testDearmorArmorPrivate:(dispatch_block_t)completion {
-  _crypto = [self loadCrypto];
+  KBCrypto *crypto = [[KBCrypto alloc] init];
   NSString *privateKeyArmored = [self loadFile:@"user1_private.asc"];
   
-  [_crypto dearmor:privateKeyArmored success:^(NSData *privateKeyData) {
+  [crypto dearmor:privateKeyArmored success:^(NSData *privateKeyData) {
     P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:privateKeyData password:@"toomanysecrets" publicKey:nil error:nil];
-    [_crypto armorPrivateKey:secretKey password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
+    [crypto armorPrivateKey:secretKey password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
 //      NSString *key1 = [privateKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
 //      NSString *key2 = [privateKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
 //      GRAssertEqualStrings(key1, key2);
@@ -277,16 +278,25 @@
 }
 
 - (void)testDearmorArmorPublic:(dispatch_block_t)completion {
-  _crypto = [self loadCrypto];
+  KBCrypto *crypto = [[KBCrypto alloc] init];
   NSString *publicKeyArmored = [self loadFile:@"user1_public.asc"];
-  [_crypto dearmor:publicKeyArmored success:^(NSData *publicKeyData) {
-    [_crypto armorPublicKey:publicKeyData success:^(NSString *publicKeyRearmored) {
+  [crypto dearmor:publicKeyArmored success:^(NSData *publicKeyData) {
+    [crypto armorPublicKey:publicKeyData success:^(NSString *publicKeyRearmored) {
       NSString *key1 = [publicKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
       NSString *key2 = [publicKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
       GRAssertEqualStrings(key1, key2);
       
       completion();
     } failure:GRErrorHandler];
+  } failure:GRErrorHandler];
+}
+
+- (void)testPGPKey:(dispatch_block_t)completion {
+  _crypto = [[KBCrypto alloc] init];
+  NSString *privateKeyArmored = [self loadFile:@"user1_private.asc"];
+  [_crypto PGPKeyForBundle:privateKeyArmored success:^(KBPGPKey *key) {
+    GRTestLog(@"key: %@", key);
+    completion();
   } failure:GRErrorHandler];
 }
 

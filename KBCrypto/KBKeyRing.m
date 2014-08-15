@@ -74,5 +74,14 @@
   success(signers);
 }
 
+- (void)fetch:(NSArray *)keyIds ops:(NSUInteger)ops success:(JSValue *)success failure:(JSValue *)failure {
+  [self lookupPGPKeyIds:keyIds capabilities:ops success:^(NSArray *keys) {
+    //NSArray *keyBundles = [keys map:^id(id<KBKey> k) { return k.bundle; }];
+    NSString *keyBundle = [keys[0] bundle];
+    [success callWithArguments:@[keyBundle]];
+  } failure:^(NSError *error) {
+    [failure callWithArguments:@[error.localizedDescription]];
+  }];
+}
 
 @end

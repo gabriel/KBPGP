@@ -4,7 +4,8 @@ pod "GHKit"
 pod "ObjectiveSugar"
 pod "NAChloride"
 pod "TSTripleSec"
-pod "libextobjc"
+pod "libextobjc/EXTScope"
+pod "Mantle"
 
 target :Tests do
   pod "GRUnit", :path => "../GRUnit"

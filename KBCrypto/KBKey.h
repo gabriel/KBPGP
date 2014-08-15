@@ -17,17 +17,7 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
 
 typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
   KBKeyAlgorithmRSA = 1,
-  KBKeyAlgorithmECC = 2 
-};
-
-typedef NS_ENUM (NSUInteger, KBKeyFlags) {
-  KBKeyFlagsCertifyKeys = 0x1,
-  KBKeyFlagsSighData = 0x2,
-  KBKeyFlagsEncryptComm = 0x4,
-  KBKeyFlagsStorage = 0x8,
-  KBKeyFlagsPrivateSplit = 0x10,
-  KBKeyFlagsAuth = 0x20,
-  KBKeyFlagsShared = 0x80,
+  KBKeyAlgorithmECDSA = 19
 };
 
 @protocol KBKey <NSObject>

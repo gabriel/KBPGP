@@ -9,7 +9,7 @@ window.crypto.getRandomValues = function(buf) {
   }
 };
 
-var kblog = function(obj) {
+var jsondump = function(obj) {
   seen = [];
   if (obj === undefined) return "undefined";
   if (obj === null) return "null";
@@ -21,18 +21,19 @@ var kblog = function(obj) {
           seen.push(val);
       }
       if (val && val.type == "Buffer") {
-        var buf = new Buffer(val.data);
-        return "<Buffer:0x" + buf.toString("hex") + ">";
+        //var buf = new Buffer(val.data);
+        //return "<Buffer:0x" + buf.toString("hex") + ">";
+        return "<Buffer>";
       }      
       return val;
   }, 2);
 
-  console.log('\n' + obj.constructor.name + ': ' + desc);
+  return '\n' + obj.constructor.name + ': ' + desc;
 };
 
-var kberr = function(err) {
-  return err.fileName + ":" + err.lineNumber + ", " + err.message;
-};
+// var kberr = function(err) {
+//   return err.fileName + ":" + err.lineNumber + ", " + err.message;
+// };
 
 var failure = function() {
   return err.message;
@@ -41,7 +42,8 @@ var failure = function() {
 function ErrorHandler(failure) {
   this.failure = failure;
 }
-ErrorHandler.prototype.handle = function(err) {  
+ErrorHandler.prototype.handle = function(err) {
+  console.log(jsondump(err));
   this.failure(err.message);
 };
 
@@ -70,6 +72,7 @@ jscore.encrypt = function(params) {
     };
     if (private_key) kparams.sign_with = private_key;
     kbpgp.box(kparams, function(err, result_string, result_buffer) {
+      if (err) { failure.handle(err); return; }
       success(result_string);
     });
   }, failure);
@@ -97,85 +100,86 @@ jscore.sign = function(params) {
   }, failure);
 };
 
-function RemoteKeyFetch(keyring) {
-  this.keyring = keyring;
+/*!
+Key ring.
+@param jsckr [KBKeyRing] JSExport'ed
+*/
+function KeyRing(jsckr) {
+  this.jsckr = jsckr;
+  this.pgpkr = new kbpgp.keyring.PgpKeyRing();
 }
-
-RemoteKeyFetch.prototype.fetchRemote = function(key_ids, ops, callback) {
-  var keyring = this.keyring;
-  var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
-  jscore.kbcrypto.keyfetch(hexkeyids, ops, function(bundle) { //, passphrase) {
-    kbpgp.KeyManager.import_from_armored_pgp({raw: bundle}, function(err, km) {
-      if (err) { callback(err); return; }
-
-      // if (passphrase && km.is_pgp_locked()) {
-      //   km.unlock_pgp({
-      //     passphrase: passphrase
-      //   }, function(err) {
-      //     if (err) { callback(err); return; }
-      //   });
-      // }
-
-      //var keyring = new kbpgp.keyring.PgpKeyRing();
-      keyring.add_key_manager(km);
-      keyring.fetch(key_ids, ops, callback);
-    });
-  }, function(err_msg) {
-    callback(new Error(err_msg));
-  });
-};
-
-// Check local keyring and then fetch remote if not found
-RemoteKeyFetch.prototype.fetch = function(key_ids, ops, callback) {  
-  var fetcher = this;
-  this.keyring.fetch(key_ids, ops, function(err, key, index) {
+KeyRing.prototype.fetch = function(key_ids, ops, callback) {
+  var that = this;
+  this.pgpkr.fetch(key_ids, ops, function(err, key, index) {
     if (err) {
-      fetcher.fetchRemote(key_ids, ops, callback);
+      var hex_keyids = key_ids.map(function(k) { return k.toString("hex"); });      
+      that.jsckr.fetch(hex_keyids, ops, function(bundle) {
+        that.add_key_bundle(bundle, function(err) {
+          if (err) { callback(err); return; }
+          that.pgpkr.fetch(key_ids, ops, callback);
+        });
+      }, function(errmsg) {
+        callback(new Error(errmsg));
+      });
     } else {
       callback(err, key, index);
     }
   });
 };
+KeyRing.prototype.add_key_manager = function(key) {
+  this.pgpkr.add_key_manager(key);
+};
+KeyRing.prototype.add_key_bundle = function(bundle, callback) {
+  var that = this;
+  kbpgp.KeyManager.import_from_armored_pgp({raw: bundle}, function(err, km) {
+    if (err) { callback(err); return; }
+    that.pgpkr.add_key_manager(km);
+    callback(null, km);
+  });
+};
 
-jscore.unbox = function(params) {
+jscore.verify = function(params) {
   var message_armored = params.message_armored,
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  var keyring = new kbpgp.keyring.PgpKeyRing();
+  var keyring;
+  if (params.jsc_keyring) {
+    keyring = new KeyRing(params.jsc_keyring);
+  } else {
+    keyring = params.keyring;
+  }
+
   var kparams = {
     armored: message_armored,
-    keyfetch: new RemoteKeyFetch(keyring),
+    keyfetch: keyring,
   };
   kbpgp.unbox(kparams, function(err, literals) {
     if (err) { failure.handle(err); return; }
     jscore._process_literals(literals, success);
   });
 };
-jscore.verify = jscore.unbox;
-//jscore.decrypt = jscore.unbox;
 
 jscore.decrypt = function(params) {
   var message_armored = params.message_armored,
     decrypt_with = params.decrypt_with,
-    passphrase = params.passphrase,
+    passphrase = params.passphrase,    
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-
-  if (!decrypt_with) {
-    //jscore.unbox(params);
-    failure.handle(new Error("Must specify decrypt_with"));
-    return;
+  var keyring;
+  if (params.jsc_keyring) {
+    keyring = new KeyRing(params.jsc_keyring);
+  } else {
+    keyring = params.keyring;
   }
 
-  jscore._decodeKey(decrypt_with, passphrase, function(private_key) {
-    var keyring = new kbpgp.keyring.PgpKeyRing();
+  jscore._decodeKey(decrypt_with, passphrase, function(private_key) {    
     keyring.add_key_manager(private_key);
 
     var kparams = {
       armored: message_armored,
-      keyfetch: new RemoteKeyFetch(keyring),
+      keyfetch: keyring,
     };
     kbpgp.unbox(kparams, function(err, literals) {
       if (err) { failure.handle(err); return; }
@@ -244,16 +248,16 @@ jscore.generateKeyPair = function(params) {
     });  
   }
 
-  var generate;
+  var generatef;
   if (algorithm == "ecc") {
-    generate = kbpgp.KeyManager.generate_ecc;
+    generatef = kbpgp.KeyManager.generate_ecc;
   } else if (algorithm == "rsa") {
-    generate = kbpgp.KeyManager.generate_rsa;
+    generatef = kbpgp.KeyManager.generate_rsa;
   } else {
-    generate = kbpgp.KeyManager.generate_rsa;
+    generatef = kbpgp.KeyManager.generate_rsa;
   }
 
-  generate(opts, function(err, key) {    
+  generatef(opts, function(err, key) {    
     if (err) { failure.handle(err); return; }
     key.sign({}, function(err) {
       if (err) { failure.handle(err); return; }
@@ -367,7 +371,7 @@ jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase,
   }, failure);
 };
 
-jscore.keyInfo = function(params) {
+jscore.info = function(params) {
   var armored = params.armored,
     passphrase = params.passphrase,
     success = params.success,
@@ -376,44 +380,37 @@ jscore.keyInfo = function(params) {
   jscore._decodeKey(armored, passphrase, function(key) {
 
     var info = {};
-    info.id = key.get_pgp_key_id().toString("hex");
-    info.short_id = key.get_pgp_short_key_id().toString("hex");
-    info.fingerprint = key.get_pgp_fingerprint().toString("hex");
-    
+
     // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
 
-    var lifespan = key.lifespan;     
-
+    var primary = key.primary; // KeyWrapper (Primary/Subkey)
     var keymat = key.get_all_pgp_key_materials(); 
-
-    var primary = key.primary; // KeyWrapper (Primary/Subkey);  .key is Pair
     var pkeymat = keymat[0][0];
 
-    // RSA:1, ECDSA:19
-
-    info.primary = {
-      id: pkeymat.get_key_id().toString("hex"),
-      flags: pkeymat.flags,      
-      type: primary.key.type, 
-      timestamp: pkeymat.timestamp,
-      is_locked: pkeymat.is_locked(),
-      has_private: pkeymat.has_private() ? true : false,
-      self_signed: pkeymat.is_self_signed(),        
-    };
-
-    if (primary.key.pub.nbits) info.primary.nbits = primary.key.pub.nbits();
+    info.fingerprint = key.get_pgp_fingerprint().toString("hex");
+    info.pgp_key_id = pkeymat.get_key_id().toString("hex");
+    //info.short_id = key.get_pgp_short_key_id().toString("hex");
+    info.flags = pkeymat.flags;
+    info.type = primary.key.type;
+    info.timestamp = pkeymat.timestamp;
+    info.is_locked = pkeymat.is_locked();
+    info.has_private = pkeymat.has_private() ? true : false;
+    info.self_signed = pkeymat.is_self_signed();
+    if (primary.key.pub.nbits) info.nbits = primary.key.pub.nbits();
 
     // userids: pkeymat.get_signed_userids()[0].userid.toString("utf8")
 
     info.subkeys = [];
 
     var subkeys = key.subkeys;
-    for (var i = 0; i < subkeys.length; i++) {
+    var i;
+    for (i = 0; i < subkeys.length; i++) {
       var subkeymat = keymat[i+1][0];
       var subinfo = {
-        id: subkeymat.get_key_id().toString("hex"),
+        pgp_key_id: subkeymat.get_key_id().toString("hex"),
         flags: subkeymat.flags,
         timestamp: subkeymat.timestamp,
+        type: subkeys[i].key.type
       };
 
       if (subkeys[i].key.pub.nbits) subinfo.nbits = subkeys[i].key.pub.nbits();
@@ -423,7 +420,7 @@ jscore.keyInfo = function(params) {
 
     info.userids = [];
     var userids = key.get_userids_mark_primary();
-    for (var i = 0; i < userids.length; i++) {
+    for (i = 0; i < userids.length; i++) {
       info.userids.push({
         is_primary: userids[i].primary,
         username: userids[i].get_username(),
@@ -466,3 +463,85 @@ jscore.keyInfo = function(params) {
 //     success(key);
 //   });
 // };
+
+// jscore.decryptdryrun = function(params) {
+//   var message_armored = params.message_armored,
+//     decrypt_with = params.decrypt_with,
+//     passphrase = params.passphrase,
+//     success = params.success,
+//     keys = params.keys,
+//     failure = new ErrorHandler(params.failure);
+
+//   jscore._decodeKey(decrypt_with, passphrase, function(private_key) {
+//     var keyring = new kbpgp.keyring.PgpKeyRing();
+//     keyring.add_key_manager(private_key);
+//     var dryrun = new KeyFetchDryRun(keyring);    
+//     var kparams = {
+//       armored: message_armored,
+//       keyfetch: dryrun,
+//     };
+//     kbpgp.unbox(kparams, function(err, literals) {
+//       if (err) { 
+//         if (err.message == "Dry run") {
+//           keys(dryrun.fetched);
+//           return;
+//         }
+//         failure.handle(err); 
+//         return; 
+//       }
+//       jscore._process_literals(literals, success);
+//     });    
+//   }, failure);
+// };
+
+// var RemoteKeyFetch = function(keyring) {
+//   this.keyring = keyring;
+// };
+// RemoteKeyFetch.prototype.fetchRemote = function(key_ids, ops, callback) {
+//   var keyring = this.keyring;
+//   var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
+//   jscore.kbcrypto.keyfetch(hexkeyids, ops, function(bundle) { //, passphrase) {
+//     kbpgp.KeyManager.import_from_armored_pgp({raw: bundle}, function(err, km) {
+//       if (err) { callback(err); return; }
+
+//       // if (passphrase && km.is_pgp_locked()) {
+//       //   km.unlock_pgp({
+//       //     passphrase: passphrase
+//       //   }, function(err) {
+//       //     if (err) { callback(err); return; }
+//       //   });
+//       // }
+
+//       //var keyring = new kbpgp.keyring.PgpKeyRing();
+//       keyring.add_key_manager(km);
+//       keyring.fetch(key_ids, ops, callback);
+//     });
+//   }, function(err_msg) {
+//     callback(new Error(err_msg));
+//   });
+// };
+
+// // Check local keyring and then fetch remote if not found
+// RemoteKeyFetch.prototype.fetch = function(key_ids, ops, callback) {  
+//   var fetcher = this;
+//   this.keyring.fetch(key_ids, ops, function(err, key, index) {
+//     if (err) {
+//       fetcher.fetchRemote(key_ids, ops, callback);
+//     } else {
+//       callback(err, key, index);
+//     }
+//   });
+// };
+
+// function KeyFetchDryRun() {
+//   this.fetched = []
+// }
+// KeyFetchDryRun.prototype.fetch = function(key_ids, ops, callback) {  
+//   var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
+//   this.fetched.push({
+//     key_ids: hexkeyids,
+//     ops: ops
+//   });
+//   callback(new Error("Dry run"));
+// };
+

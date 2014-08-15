@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
   s.dependency 'NAChloride'
   s.dependency 'ObjectiveSugar'
   s.dependency 'GHKit'
+  s.dependency 'Mantle'
   s.source_files = 'KBCrypto/**/*.{c,h,m}'
   s.requires_arc = true
 

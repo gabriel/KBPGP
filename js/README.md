@@ -1,6 +1,6 @@
 # Generating keybase.js
 
-    node r.js -o baseUrl=. name=almond.js include=main out=keybase.js optimize=none
+    node r.js -o baseUrl=. name=almond.js include=main out=../keybase.js optimize=none
 
 
 # Testing
@@ -13,7 +13,7 @@
 1. Clone `openpgp.js` repo
 1. Remove crypto from external arrays in Gruntfile
 1. Run grunt
-1. Copy generated `openpgp.js` file here
+1. Copy generated `openpgp.js` to the build dir
 
 
 To use `openpgp.js` as the backend, change `main.js` to require openpgp instance of kbpgp.

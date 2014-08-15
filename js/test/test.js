@@ -8,14 +8,14 @@ vm.runInThisContext(fs.readFileSync("./keybase-kbpgp-jscore.js"));
 
 var dataDir = "../Tests/Data";
 
-jscore.kbcrypto = {};
-jscore.kbcrypto.keyfetch = function(hex_key_ids, ops, success, failure) {
-  if (hex_key_ids[0] == "4bf812991a9c76ab" && (ops & 4) != 0) {    
-    success(datafile("user2_public.asc"));
-  } else {
-    failure(new Error("No key for " + hex_key_ids + ", ops: " + ops));
-  }
-};
+// jscore.kbcrypto = {};
+// jscore.kbcrypto.keyfetch = function(hex_key_ids, ops, success, failure) {
+//   if (hex_key_ids[0] == "4bf812991a9c76ab" && (ops & 4) != 0) {    
+//     success(datafile("user2_public.asc"));
+//   } else {
+//     failure(new Error("No key for " + hex_key_ids + ", ops: " + ops));
+//   }
+// };
 
 var crypto = require("crypto");
 jscore.getRandomHexString = function(length) {
@@ -31,10 +31,16 @@ var failure = function(msg) { throw new Error(msg); };
 describe("JSCore", function() {
   this.timeout(10000);
 
-  it("should decrypt with private key", function(done) {   
+  var keyring = new kbpgp.keyring.PgpKeyRing();
+  kbpgp.KeyManager.import_from_armored_pgp({raw: datafile("user2_public.asc")}, function(err, km) {
+    keyring.add_key_manager(km);
+  });
+
+  it("should decrypt with private key kb", function(done) {   
     jscore.decrypt({
       message_armored: datafile("user1_message_kb.asc"),
       decrypt_with: datafile("user1_private.asc"),
+      keyring: keyring,
       passphrase: "toomanysecrets",
       success: function(plain_text, signers) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
@@ -44,10 +50,11 @@ describe("JSCore", function() {
     });
   });  
 
-  it("should decrypt with private key (gpg2)", function(done) {   
+  it("should decrypt with private key gpg2", function(done) {   
     jscore.decrypt({
       message_armored: datafile("user1_message_gpg2.asc"),
       decrypt_with: datafile("user1_private.asc"),
+      keyring: keyring,
       passphrase: "toomanysecrets",
       success: function(plain_text, signers) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
@@ -69,7 +76,8 @@ describe("JSCore", function() {
         // Decrypt and verify        
         jscore.decrypt({
           message_armored: message_armored,
-          decrypt_with: datafile("user1_private.asc"),          
+          decrypt_with: datafile("user1_private.asc"),
+          keyring: keyring,      
           passphrase: "toomanysecrets",        
           success: function(plain_text, signers) {
             assert.equal(plain_text, "this is a secret message from user2 signed by user1")
@@ -88,6 +96,7 @@ describe("JSCore", function() {
     jscore.decrypt({
       message_armored: datafile("user1_message_kb.asc"),
       decrypt_with: datafile("user1_private_unlocked.asc"),
+      keyring: keyring,
       success: function(plain_text, signers) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
         done();
@@ -127,10 +136,9 @@ describe("JSCore", function() {
 
   it("should get info for private key", function(done) {
     armored = datafile("user1_private.asc")
-    jscore.keyInfo({
+    jscore.info({
       armored: armored, 
       success: function(info) {
-        //kblog(info);      
         done();
       },
       failure:failure
@@ -139,10 +147,9 @@ describe("JSCore", function() {
 
   it("should get info for public key", function(done) {
     armored = datafile("user1_public.asc")
-    jscore.keyInfo({
+    jscore.info({
       armored: armored,
       success: function(info) {
-        //kblog(info);      
         done();
       },
       failure:failure
@@ -151,10 +158,9 @@ describe("JSCore", function() {
 
   it("should get info for gpg key", function(done) {
     armored = datafile("user2_private.asc")
-    jscore.keyInfo({
+    jscore.info({
       armored: armored,
       success: function(info) {
-        //kblog(info);      
         done();
       },
       failure:failure
@@ -163,10 +169,9 @@ describe("JSCore", function() {
 
   it("should get info for ecc key", function(done) {
     armored = datafile("user3_ecc_private.asc")
-    jscore.keyInfo({
+    jscore.info({
       armored: armored,
       success: function(info) {
-        //kblog(info);      
         done();
       },
       failure:failure

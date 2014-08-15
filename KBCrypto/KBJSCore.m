@@ -13,7 +13,6 @@
 #import <libextobjc/EXTScope.h>
 
 @interface KBJSCore ()
-@property dispatch_queue_t queue;
 @end
 
 @implementation KBJSCore
@@ -22,10 +21,15 @@
   if ((self = [super init])) {
     _context = context;
     [_context evaluateScript:@"var console = {}"];
-    _context[@"console"][@"log"] = ^(NSString *msg) {
-      GHDebug(@"Console: %@", msg);
+    _context[@"console"][@"log"] = ^(id obj) {
+      GHDebug(@"Console: %@", obj);
     };
-    
+    _context[@"console"][@"warn"] = ^(id obj) {
+      GHErr(@"Warning: %@", obj);
+    };
+    _context[@"console"][@"error"] = ^(id obj) {
+      GHErr(@"Error: %@", obj);
+    };
     _context[@"alert"] = ^(NSString *msg) {
       GHDebug(@"Alert: %@", msg);
     };
@@ -35,24 +39,29 @@
       GHDebug(@"Document write: %@", msg);
     };
     
-    GHWeakSelf blockSelf = self;
-    
-    _queue = dispatch_queue_create("KBJSCore", NULL);
-    
     _context[@"setTimeout"] = ^(JSValue *function, JSValue *timeout) {
-      dispatch_queue_t queue = blockSelf.queue;
-      if (queue) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeout toInt32] * NSEC_PER_MSEC)), queue, ^{
-          [function callWithArguments:@[]];
-        });
-      }
+      int64_t time = (int64_t)([timeout toInt32] * NSEC_PER_MSEC);
+      //GHDebug(@"Time: %d", [timeout toInt32]);
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, time), dispatch_get_current_queue(), ^{
+        [function callWithArguments:@[]];
+      });
     };
     
+//    _context[@"process"] = @{};
+//    _context[@"process"][@"nextTick"] = ^(JSValue *function) {
+//      @strongify(self)
+//      dispatch_queue_t queue = self.queue;
+//      GHDebug(@"Next tick");
+//      dispatch_async(queue, ^{
+//        [function callWithArguments:@[]];
+//      });
+//    };
+    
     [_context evaluateScript:@"var jscore = jscore || {}"];
-    _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
+    _context[@"jscore"][@"getRandomHexString"] = ^(uint32_t numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
       NSError *error = nil;
-      NSString *hexString = [[NARandom randomData:[numBytes toUInt32] error:&error] na_hexString];
+      NSString *hexString = [[NARandom randomData:numBytes error:&error] na_hexString];
       if (!hexString) {
         [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
       }
