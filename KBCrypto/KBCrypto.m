@@ -26,16 +26,15 @@
 @implementation KBCrypto
 
 - (instancetype)init {
-  if ((self = [super init])) {
-    _queue = dispatch_queue_create("KBCrypto", NULL);
-    [self generateContext];
-  }
-  return self;
+  return [self initWithKeyRing:nil];
 }
 
 - (instancetype)initWithKeyRing:(id<KBKeyRing>)keyRing {
-  if ((self = [self init])) {
+  if ((self = [super init])) {
+    _queue = dispatch_queue_create("KBCrypto", NULL);
     _keyRing = keyRing;
+    
+    [self generateContext];
   }
   return self;
 }
@@ -55,6 +54,8 @@
   
   _JSCore = JSCore;
   _context = context;
+  
+  _context[@"jscore"][@"KeyRing"] = _keyRing;
 }
 
 - (void)_call:(NSString *)method params:(NSDictionary *)params {
@@ -142,14 +143,12 @@
   }
 }
 
-- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {  
-  NSAssert(_keyRing, @"No keyring");
-  
+- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure {
   @weakify(self)
   [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle) {
     @strongify(self)
     @weakify(self)
-    [self _call:@"decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(password), @"jsc_keyring": self.keyRing,  @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+    [self _call:@"decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(password), @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
       @strongify(self)
       [self _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
     }, @"failure": ^(NSString *error) {
@@ -161,7 +160,7 @@
 
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *failure))failure {
   @weakify(self)
-  [self _call:@"verify" params:@{@"message_armored": messageArmored, @"jsc_keyring": self.keyRing, @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
+  [self _call:@"verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints) {
     @strongify(self)
     [self _verifyKeyFingerprints:keyFingerprints plainText:plainText success:success failure:failure];
   }, @"failure": ^(NSString *error) {

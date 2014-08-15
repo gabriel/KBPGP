@@ -100,12 +100,7 @@ jscore.sign = function(params) {
   }, failure);
 };
 
-/*!
-Key ring.
-@param jsckr [KBKeyRing] JSExport'ed
-*/
-function KeyRing(jsckr) {
-  this.jsckr = jsckr;
+function KeyRing() {  
   this.pgpkr = new kbpgp.keyring.PgpKeyRing();
 }
 KeyRing.prototype.fetch = function(key_ids, ops, callback) {
@@ -113,7 +108,7 @@ KeyRing.prototype.fetch = function(key_ids, ops, callback) {
   this.pgpkr.fetch(key_ids, ops, function(err, key, index) {
     if (err) {
       var hex_keyids = key_ids.map(function(k) { return k.toString("hex"); });      
-      that.jsckr.fetch(hex_keyids, ops, function(bundle) {
+      jscore.KeyRing.fetch(hex_keyids, ops, function(bundle) {
         that.add_key_bundle(bundle, function(err) {
           if (err) { callback(err); return; }
           that.pgpkr.fetch(key_ids, ops, callback);
@@ -143,16 +138,9 @@ jscore.verify = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  var keyring;
-  if (params.jsc_keyring) {
-    keyring = new KeyRing(params.jsc_keyring);
-  } else {
-    keyring = params.keyring;
-  }
-
   var kparams = {
     armored: message_armored,
-    keyfetch: keyring,
+    keyfetch: new KeyRing(),
   };
   kbpgp.unbox(kparams, function(err, literals) {
     if (err) { failure.handle(err); return; }
@@ -167,14 +155,8 @@ jscore.decrypt = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  var keyring;
-  if (params.jsc_keyring) {
-    keyring = new KeyRing(params.jsc_keyring);
-  } else {
-    keyring = params.keyring;
-  }
-
   jscore._decodeKey(decrypt_with, passphrase, function(private_key) {    
+    var keyring = new KeyRing();
     keyring.add_key_manager(private_key);
 
     var kparams = {

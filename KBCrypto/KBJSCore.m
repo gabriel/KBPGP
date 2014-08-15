@@ -58,10 +58,10 @@
 //    };
     
     [_context evaluateScript:@"var jscore = jscore || {}"];
-    _context[@"jscore"][@"getRandomHexString"] = ^(uint32_t numBytes) {
+    _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
       NSError *error = nil;
-      NSString *hexString = [[NARandom randomData:numBytes error:&error] na_hexString];
+      NSString *hexString = [[NARandom randomData:[numBytes toUInt32] error:&error] na_hexString];
       if (!hexString) {
         [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
       }
