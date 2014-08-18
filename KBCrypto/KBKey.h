@@ -32,6 +32,8 @@ typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
 
 NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint);
 
-NSString *KBKeyDisplayDescription(NSString *fingerprint);
+NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint);
 
-NSString *KBKeyCapabilitiesDescription(KBKeyCapabilities capabilities);
+NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities);
+
+NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm);

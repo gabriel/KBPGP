@@ -17,7 +17,7 @@
 #import <libextobjc/EXTScope.h>
 
 @interface KBCrypto ()
-@property dispatch_queue_t queue;
+//@property dispatch_queue_t queue;
 @property KBJSCore *JSCore;
 @property id<KBKeyRing> keyRing;
 @end
@@ -121,15 +121,26 @@
     }
     
     NSError *error = nil;
-    P3SKB *keyData = [P3SKB P3SKBFromData:data error:&error];
-    if (!keyData) {
+    P3SKB *key = [P3SKB P3SKBFromData:data error:&error];
+    if (!key) {
       failure(error);
       return;
     }
     
-    [self armorPrivateKey:keyData password:password success:^(NSString *encoded) {
-      success(encoded);
-    } failure:failure];
+    if (password) {
+      if (![key decryptPrivateKeyWithPassword:password error:&error]) {
+        failure(error);
+        return;
+      }
+      
+      [self armorPrivateKey:key password:password success:^(NSString *encoded) {
+        success(encoded);
+      } failure:failure];
+    } else {
+      [self armorPublicKey:key.publicKey success:^(NSString *encoded) {
+        success(encoded);
+      } failure:failure];
+    }
   }
 }
 
@@ -201,7 +212,7 @@
   }}];
 }
 
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure {
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure {
   
   GHWeakSelf blockSelf = self;
   
@@ -222,7 +233,7 @@
     if (!ok) return NO;
     if (progress) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        KBKeygenProgress *p = [[KBKeygenProgress alloc] initFromJSONDictionary:progressDict];
+        KBKeyGenProgress *p = [[KBKeyGenProgress alloc] initFromJSONDictionary:progressDict];
         if (progress) {
           ok = progress(p);
         }
@@ -255,18 +266,22 @@
 
 - (void)PGPKeyForBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
   @weakify(self)
-  [self _call:@"info" params:@{@"armored": keyBundle, @"success": ^(NSDictionary *dict) {
-    NSError *error = nil;
-    KBPGPKey *key = [MTLJSONAdapter modelOfClass:KBPGPKey.class fromJSONDictionary:dict error:&error];
-    if (!key) {
-      failure(error);
-      return;
-    }
-    success(key);
-  }, @"failure": ^(NSString *error) {
-    @strongify(self)
-    [self _callback:^{ failure(KBCryptoError(error)); }];
-  }}];
+  [self _armorBundle:keyBundle password:nil success:^(NSString *armoredBundle) {
+    [self _call:@"info" params:@{@"armored": armoredBundle, @"success": ^(NSDictionary *dict) {
+      NSError *error = nil;
+      NSMutableDictionary *mdict = [dict mutableCopy];
+      mdict[@"bundle"] = keyBundle;
+      KBPGPKey *key = [MTLJSONAdapter modelOfClass:KBPGPKey.class fromJSONDictionary:mdict error:&error];
+      if (!key) {
+        failure(error);
+        return;
+      }
+      success(key);
+    }, @"failure": ^(NSString *error) {
+      @strongify(self)
+      [self _callback:^{ failure(KBCryptoError(error)); }];
+    }}];
+  } failure:failure];
 }
 
 NSError *KBCryptoError(NSString *message) {

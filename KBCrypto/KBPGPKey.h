@@ -15,11 +15,14 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
   KBPGPKeyFlagsCertifyKeys = 0x1,
   KBPGPKeyFlagsSignData = 0x2,
   KBPGPKeyFlagsEncryptComm = 0x4,
-  KBPGPKeyFlagsStorage = 0x8,
+  KBPGPKeyFlagsEncryptStorage = 0x8,
   KBPGPKeyFlagsPrivateSplit = 0x10,
   KBPGPKeyFlagsAuth = 0x20,
   KBPGPKeyFlagsShared = 0x80,
 };
+
+@class KBPGPUserId;
+@class KBPGPSubKey;
 
 @interface KBPGPKey : MTLModel <KBKey, MTLJSONSerializing>
 @property (readonly) NSString *keyId;
@@ -36,6 +39,18 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 
 @property (readonly) NSArray *subKeys;
 @property (readonly) NSArray *userIds;
+
+/*!
+ Get the primary or first user id.
+ */
+- (KBPGPUserId *)userId;
+
+- (NSString *)userDescription;
+
+- (NSString *)typeDescription;
+
+- (NSComparisonResult)compare:(KBPGPKey *)key2;
+
 @end
 
 
@@ -45,6 +60,9 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @property (readonly) NSDate *date;
 @property (readonly) NSUInteger numBits;
 @property (readonly) KBKeyAlgorithm algorithm;
+
+- (NSString *)subKeyDescription;
+
 @end
 
 @interface KBPGPUserId : MTLModel <MTLJSONSerializing>

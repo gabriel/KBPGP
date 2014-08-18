@@ -16,7 +16,7 @@ NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint) {
   return [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];
 }
 
-NSString *KBKeyDisplayDescription(NSString *fingerprint) {
+NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint) {
   if ([fingerprint length] < 16) return fingerprint;
   NSString *str = [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];
   return [@[[str substringWithRange:NSMakeRange(0, 4)],
@@ -26,7 +26,7 @@ NSString *KBKeyDisplayDescription(NSString *fingerprint) {
 
 }
 
-NSString *KBKeyCapabilitiesDescription(KBKeyCapabilities capabilities) {
+NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities) {
   NSMutableArray *desc = [NSMutableArray array];
   if ((capabilities & KBKeyCapabilitiesDecrypt) != 0) [desc addObject:@"Decrypt"];
   if ((capabilities & KBKeyCapabilitiesEncrypt) != 0) [desc addObject:@"Encrypt"];
@@ -35,4 +35,9 @@ NSString *KBKeyCapabilitiesDescription(KBKeyCapabilities capabilities) {
   return [desc componentsJoinedByString:@", "];
 }
 
-
+NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm) {
+  switch (algorithm) {
+    case KBKeyAlgorithmRSA: return @"RSA";
+    case KBKeyAlgorithmECDSA: return @"ECDSA";
+  }
+}

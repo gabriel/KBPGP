@@ -10,11 +10,22 @@
 
 #import <GHKit/GHKit.h>
 
+NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
+  NSMutableArray *desc = [NSMutableArray array];
+  if ((flags & KBPGPKeyFlagsSignData) != 0) [desc addObject:@"Sign"];
+  if ((flags & KBPGPKeyFlagsEncryptComm) != 0 || (flags & KBPGPKeyFlagsEncryptStorage) != 0) [desc addObject:@"Encrypt"];
+  if ((flags & KBPGPKeyFlagsCertifyKeys) != 0) [desc addObject:@"Certify"];
+  if ((flags & KBPGPKeyFlagsAuth) != 0) [desc addObject:@"Auth"];
+  if ((flags & KBPGPKeyFlagsShared) != 0) [desc addObject:@"Shared"];
+  return [desc componentsJoinedByString:@", "];
+}
+
 @implementation KBPGPKey
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
   return @{
            @"fingerprint": @"fingerprint",
+           @"bundle": @"bundle",
            @"keyId": @"pgp_key_id",
            @"numBits": @"nbits",
            @"flags": @"flags",
@@ -44,6 +55,42 @@
   return [NSValueTransformer mtl_JSONArrayTransformerWithModelClass:KBPGPUserId.class];
 }
 
+- (KBPGPUserId *)userId {
+  if ([_userIds count] == 0) return nil;
+  
+  for (KBPGPUserId *userId in _userIds) {
+    if (userId.primary) return userId;
+  }
+  return _userIds[0];
+}
+
+- (NSString *)userDescription {
+  NSMutableArray *desc = [NSMutableArray array];
+  KBPGPUserId *userId = [self userId];
+  if (userId.userName) [desc addObject:userId.userName];
+  if (userId.email) [desc addObject:[NSString stringWithFormat:@"<%@>", userId.email]];
+  return [desc componentsJoinedByString:@" "];
+}
+
+- (NSString *)typeDescription {
+  if (_secret) {
+    return @"Secret and Public Key";
+  } else {
+    return @"Public Key";
+  }
+}
+
+- (NSComparisonResult)compare:(KBPGPKey *)key2 {
+  KBPGPUserId *userId1 = [self userId];
+  KBPGPUserId *userId2 = [key2 userId];
+  if (userId1.userName) {
+    if (!userId2) return NSOrderedAscending;
+    return [userId1.userName localizedCaseInsensitiveCompare:userId2.userName];
+  } else if (userId2) {
+    return NSOrderedDescending;
+  }
+  return [self.fingerprint caseInsensitiveCompare:key2.fingerprint];
+}
 
 @end
 
@@ -57,6 +104,10 @@
            @"algorithm": @"type",
            @"date": @"timestamp",
            };
+}
+
+- (NSString *)subKeyDescription {
+  return [NSString stringWithFormat:@"%@ %d %@ %@", _keyId, (int)_numBits, NSStringFromKBKeyAlgorithm(_algorithm), NSStringFromKBPGPKeyFlags(_flags)];
 }
 
 @end

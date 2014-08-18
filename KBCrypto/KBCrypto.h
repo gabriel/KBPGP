@@ -8,7 +8,7 @@
 
 #import "KBKeyRing.h"
 #import "KBKeyBundle.h"
-#import "KBKeygenProgress.h"
+#import "KBKeyGenProgress.h"
 #import "KBPGPKey.h"
 
 #import <TSTripleSec/P3SKB.h>
@@ -121,7 +121,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  Generates key pair.
  Uses RSA with appropriate defaults.
  */
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeygenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Load PGP key info from bundle.

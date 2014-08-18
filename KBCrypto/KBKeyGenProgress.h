@@ -1,5 +1,5 @@
 //
-//  KBKeygenProgress.h
+//  KBKeyGenProgress.h
 //  KBCrypto
 //
 //  Created by Gabriel on 8/11/14.
@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM (NSUInteger, KBKeygenProgressType) {
-  KBKeygenProgressTypeFindCandidateP = 1,
-  KBKeygenProgressTypeFindCandidateQ,
-  KBKeygenProgressTypeTesting
+typedef NS_ENUM (NSUInteger, KBKeyGenProgressType) {
+  KBKeyGenProgressTypeFindCandidateP = 1,
+  KBKeyGenProgressTypeFindCandidateQ,
+  KBKeyGenProgressTypeTesting
 };
 
-@interface KBKeygenProgress : NSObject
+@interface KBKeyGenProgress : NSObject
 
-@property (readonly) KBKeygenProgressType progressType;
+@property (readonly) KBKeyGenProgressType progressType;
 @property (readonly) float amount;
 @property (readonly) NSString *prime;
 

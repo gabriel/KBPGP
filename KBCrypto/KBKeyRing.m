@@ -58,7 +58,7 @@
     }
   }
   
-  GHDebug(@"Lookup key ids: %@, %@; %@", PGPKeyIds, KBKeyCapabilitiesDescription(capabilities), found);
+  GHDebug(@"Lookup key ids: %@, %@; %@", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities), found);
   
   if ([found count] > 0) {
     success(found);

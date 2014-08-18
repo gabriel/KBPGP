@@ -193,7 +193,7 @@
 }
 
 - (void)testGenerateKeyRSA:(dispatch_block_t)completion {
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"Setec Astronomy" progress:^BOOL(KBKeygenProgress *progress) {
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"Setec Astronomy" progress:^BOOL(KBKeyGenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
   } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
@@ -215,7 +215,7 @@
 
 - (void)testGenerateKeyECC:(dispatch_block_t)completion {
   NSString *password = @"Setec Astronomy";
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECDSA password:password progress:^BOOL(KBKeygenProgress *progress) {
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECDSA password:password progress:^BOOL(KBKeyGenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
   } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
@@ -241,7 +241,7 @@
 
 - (void)testGenerateKeyCancel:(dispatch_block_t)completion {
   __block NSInteger iter = 0;
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^BOOL(KBKeygenProgress *progress) {
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^BOOL(KBKeyGenProgress *progress) {
     return (iter++ < 10);
   } success:^(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
     GRFail(@"Should have cancelled");
@@ -281,11 +281,16 @@
 }
 
 - (void)testPGPKey:(dispatch_block_t)completion {
-  NSString *privateKeyArmored = [self loadFile:@"user1_private.asc"];
-  [_crypto PGPKeyForBundle:privateKeyArmored success:^(KBPGPKey *key) {
-    GRTestLog(@"key: %@", key);
-    completion();
-  } failure:GRErrorHandler];
+  NSArray *files = @[@"user1_private.asc", @"user1_private.p3skb"];
+  __block NSInteger index = 0;
+  for (NSString *file in files) {
+    NSString *bundle = [self loadFile:file];
+    [_crypto PGPKeyForBundle:bundle success:^(KBPGPKey *key) {
+      GRTestLog(@"key: %@", key);
+
+      if (++index == [files count]) completion();
+    } failure:GRErrorHandler];
+  }
 }
 
 @end

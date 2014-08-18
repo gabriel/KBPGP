@@ -100,7 +100,7 @@ Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
 ```objc
 KBCrypto *crypto = [[KBCrypto alloc] init];
-[crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeygenProgress *progress) {
+[crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error
   return YES;

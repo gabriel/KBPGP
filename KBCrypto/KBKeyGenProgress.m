@@ -1,31 +1,31 @@
 //
-//  KBKeygenProgress.m
+//  KBKeyGenProgress.m
 //  KBCrypto
 //
 //  Created by Gabriel on 8/11/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
 //
 
-#import "KBKeygenProgress.h"
+#import "KBKeyGenProgress.h"
 
 #import <ObjectiveSugar/ObjectiveSugar.h>
 
-@interface KBKeygenProgress ()
-@property KBKeygenProgressType progressType;
+@interface KBKeyGenProgress ()
+@property KBKeyGenProgressType progressType;
 @property float amount;
 @property NSString *prime;
 @end
 
-@implementation KBKeygenProgress
+@implementation KBKeyGenProgress
 
 - (instancetype)initFromJSONDictionary:(NSDictionary *)JSONDictionary {
   if ((self = [super init])) {
     if ([JSONDictionary[@"type"] isEqualToString:@"find_prime_p"]) {
-      _progressType = KBKeygenProgressTypeFindCandidateP;
+      _progressType = KBKeyGenProgressTypeFindCandidateP;
     } else if ([JSONDictionary[@"type"] isEqualToString:@"find_prime_q"]) {
-      _progressType = KBKeygenProgressTypeFindCandidateQ;
+      _progressType = KBKeyGenProgressTypeFindCandidateQ;
     } else if ([JSONDictionary[@"type"] isEqualToString:@"testing"]) {
-      _progressType = KBKeygenProgressTypeTesting;
+      _progressType = KBKeyGenProgressTypeTesting;
     } else {
       NSAssert(NO, @"Invalid type");
     }
@@ -43,13 +43,13 @@
 
 - (NSString *)progressDescription {
   switch (_progressType) {
-    case KBKeygenProgressTypeFindCandidateP: {
+    case KBKeyGenProgressTypeFindCandidateP: {
       return NSStringWithFormat(@"Find Candidate Prime (P): %@", [self primeDescription]);
     }
-    case KBKeygenProgressTypeFindCandidateQ: {
+    case KBKeyGenProgressTypeFindCandidateQ: {
       return NSStringWithFormat(@"Find Candidate Prime (Q): %@", [self primeDescription]);
     }
-    case KBKeygenProgressTypeTesting: {
+    case KBKeyGenProgressTypeTesting: {
       return NSStringWithFormat(@"Testing: %@ (%2.f)%%", [self primeDescription], _amount * 100);
     }
   }

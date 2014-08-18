@@ -32,4 +32,23 @@
   return GHDescription(@"fingerprint", @"secret");
 }
 
+#pragma mark NSCoding
+
++ (BOOL)supportsSecureCoding { return YES; }
+
+- (id)initWithCoder:(NSCoder *)decoder {
+  if ((self = [self init])) {
+    _bundle = [decoder decodeObjectOfClass:[NSString class] forKey:@"bundle"];
+    _fingerprint = [decoder decodeObjectOfClass:[NSString class] forKey:@"fingerprint"];
+    _secret = [decoder decodeBoolForKey:@"secret"];
+  }
+  return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder {
+  [encoder encodeObject:_bundle forKey:@"bundle"];
+  [encoder encodeObject:_fingerprint forKey:@"fingerprint"];
+  [encoder encodeBool:_secret forKey:@"secret"];
+}
+
 @end
