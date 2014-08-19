@@ -1,5 +1,5 @@
 PODS:
-  - GHKit (1.0.5)
+  - GHKit (1.0.7)
   - GRUnit (1.0.8)
   - libextobjc/EXTScope (0.4):
     - libextobjc/RuntimeExtensions
@@ -12,32 +12,32 @@ PODS:
   - NAChloride (1.0.8):
     - libsodium
   - ObjectiveSugar (1.1.0)
-  - TSTripleSec (0.1.5):
+  - TSTripleSec (0.1.6):
     - MPMessagePack
     - NAChloride
 
 DEPENDENCIES:
   - GHKit
-  - GRUnit (from `../GRUnit`)
+  - GRUnit
   - libextobjc/EXTScope
   - Mantle
   - NAChloride
   - ObjectiveSugar
-  - TSTripleSec
+  - TSTripleSec (from `../TSTripleSec/`)
 
 EXTERNAL SOURCES:
-  GRUnit:
-    :path: ../GRUnit
+  TSTripleSec:
+    :path: ../TSTripleSec/
 
 SPEC CHECKSUMS:
-  GHKit: 737b2d495cd7f389194e2798e219c5688ded7fce
-  GRUnit: 022f58a2da768f5977255c799fba02fd15bffe98
+  GHKit: 4daea35a295a381f797194df6a1a4e405300fd1a
+  GRUnit: f9994ec0437e7db810ac8814efe489bd489550ac
   libextobjc: ba42e4111f433273a886cd54f0ddaddb7f62f82f
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
-  TSTripleSec: 70197b9118b91fa63e99767790adeffb4e06f8cf
+  TSTripleSec: 4f949ec840b4edf23e24ac21d0498e3a079648eb
 
 COCOAPODS: 0.33.1

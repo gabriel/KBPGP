@@ -125,8 +125,11 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 
 /*!
  Load PGP key info from bundle.
+ Only returns a public PGPKey. If you need a secret key use PGPKeyForSecretKey:.
  */
-- (void)PGPKeyForBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
+
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark Debugging
 

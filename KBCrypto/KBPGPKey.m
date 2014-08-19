@@ -55,6 +55,14 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   return [NSValueTransformer mtl_JSONArrayTransformerWithModelClass:KBPGPUserId.class];
 }
 
+- (void)setSecretKey:(P3SKB *)secretKey {
+  NSAssert(!_secret, @"Already has secret");
+  
+  _secret = YES;
+  _bundle = [secretKey keyBundle];
+  _locked = YES;
+}
+
 - (KBPGPUserId *)userId {
   if ([_userIds count] == 0) return nil;
   
@@ -74,7 +82,7 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 
 - (NSString *)typeDescription {
   if (_secret) {
-    return @"Secret and Public Key";
+    return @"Secret Key";
   } else {
     return @"Public Key";
   }

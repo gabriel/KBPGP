@@ -3,7 +3,7 @@ platform :ios, "7.0"
 pod "GHKit"
 pod "ObjectiveSugar"
 pod "NAChloride"
-pod "TSTripleSec"
+pod "TSTripleSec", :path => "../TSTripleSec/"
 pod "libextobjc/EXTScope"
 pod "Mantle"
 

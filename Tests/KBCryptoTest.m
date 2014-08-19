@@ -280,17 +280,31 @@
   } failure:GRErrorHandler];
 }
 
-- (void)testPGPKey:(dispatch_block_t)completion {
-  NSArray *files = @[@"user1_private.asc", @"user1_private.p3skb"];
-  __block NSInteger index = 0;
-  for (NSString *file in files) {
-    NSString *bundle = [self loadFile:file];
-    [_crypto PGPKeyForBundle:bundle success:^(KBPGPKey *key) {
-      GRTestLog(@"key: %@", key);
+- (void)testPGPKeyFromPublicArmored:(dispatch_block_t)completion {
+  NSString *bundle = [self loadFile:@"user1_public.asc"];
+  [_crypto PGPKeyForKeyBundle:bundle success:^(KBPGPKey *key) {
+    GRTestLog(@"key: %@", key);
+    GRAssertFalse([key isSecret]);
+    completion();
+  } failure:GRErrorHandler];
+}
 
-      if (++index == [files count]) completion();
-    } failure:GRErrorHandler];
-  }
+- (void)testPGPKeyFromPrivateArmored:(dispatch_block_t)completion {
+  NSString *bundle = [self loadFile:@"user1_private.asc"];
+  [_crypto PGPKeyForKeyBundle:bundle success:^(KBPGPKey *key) {
+    GRTestLog(@"key: %@", key);
+    GRAssertTrue([key isSecret]);
+    completion();
+  } failure:GRErrorHandler];
+}
+
+- (void)testPGPKeyFromP3SKB:(dispatch_block_t)completion {
+  P3SKB *secretKey = [P3SKB P3SKBFromKeyBundle:[self loadFile:@"user1_private.p3skb"] error:nil];
+  [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *key) {
+    GRTestLog(@"key: %@", key);
+    GRAssertTrue([key isSecret]);
+    completion();
+  } failure:GRErrorHandler];
 }
 
 @end

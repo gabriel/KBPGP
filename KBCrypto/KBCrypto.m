@@ -264,9 +264,9 @@
   [self _call:@"generateKeyPair" params:params];
 }
 
-- (void)PGPKeyForBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
+- (void)_PGPKeyForBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
   @weakify(self)
-  [self _armorBundle:keyBundle password:nil success:^(NSString *armoredBundle) {
+  [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle) {
     [self _call:@"info" params:@{@"armored": armoredBundle, @"success": ^(NSDictionary *dict) {
       NSError *error = nil;
       NSMutableDictionary *mdict = [dict mutableCopy];
@@ -281,6 +281,17 @@
       @strongify(self)
       [self _callback:^{ failure(KBCryptoError(error)); }];
     }}];
+  } failure:failure];
+}
+
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
+  [self _PGPKeyForBundle:keyBundle password:nil success:success failure:failure];
+}
+
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
+  [self _PGPKeyForBundle:[secretKey keyBundle] password:nil success:^(KBPGPKey *PGPKey) {
+    [PGPKey setSecretKey:secretKey];
+    success(PGPKey);
   } failure:failure];
 }
 

@@ -10,6 +10,7 @@
 
 #import "KBKey.h"
 #import <Mantle/Mantle.h>
+#import <TSTripleSec/P3SKB.h>
 
 typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
   KBPGPKeyFlagsCertifyKeys = 0x1,
@@ -48,6 +49,11 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 - (NSString *)userDescription;
 
 - (NSString *)typeDescription;
+
+/*!
+ Set secret key.
+ */
+- (void)setSecretKey:(P3SKB *)secretKey;
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2;
 
