@@ -24,8 +24,9 @@
 }
 
 - (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure {
+  __weak KBTestKeyRing *blockSelf = self;
   NSArray *s = [keyFingerprints map:^id(NSString *keyFingerprint) {
-    return [[KBSigner alloc] initWithKeyFingerprint:keyFingerprint verified:([_verifiedKeyFingerprints containsObject:keyFingerprint])];
+    return [[KBSigner alloc] initWithKeyFingerprint:keyFingerprint verified:([blockSelf.verifiedKeyFingerprints containsObject:keyFingerprint])];
   }];
   success(s);
 }

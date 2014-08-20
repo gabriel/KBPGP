@@ -572,6 +572,7 @@
 			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/xcodeproj.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -599,6 +600,7 @@
 			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				COPY_PHASE_STRIP = YES;
 				DSTROOT = /tmp/xcodeproj.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;

@@ -1,9 +1,6 @@
 PODS:
   - GHKit (1.0.7)
   - GRUnit (1.0.8)
-  - libextobjc/EXTScope (0.4):
-    - libextobjc/RuntimeExtensions
-  - libextobjc/RuntimeExtensions (0.4)
   - libsodium (0.6.1)
   - Mantle (1.5):
     - Mantle/extobjc
@@ -19,7 +16,6 @@ PODS:
 DEPENDENCIES:
   - GHKit
   - GRUnit
-  - libextobjc/EXTScope
   - Mantle
   - NAChloride
   - ObjectiveSugar
@@ -32,7 +28,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   GHKit: 4daea35a295a381f797194df6a1a4e405300fd1a
   GRUnit: f9994ec0437e7db810ac8814efe489bd489550ac
-  libextobjc: ba42e4111f433273a886cd54f0ddaddb7f62f82f
   libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6

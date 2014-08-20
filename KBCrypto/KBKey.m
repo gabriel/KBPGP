@@ -38,6 +38,9 @@ NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities) {
 NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm) {
   switch (algorithm) {
     case KBKeyAlgorithmRSA: return @"RSA";
+    case KBKeyAlgorithmDSA: return @"DSA";
+    case KBKeyAlgorithmElgamal: return @"Elgamal";
     case KBKeyAlgorithmECDSA: return @"ECDSA";
   }
+  return @"Unknown";
 }

@@ -17,6 +17,8 @@ typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
 
 typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
   KBKeyAlgorithmRSA = 1,
+  KBKeyAlgorithmElgamal = 16,
+  KBKeyAlgorithmDSA = 17,
   KBKeyAlgorithmECDSA = 19
 };
 

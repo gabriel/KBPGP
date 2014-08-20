@@ -4,7 +4,6 @@ pod "GHKit"
 pod "ObjectiveSugar"
 pod "NAChloride"
 pod "TSTripleSec", :path => "../TSTripleSec/"
-pod "libextobjc/EXTScope"
 pod "Mantle"
 
 target :Tests do

@@ -34,7 +34,7 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @property (readonly) NSString *bundle;
 @property (readonly) NSString *fingerprint;
 
-@property (readonly) BOOL locked;
+@property (readonly, getter=isLocked) BOOL locked;
 @property (readonly, getter=isSecret) BOOL secret;
 @property (readonly, getter=isSelfSigned) BOOL selfSigned;
 
@@ -45,6 +45,11 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
  Get the primary or first user id.
  */
 - (KBPGPUserId *)userId;
+
+/*!
+ User ids, except for the one returned by userId.
+ */
+- (NSArray *)alternateUserIds;
 
 - (NSString *)userDescription;
 
@@ -75,4 +80,7 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @property (readonly) NSString *userName;
 @property (readonly) NSString *email;
 @property (readonly, getter=isPrimary) BOOL primary;
+
+- (NSString *)userIdDescription;
+
 @end

@@ -56,8 +56,6 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (void)setSecretKey:(P3SKB *)secretKey {
-  NSAssert(!_secret, @"Already has secret");
-  
   _secret = YES;
   _bundle = [secretKey keyBundle];
   _locked = YES;
@@ -70,6 +68,12 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
     if (userId.primary) return userId;
   }
   return _userIds[0];
+}
+
+- (NSArray *)alternateUserIds {
+  NSMutableArray *alternateUserIds = [_userIds mutableCopy];
+  [alternateUserIds removeObject:[self userId]];
+  return alternateUserIds;
 }
 
 - (NSString *)userDescription {
@@ -128,6 +132,13 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
            @"email": @"email",
            @"primary": @"primary",
            };
+}
+
+- (NSString *)userIdDescription {
+  NSMutableArray *desc = [NSMutableArray array];
+  if (_userName) [desc addObject:_userName];
+  if (_email) [desc addObject:[NSString stringWithFormat:@"<%@>", _email]];
+  return [desc componentsJoinedByString:@" "];
 }
 
 @end

@@ -412,13 +412,26 @@ jscore.info = function(params) {
       });
     }
 
-    success(info);      
+    key.sign({}, function(err) {
+      if (err) { failure.handle(err); return; }
+      key.export_pgp_public({}, function(err, pgp_public) {
+        if (err) { failure.handle(err); return; }
+
+        var pgp_public_decode = armor.decode(pgp_public);
+        if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
+        var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
+
+        success(info, pgp_public_hex);      
+      });
+    });
+
   }, failure);
 };
 
 
 //Export
 // key.sign({}, function(err) {
+//   if (err) { failure.handle(err); return; }
 //   key.export_pgp_private_to_client({}, function(err, msg) {
 //     console.log(err);
 //     console.log(msg);        
