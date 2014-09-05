@@ -205,19 +205,19 @@ jscore.generateKeyPair = function(params) {
         if (o.what == "fermat" && o.section == "p") {
           ok = progress({
             type: "find_prime_p",
-            prime: o.p.toString(),
+            prime: o.p.toString().slice(-3),
             amount: -1
           });
         } else if (o.what == "fermat" && o.section == "q") {
           ok = progress({
             type: "find_prime_q",
-            prime: o.p.toString(),
+            prime: o.p.toString().slice(-3),
             amount: -1
           });
         } else if (o.what == "mr") {
           ok = progress({
             type: "testing",
-            prime: o.p.toString(),
+            prime: o.p.toString().slice(-3),
             amount: o.i / o.total
           });
         } else {
@@ -362,6 +362,7 @@ jscore.info = function(params) {
   jscore._decodeKey(armored, passphrase, function(key) {
 
     var info = {};
+    info.bundle = armored;
 
     // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
 
@@ -377,7 +378,7 @@ jscore.info = function(params) {
     info.timestamp = pkeymat.timestamp;
     info.is_locked = pkeymat.is_locked();
     info.has_private = pkeymat.has_private() ? true : false;
-    info.self_signed = pkeymat.is_self_signed();
+    info.self_signed = pkeymat.is_self_signed();    
     if (primary.key.pub.nbits) info.nbits = primary.key.pub.nbits();
 
     // userids: pkeymat.get_signed_userids()[0].userid.toString("utf8")
