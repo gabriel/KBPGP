@@ -1,7 +1,7 @@
 PODS:
-  - GHKit (1.0.7)
+  - GHKit (1.0.9)
   - GRUnit (1.0.8)
-  - libsodium (0.6.1)
+  - libsodium (0.7.0)
   - Mantle (1.5):
     - Mantle/extobjc
   - Mantle/extobjc (1.5)
@@ -26,9 +26,9 @@ EXTERNAL SOURCES:
     :path: ../TSTripleSec/
 
 SPEC CHECKSUMS:
-  GHKit: 4daea35a295a381f797194df6a1a4e405300fd1a
+  GHKit: a92861bbf7a5878c2638afb08e6790ffc102cc29
   GRUnit: f9994ec0437e7db810ac8814efe489bd489550ac
-  libsodium: 4baff758d2e4b598e12641ea8f2e9ffc18c9fa0b
+  libsodium: 6e51df562e39e747c64cc25162b0f57132114fae
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 629fb7ecb3a35ee6f21a4d2e15462b9f87e5c4bd
