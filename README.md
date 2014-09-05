@@ -74,21 +74,52 @@ KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:keyRing];
 
 # Key Bundles
 
-For public keys, only an armored PGP string is accepted.
+A key bundle is a string which can represent:
 
-For private keyBundle, you can specify either a armored PGP string, or [P3SKB](https://github.com/gabriel/TSTripleSec#p3skb) data base64 encoded string.
+* An armored PGP public key
+* An armored PGP private key
+* [P3SKB](https://github.com/gabriel/TSTripleSec#p3skb) data (Base64 encoded)
 
 ```objc
+NSString *armoredPublicKeyBundle = @"-----BEGIN PGP PUBLIC KEY...";
+NSString *armoredPrivateKeyBundle = @"-----BEGIN PGP PRIVATE KEY...";
+
 P3SKB *secretKey = ...;
-NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
+NSString *secretKeyBundle = [[secretKey data] base64EncodedStringWithOptions:0];
 ```
 
-# Key Ring
+# Key (KBKey)
+
+A key is the simplest representation of a key:
+
+* A key bundle (string), see above.
+* A fingerprint (string), which is the unique identifier for the key.
+* Whether the bundle contains the private key (is secret).
+
+# PGP Key (KBPGPKey)
+
+A PGP key is a more detailed version of a key, which stores extra info such as the algorithm, size, subkeys, user ids, etc. 
+
+You can get a PGP key from a bundle:
+
+```objc
+NSString *bundle = 
+KBCrypto *crypto = [[KBCrypto alloc] init];
+[crypto PGPKeyForKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(KBPGPKey *PGPKey) { 
+  // PGP key
+} failure:^(NSError *error) {
+  NSLog(@"Error: %@", [error localizedDescription]);
+}
+```
+
+# Key Ring (KBKeyRing)
+
+A key ring stores keys.
 
 ```objc
 KBKeyRing *keyRing = [[KBKeyRing alloc] init];
 
-KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userId:@"gabrielhlocal2" fingerprint:@"AFB10F6A5895F5B1D67851861296617A289D5C6B" secret:NO];
+KBKey *publicKey1 = [[KBKey alloc] initWithBundle:[self loadFile:@"user1_public.asc"] userId:@"gabrielhlocal2" fingerprint:@"AFB10F6A5895F5B1D67851861296617A289D5C6B" secret:NO];
 [keyRing addKey:publicKey1 keyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
 
 return keyRing;
@@ -116,7 +147,7 @@ KBCrypto *crypto = [[KBCrypto alloc] init];
 
 ```objc
 NSData *data = ...;
-[crypto armorPublicKey:data success:^(NSString *publicKeyArmored) {
+[crypto armoredKeyBundleFromPublicKey:data success:^(NSString *publicKeyArmored) {
   
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);

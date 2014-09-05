@@ -7,7 +7,7 @@
 //
 
 #import "KBKeyRing.h"
-#import "KBKeyBundle.h"
+#import "KBKey.h"
 #import "KBKeyGenProgress.h"
 #import "KBPGPKey.h"
 
@@ -108,16 +108,17 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 
 /*!
  Armored public key bundle from PGP key.
+ Returns the armored public key bundle for any type of PGP key (public or private).
  */
 - (void)armoredPublicKeyBundleFromPGPKey:(KBPGPKey *)PGPKey success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure;
 
 /*!
- Armor secret key.
+ Armored private key bundle from P3SKB.
  */
 - (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
 
 /*!
- Dearmor message.
+ Dearmor. Can be a armored pgp key or message.
  */
 - (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure;
 

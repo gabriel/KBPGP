@@ -39,3 +39,12 @@ NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint);
 NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities);
 
 NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm);
+
+/*!
+ Default key implementation.
+ */
+@interface KBKey : NSObject <KBKey>
+
+- (instancetype)initWithBundle:(NSString *)bundle fingerprint:(NSString *)fingerprint secret:(BOOL)secret;
+
+@end

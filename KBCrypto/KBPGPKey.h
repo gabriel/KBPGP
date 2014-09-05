@@ -26,14 +26,14 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @class KBPGPSubKey;
 
 @interface KBPGPKey : MTLModel <KBKey, MTLJSONSerializing>
+@property (readonly) NSString *bundle;
+@property (readonly) NSString *fingerprint;
+
 @property (readonly) NSString *keyId;
 @property (readonly) KBPGPKeyFlags flags;
 @property (readonly) NSDate *date;
 @property (readonly) NSUInteger numBits;
 @property (readonly) KBKeyAlgorithm algorithm;
-@property (readonly) NSString *bundle;
-@property (readonly) NSString *fingerprint;
-
 @property (readonly, getter=isLocked) BOOL locked;
 @property (readonly, getter=isSecret) BOOL secret;
 @property (readonly, getter=isSelfSigned) BOOL selfSigned;

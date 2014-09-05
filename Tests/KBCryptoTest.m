@@ -40,18 +40,18 @@
   
   [keyRing addVerifiedKeyFingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b"];
   
-  KBKeyBundle *publicKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_public.asc"] fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:NO];
+  KBKey *publicKey1 = [[KBKey alloc] initWithBundle:[self loadFile:@"user1_public.asc"] fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:NO];
   [keyRing addKey:publicKey1 PGPKeyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
   
-  KBKeyBundle *publicKey2 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user2_public.asc"] fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:NO];
+  KBKey *publicKey2 = [[KBKey alloc] initWithBundle:[self loadFile:@"user2_public.asc"] fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:NO];
   [keyRing addKey:publicKey2 PGPKeyIds:@[@"4bf812991a9c76ab"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
 
-  //  KBKeyBundle *privateKey1 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user1_private.asc"] userName:@"gabrielhlocal2" fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:YES];
+  //  KBKey *privateKey1 = [[KBKey alloc] initWithBundle:[self loadFile:@"user1_private.asc"] userName:@"gabrielhlocal2" fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:YES];
   //  [keyRing addKey:privateKey1 keyIds:@[@"d53374f55303d0ea"] capabilities:KBKeyCapabilitiesDecrypt];
   //  [keyRing addKey:privateKey1 keyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesSign];
   
 
-//  KBKeyBundle *privateKey2 = [[KBKeyBundle alloc] initWithBundle:[self loadFile:@"user2_private.asc"] userName:nil fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:YES];
+//  KBKey *privateKey2 = [[KBKey alloc] initWithBundle:[self loadFile:@"user2_private.asc"] userName:nil fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:YES];
 //  [keyRing addKey:privateKey2 keyIds:@[@"49d182780818ea2d"] capabilities:KBKeyCapabilitiesDecrypt];
 //  [keyRing addKey:privateKey2 keyIds:@[@"4bf812991a9c76ab"] capabilities:KBKeyCapabilitiesSign];
   
@@ -107,6 +107,7 @@
 }
 
 - (void)testEncryptSignDecryptVerify:(dispatch_block_t)completion {
+  GHWeakSelf blockSelf = self;
   [_crypto encryptText:@"This is a secret signed message" keyBundle:[self loadFile:@"user2_public.asc"] keyBundleForSign:[self loadFile:@"user1_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user2_private.asc"] password:@"toomanysecrets" success:^(NSString *plainText, NSArray *signers) {
       GRAssertEqualStrings(plainText, @"This is a secret signed message");
@@ -292,6 +293,7 @@
   NSString *bundle = [self loadFile:@"user1_public.asc"];
   GHWeakSelf blockSelf = self;
   [_crypto PGPKeyForKeyBundle:bundle success:^(KBPGPKey *key) {
+    GRAssertNotNil(key);
     GRTestLog(@"key: %@", key);
     GRAssertFalse([key isSecret]);
     
@@ -332,7 +334,7 @@
   GHWeakSelf blockSelf = self;
   P3SKB *secretKey = [P3SKB P3SKBFromKeyBundle:[self loadFile:@"user1_private.p3skb"] error:nil];
   [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *key) {
-    [blockSelf.crypto armoredPublicKeyBundleFromPGPKey:PGPKey success:^(NSString *encoded) {
+    [blockSelf.crypto armoredPublicKeyBundleFromPGPKey:key success:^(NSString *encoded) {
       GRTestLog(encoded);
       completion();
     } failure:GRErrorHandler];

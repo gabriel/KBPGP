@@ -189,6 +189,8 @@
 }
 
 - (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure {
+  NSAssert(PGPKey.bundle, @"No bundle");
+  
   if ([PGPKey.bundle gh_startsWith:@"-----BEGIN PGP"]) {
     [self _callback:^{ success(PGPKey.bundle); }];
   } else {

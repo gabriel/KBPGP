@@ -10,7 +10,6 @@
 
 #import <GHKit/GHKit.h>
 #import <NAChloride/NAChloride.h>
-#import <libextobjc/EXTScope.h>
 
 @implementation KBJSCore
 
