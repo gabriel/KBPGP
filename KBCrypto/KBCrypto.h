@@ -98,24 +98,24 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 /*!
  Armor public key.
  */
-- (void)armoredKeyBundleFromPublicKey:(NSData *)data success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromPublicKey:(NSData *)data success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Amored key bundle from PGP key.
  Can be a public or private armored key.
  */
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure;
+- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Armored public key bundle from PGP key.
  Returns the armored public key bundle for any type of PGP key (public or private).
  */
-- (void)armoredPublicKeyBundleFromPGPKey:(KBPGPKey *)PGPKey success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure;
+- (void)armoredPublicKeyBundleFromPGPKey:(KBPGPKey *)PGPKey success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Armored private key bundle from P3SKB.
  */
-- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Dearmor. Can be a armored pgp key or message.
@@ -131,15 +131,26 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 /*!
  Load PGP key info from bundle.
  Only returns a public PGPKey. If you need a secret key use PGPKeyForSecretKey:.
+ @param keyBundle Armored private or public key, or P3SKB key.
+ @param password If public key, no password is required
  */
-- (void)PGPKeyForKeyBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Generate PGP key from secret key.
  */
-- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
 
+/*!
+ Create secret key from PGP key.
+ */
 - (void)secretKeyForPGPKey:(KBPGPKey *)PGPKey success:(void (^)(P3SKB *secretKey))success failure:(void (^)(NSError *error))failure;
+
+
+/*!
+ Strip password from armored key bundle.
+ */
+- (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
 
 #pragma mark Debugging
 

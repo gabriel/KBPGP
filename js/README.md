@@ -6,6 +6,7 @@
 # Testing
 
     mocha test
+    mocha test -g "should encrypt"
 
 
 # Using openpgp.js

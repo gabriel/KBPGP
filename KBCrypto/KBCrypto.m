@@ -288,16 +288,19 @@
         return;
       }
       
+      // If secret key, lets set the bundle as the P3SKB data which is more secure
       if (key.isSecret) {
-        // If secret key, lets set the bundle as the P3SKB data which is more secure
-        [blockSelf dearmor:armoredBundle success:^(NSData *data) {
-          P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:data password:password publicKey:[publicKeyHex na_dataFromHexString] error:nil];
-          if (!secretKey) {
-            [blockSelf _callback:^{ failure(KBCryptoError(@"Couldn't dearmor")); }];
-            return;
-          }
-          [key setSecretKey:secretKey];
-          success(key);
+        // Clear bundle password, we will encrypt P3SKB with that password right after
+        [blockSelf setPasswordForArmoredKeyBundle:armoredBundle previousPassword:password password:nil success:^(NSString *keyBundleNoPassword) {
+          [blockSelf dearmor:keyBundleNoPassword success:^(NSData *data) {
+            P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:data password:password publicKey:[publicKeyHex na_dataFromHexString] error:nil];
+            if (!secretKey) {
+              [blockSelf _callback:^{ failure(KBCryptoError(@"Couldn't dearmor")); }];
+              return;
+            }
+            [key setSecretKey:secretKey];
+            success(key);
+          } failure:failure];
         } failure:failure];
       } else {
         success(key);
@@ -308,11 +311,11 @@
   } failure:failure];
 }
 
-- (void)PGPKeyForKeyBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
-  [self _PGPKeyForBundle:keyBundle password:nil success:success failure:failure];
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure {
+  [self _PGPKeyForBundle:keyBundle password:password success:success failure:failure];
 }
 
-- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *key))success failure:(void (^)(NSError *error))failure {
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure {
   [self _PGPKeyForBundle:[secretKey keyBundle] password:nil success:^(KBPGPKey *PGPKey) {
     [PGPKey setSecretKey:secretKey];
     success(PGPKey);
@@ -339,6 +342,15 @@
     }
     [blockSelf _callback:^{ success(secretKey); }];
   }];
+}
+
+- (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure {
+  GHWeakSelf blockSelf = self;
+  [self _call:@"set_password" params:@{@"armored": armoredKeyBundle, @"previous": KBCOrNull(previousPassword), @"passphrase": KBCOrNull(password), @"success": ^(NSString *keyBundle) {
+    success(keyBundle);
+  }, @"failure": ^(NSString *error) {
+    [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
+  }}];
 }
 
 NSError *KBCryptoError(NSString *message) {

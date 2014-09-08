@@ -41,24 +41,22 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @property (readonly) NSArray *subKeys;
 @property (readonly) NSArray *userIds;
 
+// This is the only modifiable property. Allows you to add secret part to public PGP key.
+@property (nonatomic) P3SKB *secretKey;
+
 /*!
  Get the primary or first user id.
  */
-- (KBPGPUserId *)userId;
+- (KBPGPUserId *)primaryUserId;
 
 /*!
  User ids, except for the one returned by userId.
  */
 - (NSArray *)alternateUserIds;
 
-- (NSString *)userDescription;
+- (NSString *)displayDescription;
 
 - (NSString *)typeDescription;
-
-/*!
- Set secret key.
- */
-- (void)setSecretKey:(P3SKB *)secretKey;
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2;
 
@@ -81,6 +79,6 @@ typedef NS_ENUM (NSUInteger, KBPGPKeyFlags) {
 @property (readonly) NSString *email;
 @property (readonly, getter=isPrimary) BOOL primary;
 
-- (NSString *)userIdDescription;
+- (NSString *)userIdDescription:(NSString *)joinedByString;
 
 @end

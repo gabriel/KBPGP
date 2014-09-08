@@ -7,5 +7,5 @@ pod "TSTripleSec", :path => "../TSTripleSec/"
 pod "Mantle"
 
 target :Tests do
-  pod "GRUnit"#, :path => "../GRUnit"
+  pod "GRUnit", :path => "../GRUnit"
 end

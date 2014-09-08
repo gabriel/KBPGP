@@ -153,10 +153,11 @@ jscore.decrypt = function(params) {
     decrypt_with = params.decrypt_with,
     passphrase = params.passphrase,    
     success = params.success,
+    keyring = params.keyring,
     failure = new ErrorHandler(params.failure);
 
   jscore._decodeKey(decrypt_with, passphrase, function(private_key) {    
-    var keyring = new KeyRing();
+    if (!keyring) keyring = new KeyRing();
     keyring.add_key_manager(private_key);
 
     var kparams = {
@@ -291,7 +292,7 @@ jscore.armorPrivateKey = function(params) {
   var buffer = new kbpgp.Buffer(data, "hex");
   var armored = armor.encode(C.message_types.private_key, buffer);
   if (armored) {
-    jscore._decodeKey(armored, null, function(key) {
+    jscore._decodeKey(armored, passphrase, function(key) {
       key.sign({}, function(err) {
         if (err) { failure.handle(err); return; }
         key.export_pgp_private_to_client({
@@ -307,6 +308,36 @@ jscore.armorPrivateKey = function(params) {
   }
 };
 
+jscore.set_password = function(params) {
+  var armored = params.armored,
+    previous = params.previous,
+    passphrase = params.passphrase,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
+  jscore._decodeKey(armored, previous, function(key) {
+    key.sign({}, function(err) {
+      if (err) { failure.handle(err); return; }
+      key.export_pgp_private_to_client({
+        passphrase: passphrase,
+      }, function(err, armored) {
+        if (err) { failure.handle(err); return; }
+        success(armored);
+      });
+    });
+  }, failure);
+};
+
+jscore.check_password = function(params) {
+  var armored = params.armored,
+    passphrase = params.passphrase,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);    
+  jscore._decodeKey(armored, passphrase, function(key) {
+    success(true);
+  }, failure);
+};    
+
 jscore.dearmor = function(params) {
   var armored = params.armored,
     success = params.success,
@@ -321,23 +352,28 @@ jscore.dearmor = function(params) {
 };
 
 jscore._decodeKey = function(bundle, passphrase, success, failure) {
+  jscore._decodeKey2(bundle, passphrase, true, success, failure);
+};
+
+jscore._decodeKey2 = function(bundle, passphrase, unlock, success, failure) {
   kbpgp.KeyManager.import_from_armored_pgp({
     raw: bundle
   }, function(err, key) {
     if (err) { failure.handle(err); return; }
 
-    if (passphrase && key.is_pgp_locked()) {
+    if (unlock && key.is_pgp_locked()) {
       key.unlock_pgp({
         passphrase: passphrase
       }, function(err) {
         if (err) { failure.handle(err); return; }
+        success(key);
       });
     } else {
       // Workaround bug where you need to call unlock on unlocked key, will be fixed soon.
-      key.unlock_pgp({}, function(err) {});
-    }
-    
-    success(key);
+      key.unlock_pgp({}, function(err) {
+        success(key);
+      });      
+    }    
   });
 };
 
@@ -355,11 +391,11 @@ jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase,
 
 jscore.info = function(params) {
   var armored = params.armored,
-    passphrase = params.passphrase,
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  jscore._decodeKey(armored, passphrase, function(key) {
+  // No password is needed to get all the info
+  jscore._decodeKey2(armored, null, false, function(key) {
 
     var info = {};
     info.bundle = armored;

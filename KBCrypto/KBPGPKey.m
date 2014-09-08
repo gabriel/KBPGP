@@ -61,7 +61,11 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   _locked = YES;
 }
 
-- (KBPGPUserId *)userId {
+- (P3SKB *)secretKey {
+  return [P3SKB P3SKBFromKeyBundle:_bundle error:nil];
+}
+
+- (KBPGPUserId *)primaryUserId {
   if ([_userIds count] == 0) return nil;
   
   for (KBPGPUserId *userId in _userIds) {
@@ -70,18 +74,16 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   return _userIds[0];
 }
 
-- (NSArray *)alternateUserIds {
-  NSMutableArray *alternateUserIds = [_userIds mutableCopy];
-  [alternateUserIds removeObject:[self userId]];
-  return alternateUserIds;
+- (NSString *)displayDescription {
+  NSString *displayDescription = [self.primaryUserId userIdDescription:@" "];
+  if (!displayDescription) displayDescription = self.fingerprint;
+  return displayDescription;
 }
 
-- (NSString *)userDescription {
-  NSMutableArray *desc = [NSMutableArray array];
-  KBPGPUserId *userId = [self userId];
-  if (userId.userName) [desc addObject:userId.userName];
-  if (userId.email) [desc addObject:[NSString stringWithFormat:@"<%@>", userId.email]];
-  return [desc componentsJoinedByString:@" "];
+- (NSArray *)alternateUserIds {
+  NSMutableArray *alternateUserIds = [_userIds mutableCopy];
+  [alternateUserIds removeObject:[self primaryUserId]];
+  return alternateUserIds;
 }
 
 - (NSString *)typeDescription {
@@ -93,8 +95,8 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2 {
-  KBPGPUserId *userId1 = [self userId];
-  KBPGPUserId *userId2 = [key2 userId];
+  KBPGPUserId *userId1 = [self primaryUserId];
+  KBPGPUserId *userId2 = [key2 primaryUserId];
   if (userId1.userName) {
     if (!userId2) return NSOrderedAscending;
     return [userId1.userName localizedCaseInsensitiveCompare:userId2.userName];
@@ -134,11 +136,12 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
            };
 }
 
-- (NSString *)userIdDescription {
+- (NSString *)userIdDescription:(NSString *)joinedByString {
   NSMutableArray *desc = [NSMutableArray array];
   if (_userName) [desc addObject:_userName];
-  if (_email) [desc addObject:[NSString stringWithFormat:@"<%@>", _email]];
-  return [desc componentsJoinedByString:@" "];
+  if (_email) [desc addObject:_email];
+  if ([desc count] == 0) return nil;
+  return [desc componentsJoinedByString:joinedByString];
 }
 
 @end

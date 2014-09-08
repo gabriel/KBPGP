@@ -135,7 +135,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for private key", function(done) {
-    armored = datafile("user1_private.asc")
+    var armored = datafile("user1_private.asc")
     jscore.info({
       armored: armored, 
       success: function(info) {
@@ -146,7 +146,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for public key", function(done) {
-    armored = datafile("user1_public.asc")
+    var armored = datafile("user1_public.asc")
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -157,7 +157,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for gpg key", function(done) {
-    armored = datafile("user2_private.asc")
+    var armored = datafile("user2_private.asc")
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -168,7 +168,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for ecc key", function(done) {
-    armored = datafile("user3_ecc_private.asc")
+    var armored = datafile("user3_ecc_private.asc")
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -176,6 +176,73 @@ describe("JSCore", function() {
       },
       failure:failure
     });
+  });
+
+  it("should set password", function(done) {
+    var armored = datafile("user1_private.asc")
+    jscore.set_password({
+      armored: armored,
+      previous: "toomanysecrets",
+      passphrase: "thisisanewpassword",
+      success: function(armored2) {
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should clear password", function(done) {
+    var armored = datafile("user1_private.asc")
+    jscore.set_password({
+      armored: armored,
+      previous: "toomanysecrets",
+      passphrase: null,
+      success: function(armored2) {
+        jscore.check_password({
+          armored: armored2,
+          passphrase: null,
+          success: function(success) {
+            jscore.decrypt({
+              message_armored: datafile("user1_message_kb.asc"),
+              decrypt_with: armored2,
+              keyring: keyring,
+              success: function(plain_text, signers) {
+                done();
+              },
+              failure:failure
+            });            
+          },
+          failure:failure
+        });        
+      },
+      failure:failure
+    });
+  });
+
+  it("should check password", function(done) {
+    var armored = datafile("user1_private.asc")
+    jscore.check_password({
+      armored: armored,
+      passphrase: "toomanysecrets",
+      success: function() {
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should check password and fail", function(done) {
+    var armored = datafile("user1_private.asc");
+    jscore.check_password({
+      armored: armored,
+      passphrase: "badpassword",
+      success: function(success) {
+        assert.ok(!success, "should fail");
+      },
+      failure: function(err) {        
+        done();
+      }
+    });    
   });
 
   // it("should be in keyring", function(done) {
