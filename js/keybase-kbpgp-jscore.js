@@ -308,7 +308,7 @@ jscore.armorPrivateKey = function(params) {
   }
 };
 
-jscore.set_password = function(params) {
+jscore.setPassword = function(params) {
   var armored = params.armored,
     previous = params.previous,
     passphrase = params.passphrase,
@@ -328,7 +328,7 @@ jscore.set_password = function(params) {
   }, failure);
 };
 
-jscore.check_password = function(params) {
+jscore.checkPassword = function(params) {
   var armored = params.armored,
     passphrase = params.passphrase,
     success = params.success,
@@ -389,6 +389,25 @@ jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase,
   }, failure);
 };
 
+jscore.exportPublicKey = function(params) {
+  var armored = params.armored,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
+  jscore._decodeKey2(armored, null, false, function(key) {
+    key.sign({}, function(err) {
+      if (err) { failure.handle(err); return; }
+
+      pgp_public = key.pgp.export_keys({"private": false});
+      success(pgp_public);
+
+      // key.export_pgp_public({}, function(err, pgp_public) {
+      //   success(pgp_public);
+      // }, failure);
+    });
+  }, failure);
+}
+
 jscore.info = function(params) {
   var armored = params.armored,
     success = params.success,
@@ -398,7 +417,6 @@ jscore.info = function(params) {
   jscore._decodeKey2(armored, null, false, function(key) {
 
     var info = {};
-    info.bundle = armored;
 
     // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
 
@@ -451,15 +469,22 @@ jscore.info = function(params) {
 
     key.sign({}, function(err) {
       if (err) { failure.handle(err); return; }
-      key.export_pgp_public({}, function(err, pgp_public) {
-        if (err) { failure.handle(err); return; }
 
-        var pgp_public_decode = armor.decode(pgp_public);
-        if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
-        var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
+      pgp_public = key.pgp.export_keys({"private": false});      
 
-        success(info, pgp_public_hex);      
-      });
+      var pgp_public_decode = armor.decode(pgp_public);
+      if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
+      var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
+
+      info.public_key_bundle = pgp_public;
+
+      if (info.public_key_bundle.indexOf("-----BEGIN PGP PUBLIC KEY") != 0) {
+        failure.handle(new Error("Bundle should be public key"));
+        return;
+      }
+
+      success(info, pgp_public_hex);      
+
     });
 
   }, failure);

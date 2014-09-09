@@ -134,11 +134,12 @@ describe("JSCore", function() {
     })
   });
 
-  it("should get info for private key", function(done) {
+  it("should export public key for private key", function(done) {
     var armored = datafile("user1_private.asc")
-    jscore.info({
+    jscore.export_public_key({
       armored: armored, 
-      success: function(info) {
+      success: function(public_key) {
+        assert.equal(public_key.slice(0, 25), "-----BEGIN PGP PUBLIC KEY");        
         done();
       },
       failure:failure
@@ -180,7 +181,7 @@ describe("JSCore", function() {
 
   it("should set password", function(done) {
     var armored = datafile("user1_private.asc")
-    jscore.set_password({
+    jscore.setPassword({
       armored: armored,
       previous: "toomanysecrets",
       passphrase: "thisisanewpassword",
@@ -193,12 +194,12 @@ describe("JSCore", function() {
 
   it("should clear password", function(done) {
     var armored = datafile("user1_private.asc")
-    jscore.set_password({
+    jscore.setPassword({
       armored: armored,
       previous: "toomanysecrets",
       passphrase: null,
       success: function(armored2) {
-        jscore.check_password({
+        jscore.checkPassword({
           armored: armored2,
           passphrase: null,
           success: function(success) {
@@ -221,7 +222,7 @@ describe("JSCore", function() {
 
   it("should check password", function(done) {
     var armored = datafile("user1_private.asc")
-    jscore.check_password({
+    jscore.checkPassword({
       armored: armored,
       passphrase: "toomanysecrets",
       success: function() {
@@ -233,7 +234,7 @@ describe("JSCore", function() {
 
   it("should check password and fail", function(done) {
     var armored = datafile("user1_private.asc");
-    jscore.check_password({
+    jscore.checkPassword({
       armored: armored,
       passphrase: "badpassword",
       success: function(success) {

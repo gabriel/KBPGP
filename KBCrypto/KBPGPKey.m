@@ -25,14 +25,14 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
   return @{
            @"fingerprint": @"fingerprint",
-           @"bundle": @"bundle",
+           @"bundle": @"public_key_bundle",
            @"keyId": @"pgp_key_id",
            @"numBits": @"nbits",
            @"flags": @"flags",
            @"algorithm": @"type",
            @"date": @"timestamp",
-           @"locked": @"is_locked",
-           @"secret": @"has_private",
+           //@"locked": @"is_locked",
+           //@"secret": @"has_private",
            @"selfSigned": @"self_signed",
            @"subKeys": @"subkeys",
            @"userIds": @"userids",
@@ -56,13 +56,11 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (void)setSecretKey:(P3SKB *)secretKey {
-  _secret = YES;
-  _bundle = [secretKey keyBundle];
-  _locked = YES;
+  _secretKey = secretKey;
 }
 
-- (P3SKB *)secretKey {
-  return [P3SKB P3SKBFromKeyBundle:_bundle error:nil];
+- (BOOL)isSecret {
+  return !!_secretKey;
 }
 
 - (KBPGPUserId *)primaryUserId {
@@ -87,7 +85,7 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (NSString *)typeDescription {
-  if (_secret) {
+  if ([self isSecret]) {
     return @"Secret Key";
   } else {
     return @"Public Key";
