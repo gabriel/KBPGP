@@ -47,7 +47,11 @@
 
 - (void)_call:(NSString *)method params:(NSDictionary *)params {
   if (!_JSCore) [self generateContext];
-  [_JSCore.context[@"jscore"][method] callWithArguments:@[params]];
+  
+  GHWeakSelf blockSelf = self;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [blockSelf.JSCore.context[@"jscore"][method] callWithArguments:@[params]];
+  });
 }
 
 - (void)_callback:(dispatch_block_t)callback {
@@ -113,7 +117,7 @@
   } else {
     [self _armoredForSecretKeyBundle:bundle password:password success:^(NSString *armoredBundle) {
       success(armoredBundle, YES);
-    }failure:failure];
+    } failure:failure];
   }
 }
 

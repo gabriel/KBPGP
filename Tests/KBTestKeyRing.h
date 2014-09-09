@@ -10,6 +10,9 @@
 
 @interface KBTestKeyRing : KBKeyRing
 
++ (NSData *)loadBase64Data:(NSString *)file;
++ (NSString *)loadFile:(NSString *)file;
+
 - (void)addVerifiedKeyFingerprint:(NSString *)keyFingerprint;
 
 @end

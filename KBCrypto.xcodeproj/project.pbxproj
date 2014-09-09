@@ -37,6 +37,7 @@
 		004BC8E9198B2CD5000C039B /* KBKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBKeyRing.m */; };
 		004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8EF198C187C000C039B /* KBJSCoreTest.m */; };
 		0054F14F1990503700908F74 /* user1_private.p3skb in Resources */ = {isa = PBXBuildFile; fileRef = 0054F14E1990503700908F74 /* user1_private.p3skb */; };
+		00900F5F19BE837E0018C553 /* KBPGPKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */; };
 		00AEEE1D1992F9EE00D9A741 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */; };
 		00AEEEFB1993FAA900D9A741 /* KBTestKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 00AEEEFA1993FAA900D9A741 /* KBTestKeyRing.m */; };
 		00AEEEFE1993FC3F00D9A741 /* KBSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 00AEEEFD1993FC3F00D9A741 /* KBSigner.m */; };
@@ -98,6 +99,7 @@
 		004BC8EF198C187C000C039B /* KBJSCoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBJSCoreTest.m; path = Tests/KBJSCoreTest.m; sourceTree = "<group>"; };
 		004BC8F1198C1C09000C039B /* KBCrypto.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = KBCrypto.podspec; sourceTree = "<group>"; };
 		0054F14E1990503700908F74 /* user1_private.p3skb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_private.p3skb; sourceTree = "<group>"; };
+		00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBPGPKeyTest.m; path = Tests/KBPGPKeyTest.m; sourceTree = "<group>"; };
 		00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Tests/Default-568h@2x.png"; sourceTree = "<group>"; };
 		00AEEEF91993FAA900D9A741 /* KBTestKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBTestKeyRing.h; path = Tests/KBTestKeyRing.h; sourceTree = "<group>"; };
 		00AEEEFA1993FAA900D9A741 /* KBTestKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBTestKeyRing.m; path = Tests/KBTestKeyRing.m; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */,
 				004BC8BB198B1C3D000C039B /* Data */,
 				004BC8C9198B1C3D000C039B /* KBCryptoTest.m */,
+				00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */,
 				004BC8EF198C187C000C039B /* KBJSCoreTest.m */,
 				88ADA26297094C29A5043A0B /* main.m */,
 				00AEEEF91993FAA900D9A741 /* KBTestKeyRing.h */,
@@ -450,6 +453,7 @@
 				004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */,
 				00AEEEFB1993FAA900D9A741 /* KBTestKeyRing.m in Sources */,
 				004BC8E9198B2CD5000C039B /* KBKeyRing.m in Sources */,
+				00900F5F19BE837E0018C553 /* KBPGPKeyTest.m in Sources */,
 				004BC8DE198B20F2000C039B /* KBJSCore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

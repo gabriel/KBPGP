@@ -23,16 +23,8 @@
   [_crypto clearContext];
 }
 
-- (NSData *)loadBase64Data:(NSString *)file {
-  NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
-  return [[NSData alloc] initWithBase64EncodedData:[[NSData alloc] initWithContentsOfFile:path] options:0];
-}
-
 - (NSString *)loadFile:(NSString *)file {
-  NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
-  NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
-  NSAssert(contents, @"No contents at file: %@", file);
-  return contents;
+  return [KBTestKeyRing loadFile:file];
 }
 
 - (id<KBKeyRing>)keyRing {
