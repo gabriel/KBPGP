@@ -8,14 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM (NSUInteger, KBKeyCapabilities) {
+#import <TSTripleSec/P3SKB.h>
+
+typedef NS_ENUM (NSInteger, KBKeyCapabilities) {
   KBKeyCapabilitiesEncrypt = 1 << 0,
   KBKeyCapabilitiesDecrypt = 1 << 1,
   KBKeyCapabilitiesVerify = 1 << 2,
   KBKeyCapabilitiesSign = 1 << 3,
 };
 
-typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
+typedef NS_ENUM (NSInteger, KBKeyAlgorithm) {
   KBKeyAlgorithmRSA = 1,
   KBKeyAlgorithmElgamal = 16,
   KBKeyAlgorithmDSA = 17,
@@ -23,13 +25,9 @@ typedef NS_ENUM (NSUInteger, KBKeyAlgorithm) {
 };
 
 @protocol KBKey <NSObject>
-@property (readonly) NSString *bundle;
+@property (readonly) NSString *publicKeyBundle;
 @property (readonly) NSString *fingerprint;
-- (BOOL)isSecret;
-
-@optional
-// If secret
-- (NSData *)decryptKeyWithPassword:(NSString *)password error:(NSError * __autoreleasing *)error;
+@property (nonatomic) P3SKB *secretKey;
 @end
 
 NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint);
@@ -40,11 +38,13 @@ NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities);
 
 NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm);
 
+BOOL KBHasCapabilities(KBKeyCapabilities capabilities, KBKeyCapabilities keyCapabilities);
+
 /*!
  Default key implementation.
  */
 @interface KBKey : NSObject <KBKey>
 
-- (instancetype)initWithBundle:(NSString *)bundle fingerprint:(NSString *)fingerprint secret:(BOOL)secret;
+- (instancetype)initWithPublicKeyBundle:(NSString *)publicKeyBundle fingerprint:(NSString *)fingerprint secretKey:(P3SKB *)secretKey;
 
 @end

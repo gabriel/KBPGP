@@ -13,11 +13,20 @@
 NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   NSMutableArray *desc = [NSMutableArray array];
   if ((flags & KBPGPKeyFlagsSignData) != 0) [desc addObject:@"Sign"];
-  if ((flags & KBPGPKeyFlagsEncryptComm) != 0 || (flags & KBPGPKeyFlagsEncryptStorage) != 0) [desc addObject:@"Encrypt"];
+  if ((flags & KBPGPKeyFlagsEncryptComm) != 0) [desc addObject:@"Encrypt (Comm)"];
+  if ((flags & KBPGPKeyFlagsEncryptStorage) != 0) [desc addObject:@"Encrypt (Storage)"];
   if ((flags & KBPGPKeyFlagsCertifyKeys) != 0) [desc addObject:@"Certify"];
   if ((flags & KBPGPKeyFlagsAuth) != 0) [desc addObject:@"Auth"];
   if ((flags & KBPGPKeyFlagsShared) != 0) [desc addObject:@"Shared"];
   return [desc componentsJoinedByString:@", "];
+}
+
+KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
+  KBKeyCapabilities capabilities;
+  if ((flags & KBPGPKeyFlagsEncryptComm) != 0) capabilities |= (KBKeyCapabilitiesEncrypt | KBKeyCapabilitiesDecrypt);
+  if ((flags & KBPGPKeyFlagsEncryptStorage) != 0) capabilities |= (KBKeyCapabilitiesEncrypt | KBKeyCapabilitiesDecrypt);
+  if ((flags & KBPGPKeyFlagsSignData) != 0) capabilities |= (KBKeyCapabilitiesSign | KBKeyCapabilitiesVerify);
+  return capabilities;
 }
 
 @implementation KBPGPKey
@@ -25,14 +34,12 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
   return @{
            @"fingerprint": @"fingerprint",
-           @"bundle": @"public_key_bundle",
+           @"publicKeyBundle": @"public_key_bundle",
            @"keyId": @"pgp_key_id",
            @"numBits": @"nbits",
            @"flags": @"flags",
            @"algorithm": @"type",
            @"date": @"timestamp",
-           //@"locked": @"is_locked",
-           //@"secret": @"has_private",
            @"selfSigned": @"self_signed",
            @"subKeys": @"subkeys",
            @"userIds": @"userids",
@@ -55,12 +62,8 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   return [NSValueTransformer mtl_JSONArrayTransformerWithModelClass:KBPGPUserId.class];
 }
 
-- (void)setSecretKey:(P3SKB *)secretKey {
-  _secretKey = secretKey;
-}
-
-- (BOOL)isSecret {
-  return !!_secretKey;
+- (KBKeyCapabilities)capabilities {
+  return KBKeyCapabiltiesFromFlags(_flags);
 }
 
 - (KBPGPUserId *)primaryUserId {
@@ -85,7 +88,7 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (NSString *)typeDescription {
-  if ([self isSecret]) {
+  if (self.secretKey) {
     return @"Secret Key";
   } else {
     return @"Public Key";
@@ -119,7 +122,12 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 - (NSString *)subKeyDescription {
-  return [NSString stringWithFormat:@"%@ %d %@ %@", _keyId, (int)_numBits, NSStringFromKBKeyAlgorithm(_algorithm), NSStringFromKBPGPKeyFlags(_flags)];
+  //NSStringFromKBPGPKeyFlags(_flags),
+  return [NSString stringWithFormat:@"%@ %d %@ %@", _keyId, (int)_numBits, NSStringFromKBKeyAlgorithm(_algorithm), NSStringFromKBKeyCapabilities([self capabilities])];
+}
+
+- (KBKeyCapabilities)capabilities {
+  return KBKeyCapabiltiesFromFlags(_flags);
 }
 
 @end

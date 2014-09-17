@@ -27,6 +27,8 @@ typedef NS_ENUM (NSInteger, KBPGPVerification) {
   KBPGPVerificationManual = 1 << 0,
 };
 
+KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags);
+
 @class KBPGPKey;
 @class KBPGPUserId;
 @class KBPGPSubKey;
@@ -34,7 +36,7 @@ typedef NS_ENUM (NSInteger, KBPGPVerification) {
 typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 
 @interface KBPGPKey : MTLModel <KBKey, MTLJSONSerializing>
-@property (readonly) NSString *bundle; // Always the public key bundle (for private key, see secretKey property)
+@property (readonly) NSString *publicKeyBundle;
 @property (readonly) NSString *fingerprint;
 
 @property (readonly) NSString *keyId;
@@ -47,12 +49,13 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 @property (readonly) NSArray *subKeys;
 @property (readonly) NSArray *userIds;
 
-// This is the only modifiable property. Allows you to add secret part to public PGP key.
+// So you to add secret part to public PGP key.
 @property (nonatomic) P3SKB *secretKey;
 
 // Type of verification
 @property KBPGPVerification verification;
 
+- (KBKeyCapabilities)capabilities;
 
 /*!
  Get the primary or first user id.
@@ -81,6 +84,8 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 @property (readonly) KBKeyAlgorithm algorithm;
 
 - (NSString *)subKeyDescription;
+
+- (KBKeyCapabilities)capabilities;
 
 @end
 

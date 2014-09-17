@@ -2,7 +2,6 @@
 
 #import "KBCrypto.h"
 #import "KBTestKeyRing.h"
-#import "KBSigner.h"
 
 #import <GHKit/GHKit.h>
 
@@ -32,28 +31,18 @@
   
   [keyRing addVerifiedKeyFingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b"];
   
-  KBKey *publicKey1 = [[KBKey alloc] initWithBundle:[self loadFile:@"user1_public.asc"] fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:NO];
+  KBKey *publicKey1 = [[KBKey alloc] initWithPublicKeyBundle:[self loadFile:@"user1_public.asc"] fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secretKey:nil];
   [keyRing addKey:publicKey1 PGPKeyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
   
-  KBKey *publicKey2 = [[KBKey alloc] initWithBundle:[self loadFile:@"user2_public.asc"] fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:NO];
+  KBKey *publicKey2 = [[KBKey alloc] initWithPublicKeyBundle:[self loadFile:@"user2_public.asc"] fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secretKey:nil];
   [keyRing addKey:publicKey2 PGPKeyIds:@[@"4bf812991a9c76ab"] capabilities:KBKeyCapabilitiesEncrypt|KBKeyCapabilitiesVerify];
-
-  //  KBKey *privateKey1 = [[KBKey alloc] initWithBundle:[self loadFile:@"user1_private.asc"] userName:@"gabrielhlocal2" fingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b" secret:YES];
-  //  [keyRing addKey:privateKey1 keyIds:@[@"d53374f55303d0ea"] capabilities:KBKeyCapabilitiesDecrypt];
-  //  [keyRing addKey:privateKey1 keyIds:@[@"89ae977e1bc670e5"] capabilities:KBKeyCapabilitiesSign];
-  
-
-//  KBKey *privateKey2 = [[KBKey alloc] initWithBundle:[self loadFile:@"user2_private.asc"] userName:nil fingerprint:@"664cf3d7151ed6e38aa051c54bf812991a9c76ab" secret:YES];
-//  [keyRing addKey:privateKey2 keyIds:@[@"49d182780818ea2d"] capabilities:KBKeyCapabilitiesDecrypt];
-//  [keyRing addKey:privateKey2 keyIds:@[@"4bf812991a9c76ab"] capabilities:KBKeyCapabilitiesSign];
   
   return keyRing;
 }
 
 - (KBCrypto *)loadCrypto {
-  //KBCryptoPasswordBlock passwordBlock = ^(id<KBKey> key, KBCryptoPasswordCompletionBlock completionBlock) { completionBlock(@"toomanysecrets"); };
-  KBCrypto *crypto = [[KBCrypto alloc] initWithKeyRing:[self keyRing]];
-  //crypto.passwordBlock = passwordBlock;
+  KBCrypto *crypto = [[KBCrypto alloc] init];
+  crypto.keyRing = [self keyRing];
   return crypto;
 }
 
@@ -78,10 +67,17 @@
   } failure:GRErrorHandler];
 }
 
+//- (void)testSign:(dispatch_block_t)completion {
+//  //GHWeakSelf blockSelf = self;
+//  [_crypto signText:@"This is a secret message" keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(NSString *armoredSignature) {
+//    completion();
+//  } failure:GRErrorHandler];
+//}
+
 - (void)testSignVerify:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto signText:@"This is a secret message" keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
-    [blockSelf.crypto verifyMessageArmored:clearTextArmored success:^(NSString *plainText, NSArray *verifiedSigners) {
+  [_crypto signText:@"This is a secret message" keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(NSString *armoredSignature) {
+    [blockSelf.crypto verifyMessageArmored:armoredSignature success:^(NSString *plainText, NSArray *verifiedSigners) {
       GRAssertEqualStrings(plainText, @"This is a secret message");
       completion();
     } failure:GRErrorHandler];
@@ -223,9 +219,9 @@
     
     //GRTestLog(@"%@", publicKeyArmored);
     
-    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey password:password success:^(NSString *privateKeyArmored) {
-      //GRTestLog(privateKeyArmored);
-    } failure:GRErrorHandler];
+//    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey previousPassword:password password:password success:^(NSString *privateKeyArmored) {
+//      GRTestLog(privateKeyArmored);
+//    } failure:GRErrorHandler];
     
     NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
     NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
@@ -260,7 +256,7 @@
   [_crypto dearmor:privateKeyArmored success:^(NSData *privateKeyData) {
     P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:privateKeyData password:@"toomanysecrets" publicKey:nil error:nil];
     GRAssertNotNil(secretKey);
-    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
+    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey previousPassword:@"toomanysecrets" password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
 //      NSString *key1 = [privateKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
 //      NSString *key2 = [privateKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
 //      GRAssertEqualStrings(key1, key2);
@@ -287,12 +283,11 @@
 - (void)testPGPKeyFromPublicArmored:(dispatch_block_t)completion {
   NSString *bundle = [self loadFile:@"user1_public.asc"];
   GHWeakSelf blockSelf = self;
-  [_crypto PGPKeyForKeyBundle:bundle password:nil success:^(KBPGPKey *key) {
+  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:nil password:nil success:^(KBPGPKey *key) {
     GRAssertNotNil(key);
     GRTestLog(@"key: %@", key);
-    GRAssertFalse([key isSecret]);
     
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:key password:nil success:^(NSString *encoded) {
+    [blockSelf.crypto armoredKeyBundleFromPGPKey:key previousPassword:nil password:nil success:^(NSString *encoded) {
       GRTestLog(@"%@", encoded);
       completion();
     } failure:GRErrorHandler];
@@ -301,11 +296,9 @@
 
 - (void)testPGPKeyFromPrivateArmored:(dispatch_block_t)completion {
   NSString *bundle = [self loadFile:@"user1_private.asc"];
-  [_crypto PGPKeyForKeyBundle:bundle password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
-    GRTestLog(@"key: %@", PGPKey);
-    GRAssertTrue([PGPKey isSecret]);
+  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
     GRAssertNotNil(PGPKey.secretKey);
-    GRAssertTrue([PGPKey.bundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
+    GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     
     NSError *error = nil;
     NSData *decrypted = [PGPKey.secretKey decryptPrivateKeyWithPassword:@"toomanysecrets" error:&error];
@@ -340,11 +333,10 @@
   GHWeakSelf blockSelf = self;
   [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *PGPKey) {
     GRTestLog(@"key: %@", PGPKey);
-    GRAssertTrue([PGPKey isSecret]);
     GRAssertNotNil(PGPKey.secretKey);
-    GRAssertTrue([PGPKey.bundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
+    GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:PGPKey password:@"toomanysecrets" success:^(NSString *encoded) {
+    [blockSelf.crypto armoredKeyBundleFromPGPKey:PGPKey previousPassword:@"toomanysecrets" password:@"toomanysecrets" success:^(NSString *encoded) {
       GRAssertNotNil(encoded);
       GRTestLog(@"%@", encoded);
       completion();
@@ -355,8 +347,8 @@
 - (void)testArmorPublicKeyFromPGPKey:(dispatch_block_t)completion {
   P3SKB *secretKey = [P3SKB P3SKBFromKeyBundle:[self loadFile:@"user1_private.p3skb"] error:nil];
   [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *PGPKey) {
-    GRTestLog(PGPKey.bundle);
-    GRAssertTrue([PGPKey.bundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
+    GRTestLog(PGPKey.publicKeyBundle);
+    GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     completion();
   } failure:GRErrorHandler];
 }

@@ -27,6 +27,8 @@
 }
 
 - (void)addKey:(id<KBKey>)key PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities {
+  GHDebug(@"%@ %@", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities));
+  
   for (NSString *keyId in PGPKeyIds) {
     NSMutableArray *keys = _keys[[keyId lowercaseString]];
     if (!keys) {
@@ -41,29 +43,34 @@
 }
 
 - (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure {
-  if ((capabilities & KBKeyCapabilitiesDecrypt) != 0 || (capabilities & KBKeyCapabilitiesSign) != 0) {
-    failure(KBCNSError(-1, NSStringWithFormat(@"Secret keys not supported: %@", PGPKeyIds)));
-    return;
-  }
   
   NSMutableArray *found = [NSMutableArray array];
   for (NSString *keyId in PGPKeyIds) {
     NSArray *keys = _keys[[keyId lowercaseString]];
     if (keys) {
       for (NSDictionary *key in keys) {
-        if (([key[@"capabilities"] unsignedIntegerValue] & capabilities) != 0) {
+        if (([key[@"capabilities"] integerValue] & capabilities) != 0) {
           [found addObject:key[@"key"]];
         }
       }
     }
   }
   
-  GHDebug(@"Lookup key ids: %@, %@; %@", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities), found);
+  GHDebug(@"Lookup key ids: %@, %@; %d", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities), (int)[found count]);
   
   if ([found count] > 0) {
-    success(found);
+    if (_process) {
+      _process(found, ^(NSArray *bundles) {
+        success(bundles);
+      });
+    } else {
+      success([found map:^id(id<KBKey> key) {
+        return key.publicKeyBundle;
+      }]);
+    }
   } else {
-    failure(KBCNSError(-1, NSStringWithFormat(@"No key for ids: %@", PGPKeyIds)));
+    success(@[]);
+    //failure(KBCNSError(KBCryptoErrorCodeKeyNotFound, NSStringWithFormat(@"No key for ids: %@", PGPKeyIds)));
   }
 }
 
@@ -75,10 +82,8 @@
 }
 
 - (void)fetch:(NSArray *)keyIds ops:(NSUInteger)ops success:(JSValue *)success failure:(JSValue *)failure {
-  [self lookupPGPKeyIds:keyIds capabilities:ops success:^(NSArray *keys) {
-    //NSArray *keyBundles = [keys map:^id(id<KBKey> k) { return k.bundle; }];
-    NSString *keyBundle = [keys[0] bundle];
-    [success callWithArguments:@[keyBundle]];
+  [self lookupPGPKeyIds:keyIds capabilities:ops success:^(NSArray *keyBundles) {
+    [success callWithArguments:@[keyBundles]];
   } failure:^(NSError *error) {
     [failure callWithArguments:@[error.localizedDescription]];
   }];

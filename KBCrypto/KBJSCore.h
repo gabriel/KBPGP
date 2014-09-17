@@ -10,18 +10,18 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-@protocol KBJSCore <JSExport>
-- (BOOL)exists:(NSString *)path;
-- (NSString *)readFile:(NSString *)path;
-- (id)exec:(NSString *)js;
-- (void)load:(NSString *)URLString;
-@end
-
-
-@interface KBJSCore : NSObject <KBJSCore>
+@interface KBJSCore : NSObject
 
 @property (readonly) JSContext *context;
 
 - (NSString *)randomHexString:(NSUInteger)numBytes;
+
+- (BOOL)exists:(NSString *)path;
+
+- (id)exec:(NSString *)js;
+
+- (NSString *)readFile:(NSString *)path digest:(NSString *)digest;
+
+- (void)load:(NSString *)path digest:(NSString *)digest;
 
 @end

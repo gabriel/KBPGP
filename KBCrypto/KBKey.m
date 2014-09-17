@@ -28,8 +28,8 @@ NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint) {
 
 NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities) {
   NSMutableArray *desc = [NSMutableArray array];
-  if ((capabilities & KBKeyCapabilitiesDecrypt) != 0) [desc addObject:@"Decrypt"];
   if ((capabilities & KBKeyCapabilitiesEncrypt) != 0) [desc addObject:@"Encrypt"];
+  if ((capabilities & KBKeyCapabilitiesDecrypt) != 0) [desc addObject:@"Decrypt"];
   if ((capabilities & KBKeyCapabilitiesSign) != 0) [desc addObject:@"Sign"];
   if ((capabilities & KBKeyCapabilitiesVerify) != 0) [desc addObject:@"Verify"];
   return [desc componentsJoinedByString:@", "];
@@ -45,28 +45,33 @@ NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm) {
   return @"Unknown";
 }
 
+BOOL KBHasCapabilities(KBKeyCapabilities capabilities, KBKeyCapabilities keyCapabilities) {
+  return ((keyCapabilities & capabilities) != 0);
+}
+
 #import <GHKit/GHKit.h>
 
 @interface KBKey ()
-@property NSString *bundle;
+@property NSString *publicKeyBundle;
 @property NSString *fingerprint;
-@property (getter=isSecret) BOOL secret;
 @end
 
 
 @implementation KBKey
 
-- (instancetype)initWithBundle:(NSString *)bundle fingerprint:(NSString *)fingerprint secret:(BOOL)secret {
+@synthesize secretKey=_secretKey;
+
+- (instancetype)initWithPublicKeyBundle:(NSString *)publicKeyBundle fingerprint:(NSString *)fingerprint secretKey:(P3SKB *)secretKey {
   if ((self = [super init])) {
-    _bundle = bundle;
+    _publicKeyBundle = publicKeyBundle;
     _fingerprint = fingerprint;
-    _secret = secret;
+    _secretKey = secretKey;
   }
   return self;
 }
 
 - (NSString *)description {
-  return GHDescription(@"fingerprint", @"secret");
+  return GHDescription(@"fingerprint");
 }
 
 #pragma mark NSCoding
@@ -75,17 +80,17 @@ NSString *NSStringFromKBKeyAlgorithm(KBKeyAlgorithm algorithm) {
 
 - (id)initWithCoder:(NSCoder *)decoder {
   if ((self = [self init])) {
-    _bundle = [decoder decodeObjectOfClass:[NSString class] forKey:@"bundle"];
-    _fingerprint = [decoder decodeObjectOfClass:[NSString class] forKey:@"fingerprint"];
-    _secret = [decoder decodeBoolForKey:@"secret"];
+    _publicKeyBundle = [decoder decodeObjectOfClass:NSString.class forKey:@"publicKeyBundle"];
+    _fingerprint = [decoder decodeObjectOfClass:NSString.class forKey:@"fingerprint"];
+    _secretKey = [decoder decodeObjectOfClass:P3SKB.class forKey:@"secretKey"];
   }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
-  [encoder encodeObject:_bundle forKey:@"bundle"];
+  [encoder encodeObject:_publicKeyBundle forKey:@"publicKeyBundle"];
   [encoder encodeObject:_fingerprint forKey:@"fingerprint"];
-  [encoder encodeBool:_secret forKey:@"secret"];
+  [encoder encodeObject:_secretKey forKey:@"secretKey"];
 }
 
 @end

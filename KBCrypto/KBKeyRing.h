@@ -10,16 +10,19 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
+typedef void (^KBKeyRingProcessCompletionBlock)(NSArray *bundles);
+typedef void (^KBKeyRingProcessBlock)(NSArray */*of id<KBKey>*/keys, KBKeyRingProcessCompletionBlock completion);
+
 @protocol KBKeyRing <NSObject>
 
 /*!
  Lookup keys.
  @param PGPKeyIds PGP key ids
  @param capabilities Capabilities bitmask
- @param success Array of [id<KBKey>] (KBPublicKey/KBPrivateKey)
- @param failure Failure if no keys found
+ @param success Key bundles
+ @param failure Failure
  */
-- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keys))success failure:(void (^)(NSError *error))failure;
+- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Verify signers.
@@ -42,6 +45,8 @@ JSExportAs(fetch,
  Default key ring implementation.
  */
 @interface KBKeyRing : NSObject <KBKeyRing, KBKeyRingExport>
+
+@property (copy) KBKeyRingProcessBlock process;
 
 /*!
  Add bundle to key ring.

@@ -11,13 +11,16 @@
 #import "KBKeyGenProgress.h"
 #import "KBPGPKey.h"
 
+#import "KBPGPKeyRing.h"
+#import "KBSigner.h"
+
 #import <TSTripleSec/P3SKB.h>
 
 typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   KBCryptoErrorCodeDefault = -1,
   KBCryptoErrorCodeCancelled = -2,
+  KBCryptoErrorCodeKeyNotFound = -3,
 };
-
 
 /*!
  Keybase PGP.
@@ -27,11 +30,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 // Defaults to main queue
 @property dispatch_queue_t completionQueue;
 
-/*!
- Create with key ring.
- @param keyRing Key ring used to lookup keys
- */
-- (instancetype)initWithKeyRing:(id<KBKeyRing>)keyRing;
+@property id<KBKeyRing> keyRing;
 
 /*!
  Encrypt.
@@ -55,12 +54,12 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  @param keyBundle Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param password Password for keyBundle
  */
-- (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *clearTextArmored))success failure:(void (^)(NSError *error))failure;
+- (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *armoredSignature))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Decrypt (and verify if signed).
  
- The key ring will be used to lookup keys to verify signatures if present.
+ The keyring will be used to lookup keys to verify signatures.
  
  @param messageArmored Armored PGP message
  @param keyBundle Bundle to decrypt with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
@@ -80,7 +79,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 /*!
  Verify.
  
- The key ring will be used to lookup keys to verify signatures.
+ The keyring will be used to lookup keys to verify signatures.
  
  @param messageArmored Armored PGP message
  @param success
@@ -95,6 +94,25 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  */
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
+
+/*!
+ Unbox (decrypt and/or verify).
+ 
+ The keyring will be used to lookup keys to decrypt and verify.
+ 
+ @param messageArmored Armored PGP message
+ @param success
+ 
+ - *plainText*: Verified text
+ - *signers*: Signed with key fingerprints
+ 
+ @param failure
+ 
+ - *error*: Error
+ 
+ */
+- (void)unbox:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *failure))failure;
+
 /*!
  Armor public key.
  */
@@ -104,12 +122,12 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  Amored key bundle from PGP key.
  Can be a public or private armored key.
  */
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
+- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Armored private key bundle from P3SKB.
  */
-- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Get an armored public key bundle from any type of private bundle.
@@ -129,11 +147,14 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 
 /*!
  Load PGP key info from bundle.
- Only returns a public PGPKey. If you need a secret key use PGPKeyForSecretKey:.
- @param keyBundle Armored private or public key, or P3SKB key.
- @param password If public key, no password is required
+
+ If you don't specify a password, the secretKey property will not be set.
+ 
+ @param keyBundle Armored private or public key.
+ @param keyBundlePassword If private key, password for private key part.
+ @param password Password New password to set using P3SKB.
  */
-- (void)PGPKeyForKeyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
 
 /*!
  Generate PGP key from secret key.
