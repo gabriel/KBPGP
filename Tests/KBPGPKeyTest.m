@@ -18,20 +18,13 @@
 
 @implementation KBPGPKeyTest
 
-- (instancetype)init {
-  if ((self = [super init])) {
-    _crypto = [[KBCrypto alloc] init];
-  }
-  return self;
-}
-
-- (void)tearDown {
-  [_crypto clearContext];
+- (void)setUp {
+  if (!_crypto) _crypto = [[KBCrypto alloc] init];
 }
 
 - (void)testSerialize:(dispatch_block_t)completion {
   NSString *bundle = [KBTestKeyRing loadFile:@"user1_private.asc"];
-  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomantsecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey) {
+  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey) {
 
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:PGPKey];
     KBPGPKey *PGPKey2 = [NSKeyedUnarchiver unarchiveObjectWithData:data];

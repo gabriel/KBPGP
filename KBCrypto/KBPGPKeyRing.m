@@ -14,13 +14,6 @@
 
 @implementation KBPGPKeyRing
 
-- (id)init {
-  if ((self = [super init])) {
-    _keys = [NSMutableDictionary dictionary];
-  }
-  return self;
-}
-
 - (void)addPGPKey:(KBPGPKey *)PGPKey {
   [self addKey:PGPKey PGPKeyIds:@[PGPKey.keyId] capabilities:PGPKey.capabilities];  
   for (KBPGPSubKey *subKey in PGPKey.subKeys) {

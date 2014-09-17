@@ -10,9 +10,8 @@
 #import "KBKey.h"
 #import "KBKeyGenProgress.h"
 #import "KBPGPKey.h"
-
-#import "KBPGPKeyRing.h"
 #import "KBSigner.h"
+#import "KBPGPKeyRing.h"
 
 #import <TSTripleSec/P3SKB.h>
 
@@ -22,6 +21,9 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   KBCryptoErrorCodeKeyNotFound = -3,
 };
 
+typedef void (^KBCyptoErrorBlock)(NSError *error);
+typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArray *warnings);
+
 /*!
  Keybase PGP.
  */
@@ -30,14 +32,14 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 // Defaults to main queue
 @property dispatch_queue_t completionQueue;
 
-@property id<KBKeyRing> keyRing;
+@property (nonatomic) id<KBKeyRing> keyRing;
 
 /*!
  Encrypt.
  @param text Text to encrypt
  @param keyBundle Bundle to encrypt with. Key bundle can be amrored public PGP key.
  */
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure;
+- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Encrypt and sign.
@@ -46,7 +48,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  @param keyBundleForSign Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param passwordForSign Password for keyBundleForSign
  */
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(void (^)(NSError *error))failure;
+- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Sign (clearsign).
@@ -54,7 +56,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  @param keyBundle Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param password Password for keyBundle
  */
-- (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *armoredSignature))success failure:(void (^)(NSError *error))failure;
+- (void)signText:(NSString *)text keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *armoredSignature))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Decrypt (and verify if signed).
@@ -68,13 +70,14 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   
     - *plainText*: Decrypted/verified text
     - *signers*: Signed with key fingerprints
+    - *warnings*: List of warnings
  
  @param failure
  
     - *error*: Error
  
  */
-- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
+- (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Verify.
@@ -92,7 +95,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
     - *error*: Error
  
  */
-- (void)verifyMessageArmored:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *error))failure;
+- (void)verifyMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
 
 /*!
@@ -111,7 +114,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  - *error*: Error
  
  */
-- (void)unbox:(NSString *)messageArmored success:(void (^)(NSString *plainText, NSArray *signers))success failure:(void (^)(NSError *failure))failure;
+- (void)unbox:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Armor public key.
@@ -122,7 +125,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  Amored key bundle from PGP key.
  Can be a public or private armored key.
  */
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *error))failure;
+- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Armored private key bundle from P3SKB.
@@ -132,7 +135,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 /*!
  Get an armored public key bundle from any type of private bundle.
  */
-- (void)armoredPublicKeyBundleFromKeyBundle:(NSString *)keyBundle success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
+- (void)armoredPublicKeyBundleFromKeyBundle:(NSString *)keyBundle success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Dearmor. Can be a armored pgp key or message.
@@ -143,7 +146,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  Generates key pair.
  Uses RSA with appropriate defaults.
  */
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(void (^)(NSError *error))failure;
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Load PGP key info from bundle.
@@ -154,17 +157,17 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
  @param keyBundlePassword If private key, password for private key part.
  @param password Password New password to set using P3SKB.
  */
-- (void)PGPKeyForKeyBundle:(NSString *)keyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForKeyBundle:(NSString *)keyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Generate PGP key from secret key.
  */
-- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(void (^)(NSError *error))failure;
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Strip password from armored key bundle.
  */
-- (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *error))failure;
+- (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark Debugging
 

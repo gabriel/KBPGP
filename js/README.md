@@ -1,5 +1,7 @@
 # Generating keybase.js
 
+In build:
+
     node r.js -o baseUrl=. name=almond.js include=main out=../keybase.js optimize=none
 
 

@@ -41,7 +41,6 @@
 		00596C8C19C8E9C800D16DAA /* KBPGPKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8A19C8E9C800D16DAA /* KBPGPKeyRing.m */; };
 		00596C8F19C8EE5700D16DAA /* KBUnboxTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */; };
 		00596C9219C9111B00D16DAA /* user1_message_unk.asc in Resources */ = {isa = PBXBuildFile; fileRef = 00596C9119C9111B00D16DAA /* user1_message_unk.asc */; };
-		00596C9519C9158100D16DAA /* user1_message_unk2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 00596C9319C9158100D16DAA /* user1_message_unk2.asc */; };
 		00900F5F19BE837E0018C553 /* KBPGPKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */; };
 		00AEEE1D1992F9EE00D9A741 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */; };
 		00AEEEFB1993FAA900D9A741 /* KBTestKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 00AEEEFA1993FAA900D9A741 /* KBTestKeyRing.m */; };
@@ -108,7 +107,6 @@
 		00596C8A19C8E9C800D16DAA /* KBPGPKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPKeyRing.m; sourceTree = "<group>"; };
 		00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBUnboxTest.m; path = Tests/KBUnboxTest.m; sourceTree = "<group>"; };
 		00596C9119C9111B00D16DAA /* user1_message_unk.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_message_unk.asc; sourceTree = "<group>"; };
-		00596C9319C9158100D16DAA /* user1_message_unk2.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_message_unk2.asc; sourceTree = "<group>"; };
 		00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBPGPKeyTest.m; path = Tests/KBPGPKeyTest.m; sourceTree = "<group>"; };
 		00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Tests/Default-568h@2x.png"; sourceTree = "<group>"; };
 		00AEEEF91993FAA900D9A741 /* KBTestKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBTestKeyRing.h; path = Tests/KBTestKeyRing.h; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 				004BC8C4198B1C3D000C039B /* user1_message_kb.asc */,
 				00AEEF001994133700D9A741 /* user1_message_gpgui.asc */,
 				00596C9119C9111B00D16DAA /* user1_message_unk.asc */,
-				00596C9319C9158100D16DAA /* user1_message_unk2.asc */,
 				004BC8C5198B1C3D000C039B /* user1_private.asc */,
 				0054F14E1990503700908F74 /* user1_private.p3skb */,
 				004BC8C6198B1C3D000C039B /* user1_public.asc */,
@@ -363,7 +360,6 @@
 				00AEEE1D1992F9EE00D9A741 /* Default-568h@2x.png in Resources */,
 				004BC8D2198B1C3D000C039B /* user1_message_gpg1.asc in Resources */,
 				004BC8D7198B1C3D000C039B /* user1_sign_gpg1.asc in Resources */,
-				00596C9519C9158100D16DAA /* user1_message_unk2.asc in Resources */,
 				004BC8D5198B1C3D000C039B /* user1_private.asc in Resources */,
 				004BC8D6198B1C3D000C039B /* user1_public.asc in Resources */,
 				00596C9219C9111B00D16DAA /* user1_message_unk.asc in Resources */,

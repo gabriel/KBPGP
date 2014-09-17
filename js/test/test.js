@@ -42,7 +42,7 @@ describe("JSCore", function() {
       decrypt_with: datafile("user1_private.asc"),
       keyring: keyring,
       passphrase: "toomanysecrets",
-      success: function(plain_text, signers) {
+      success: function(plain_text, signers, warnings) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
         done();
       },
@@ -56,7 +56,7 @@ describe("JSCore", function() {
       decrypt_with: datafile("user1_private.asc"),
       keyring: keyring,
       passphrase: "toomanysecrets",
-      success: function(plain_text, signers) {
+      success: function(plain_text, signers, warnings) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
         done();
       },
@@ -79,7 +79,7 @@ describe("JSCore", function() {
           decrypt_with: datafile("user1_private.asc"),
           keyring: keyring,      
           passphrase: "toomanysecrets",        
-          success: function(plain_text, signers) {
+          success: function(plain_text, signers, warnings) {
             assert.equal(plain_text, "this is a secret message from user2 signed by user1")
             assert.deepEqual(signers, ["664cf3d7151ed6e38aa051c54bf812991a9c76ab"]);
             done();
@@ -97,7 +97,7 @@ describe("JSCore", function() {
       message_armored: datafile("user1_message_kb.asc"),
       decrypt_with: datafile("user1_private_unlocked.asc"),
       keyring: keyring,
-      success: function(plain_text, signers) {
+      success: function(plain_text, signers, warnings) {
         assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
         done();
       },
@@ -207,7 +207,7 @@ describe("JSCore", function() {
               message_armored: datafile("user1_message_kb.asc"),
               decrypt_with: armored2,
               keyring: keyring,
-              success: function(plain_text, signers) {
+              success: function(plain_text, signers, warnings) {
                 done();
               },
               failure:failure
@@ -244,6 +244,24 @@ describe("JSCore", function() {
         done();
       }
     });    
+  });
+
+  it("should unbox with warnings", function(done) {
+    var unbox_keyring = new kbpgp.keyring.PgpKeyRing();
+    jscore.importKey(datafile("user1_private.asc"), "toomanysecrets", function(err, km) {
+      unbox_keyring.add_key_manager(km);
+    });
+
+    jscore.unbox({
+      message_armored: datafile("user1_message_unk.asc"),
+      keyring: unbox_keyring,      
+      success: function(plain_text, signers, warnings) {
+        assert.equal(plain_text, "unknown signer (alice)");          
+        console.log("warnings: " + jsondump(warnings));
+        done();
+      },
+      failure:failure
+    });
   });
 
   // it("should be in keyring", function(done) {
@@ -295,7 +313,7 @@ describe("JSCore", function() {
   //     message_armored: datafile("user1_message_kb.asc"),
   //     decrypt_with: datafile("user1_private.p3skb"),
   //     passphrase: "toomanysecrets",
-  //     success: function(plain_text, signers) {
+  //     success: function(plain_text, signers, warnings) {
   //       assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
   //       done();
   //     },

@@ -22,7 +22,7 @@ NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
 }
 
 KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
-  KBKeyCapabilities capabilities;
+  KBKeyCapabilities capabilities = 0;
   if ((flags & KBPGPKeyFlagsEncryptComm) != 0) capabilities |= (KBKeyCapabilitiesEncrypt | KBKeyCapabilitiesDecrypt);
   if ((flags & KBPGPKeyFlagsEncryptStorage) != 0) capabilities |= (KBKeyCapabilitiesEncrypt | KBKeyCapabilitiesDecrypt);
   if ((flags & KBPGPKeyFlagsSignData) != 0) capabilities |= (KBKeyCapabilitiesSign | KBKeyCapabilitiesVerify);

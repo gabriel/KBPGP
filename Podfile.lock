@@ -1,6 +1,6 @@
 PODS:
   - GHKit (1.0.9)
-  - GRUnit (1.0.8)
+  - GRUnit (1.0.10)
   - libsodium (0.7.0)
   - Mantle (1.5):
     - Mantle/extobjc
@@ -29,7 +29,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   GHKit: a92861bbf7a5878c2638afb08e6790ffc102cc29
-  GRUnit: 022f58a2da768f5977255c799fba02fd15bffe98
+  GRUnit: 92450e5f8591626bea345ae78d5a039528e0904c
   libsodium: 6e51df562e39e747c64cc25162b0f57132114fae
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6

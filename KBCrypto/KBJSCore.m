@@ -70,10 +70,6 @@
   return self;
 }
 
-- (void)setUp {
-  
-}
-
 - (BOOL)exists:(id)path {
   NSString *resourcePath = [[NSBundle mainBundle] pathForResource:[path stringByDeletingPathExtension] ofType:[path pathExtension]];
   return !!resourcePath;
