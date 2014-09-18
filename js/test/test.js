@@ -257,10 +257,24 @@ describe("JSCore", function() {
       keyring: unbox_keyring,      
       success: function(plain_text, signers, warnings) {
         assert.equal(plain_text, "unknown signer (alice)");          
-        console.log("warnings: " + jsondump(warnings));
+        console.log("warnings: " + jsondump(warnings));        
         done();
       },
       failure:failure
+    });
+  });
+
+  it("should unbox dryrun", function(done) {
+    jscore.unboxDryRun({
+      message_armored: datafile("user1_message_unk.asc"),      
+      callback: function(errmsg, warnings, fetched) {
+        //console.log("err: " + errmsg);
+        //console.log("warnings: " + jsondump(warnings));
+        //console.log("fetched: " + jsondump(fetched));
+        assert.equal(fetched[0]["key_ids"][0], "303494a3903f2fc6");
+        assert.equal(fetched[0]["key_ids"][1], "d53374f55303d0ea");        
+        done();
+      }
     });
   });
 

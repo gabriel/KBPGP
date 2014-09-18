@@ -2,51 +2,26 @@
 //  KBKeyRing.h
 //  KBCrypto
 //
-//  Created by Gabriel on 7/31/14.
+//  Created by Gabriel on 9/18/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #import "KBKey.h"
 
-#import <JavaScriptCore/JavaScriptCore.h>
+@protocol KBKeyRing
 
-typedef void (^KBKeyRingProcessCompletionBlock)(NSArray *bundles);
-typedef void (^KBKeyRingProcessBlock)(NSArray */*of id<KBKey>*/keys, KBKeyRingProcessCompletionBlock completion);
+- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keys))success failure:(void (^)(NSError *error))failure;
 
-@protocol KBKeyRingExport <JSExport>
-JSExportAs(fetch,
-- (void)fetch:(NSArray *)keyIds ops:(NSUInteger)ops success:(JSValue *)success failure:(JSValue *)failure
-);
+- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure;
+
 @end
 
 
-/*!
- Default key ring implementation.
- */
-@interface KBKeyRing : NSObject <KBKeyRingExport>
+@interface KBKeyRingFetch : NSObject
 
-@property dispatch_queue_t completionQueue;
-@property (copy) KBKeyRingProcessBlock process;
-
-/*!
- Add bundle to key ring.
- */
-- (void)addKey:(id<KBKey>)key PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities;
-
-/*!
- Lookup keys.
- @param PGPKeyIds PGP key ids
- @param capabilities Capabilities bitmask
- @param success Key bundles
- @param failure Failure
- */
-- (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure;
-
-/*!
- Verify signers.
- @param signers List of key fingerprints to verify
- @param success Array of [KBSigner]
- */
-- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure;
+@property NSArray *PGPKeyIds;
+@property KBKeyCapabilities capabilities;
 
 @end

@@ -18,11 +18,19 @@
 @interface KBCrypto ()
 @property dispatch_queue_t queue;
 @property KBJSCore *JSCore;
+@property KBCryptoKeyRing *cryptoKeyRing;
 @end
 
 typedef void (^KBCryptoJSFailureBlock)(NSString *error);
 
 @implementation KBCrypto
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _queue = dispatch_queue_create("KBCrypto", NULL);
+  }
+  return self;
+}
 
 - (BOOL)generateContext {
   KBJSCore *JSCore = [[KBJSCore alloc] init];
@@ -34,23 +42,21 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
     return NO;
   }
   
-  if (!_queue) _queue = dispatch_queue_create("KBCrypto", NULL);
-
   _JSCore = JSCore;
   _JSCore.completionQueue = _queue;
   
-  if (!_keyRing) _keyRing = [[KBKeyRing alloc] init]; // Default keyring
-  _keyRing.completionQueue = _queue;
-  
-  _JSCore.context[@"jscore"][@"KeyRing"] = _keyRing;
+  if (_cryptoKeyRing) {
+    _JSCore.context[@"jscore"][@"KeyRing"] = _cryptoKeyRing;
+  }
   return YES;
 }
 
-- (void)setKeyRing:(KBKeyRing *)keyRing {
-  _keyRing = keyRing;
-  _keyRing.completionQueue = _queue;
+- (void)setKeyRing:(id<KBKeyRing>)keyRing passwordBlock:(KBKeyRingPasswordBlock)passwordBlock {
+  _cryptoKeyRing = [[KBCryptoKeyRing alloc] initWithKeyRing:keyRing];
+  _cryptoKeyRing.passwordBlock = passwordBlock;
+  _cryptoKeyRing.completionQueue = _queue;
   if (_JSCore) {
-    _JSCore.context[@"jscore"][@"KeyRing"] = _keyRing;
+    _JSCore.context[@"jscore"][@"KeyRing"] = _cryptoKeyRing;
   }
 }
 
@@ -158,10 +164,10 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }
 }
 
-- (void)_verifyKeyFingerprints:(NSArray *)keyFingerprints plainText:(NSString *)plainText warnings:(NSArray *)warnings success:(void (^)(NSString *plainText, NSArray *signers, NSArray *warnings))success failure:(KBCyptoErrorBlock)failure {
+- (void)_verifyKeyFingerprints:(NSArray *)keyFingerprints plainText:(NSString *)plainText warnings:(NSArray *)warnings fetches:(NSArray *)fetches success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
-  [blockSelf.keyRing verifyKeyFingerprints:keyFingerprints success:^(NSArray *signers) {
-    [blockSelf _callback:^{ success(plainText, signers, warnings); }];
+  [_cryptoKeyRing verifyKeyFingerprints:keyFingerprints success:^(NSArray *signers) {
+    [blockSelf _callback:^{ success(plainText, signers, warnings, fetches); }];
   } failure:^(NSError *error) {
     [blockSelf _callback:^{ failure(error); }];
   }];
@@ -170,8 +176,8 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
 - (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
   [self _armorBundle:keyBundle password:password success:^(NSString *armoredBundle, BOOL isSecret) {
-    [blockSelf _call:@"decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(password), @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings) {
-      [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings success:success failure:failure];
+    [blockSelf _call:@"decrypt" params:@{@"message_armored": messageArmored, @"decrypt_with": armoredBundle, @"passphrase": KBCOrNull(password), @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings, NSArray *fetches) {
+      [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings fetches:[self _parseFetches:fetches] success:success failure:failure];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
     }}];
@@ -180,17 +186,44 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
 
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings) {
-    [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings success:success failure:failure];
+  [self _call:@"verify" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings, NSArray *fetches) {
+    [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings fetches:[self _parseFetches:fetches] success:success failure:failure];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];
 }
 
-- (void)unbox:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure {
+- (void)unboxMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"unbox" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings) {
-    [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings success:success failure:failure];
+  [self _call:@"unbox" params:@{@"message_armored": messageArmored, @"success": ^(NSString *plainText, NSArray *keyFingerprints, NSArray *warnings, NSArray *fetches) {
+    [blockSelf _verifyKeyFingerprints:keyFingerprints plainText:plainText warnings:warnings fetches:[self _parseFetches:fetches] success:success failure:failure];
+  }, @"failure": ^(NSString *error) {
+    [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
+  }}];
+}
+
+- (NSArray *)_parseFetches:(NSArray *)fetches {
+  NSMutableArray *keyRingFetches = [NSMutableArray array];
+  for (NSDictionary *fetch in fetches) {
+    KBKeyRingFetch *keyRingFetch = [[KBKeyRingFetch alloc] init];
+    keyRingFetch.PGPKeyIds = fetch[@"key_ids"];
+    keyRingFetch.capabilities = [fetch[@"ops"] integerValue];
+    [keyRingFetches addObject:fetch];
+  }
+  return keyRingFetches;
+}
+
+- (void)keyRingFetchesForMessageArmored:(NSString *)messageArmored success:(void (^)(NSArray *fetches))success failure:(void (^)(NSError *failure))failure {
+  GHWeakSelf blockSelf = self;
+  [self _call:@"unboxDryRun" params:@{@"message_armored": messageArmored, @"success": ^(NSString *errorMessage, NSArray *warnings, NSArray *fetched) {
+    NSMutableArray *fetches = [NSMutableArray array];
+    for (NSDictionary *fetch in fetched) {
+      KBKeyRingFetch *keyRingFetch = [[KBKeyRingFetch alloc] init];
+      keyRingFetch.PGPKeyIds = fetch[@"key_ids"];
+      keyRingFetch.capabilities = [fetch[@"ops"] integerValue];
+      [fetches addObject:fetch];
+    }
+    success(fetches);
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];

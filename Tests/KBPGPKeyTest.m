@@ -10,7 +10,6 @@
 
 #import "KBPGPKey.h"
 #import "KBCrypto.h"
-#import "KBTestKeyRing.h"
 
 @interface KBPGPKeyTest : GRTestCase
 @property KBCrypto *crypto;
@@ -18,12 +17,19 @@
 
 @implementation KBPGPKeyTest
 
+- (NSString *)loadFile:(NSString *)file {
+  NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
+  NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
+  NSAssert(contents, @"No contents at file: %@", file);
+  return contents;
+}
+
 - (void)setUp {
   if (!_crypto) _crypto = [[KBCrypto alloc] init];
 }
 
 - (void)testSerialize:(dispatch_block_t)completion {
-  NSString *bundle = [KBTestKeyRing loadFile:@"user1_private.asc"];
+  NSString *bundle = [self loadFile:@"user1_private.asc"];
   [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey) {
 
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:PGPKey];

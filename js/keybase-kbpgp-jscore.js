@@ -101,8 +101,16 @@ jscore.sign = function(params) {
 
 function KeyRing() {  
   this.pgpkr = new kbpgp.keyring.PgpKeyRing();  
+  this.fetched = [];
 }
 KeyRing.prototype.fetch = function(key_ids, ops, callback) {
+
+  // Keep track of fetch info
+  this.fetched.push({
+    key_ids: key_ids.map(function(k) { return k.toString("hex"); }),
+    ops: ops
+  });
+
   var that = this;
   this.pgpkr.fetch(key_ids, ops, function(err, key, index) {
     if (err) {
@@ -124,7 +132,7 @@ KeyRing.prototype.add_key_manager = function(key) {
   this.pgpkr.add_key_manager(key);
 };
 KeyRing.prototype.add_key_bundles = function(bundles, callback) {
-  if (bundles.length == 0) {
+  if (bundles.length === 0) {
     callback(null);
     return;
   }
@@ -150,7 +158,7 @@ jscore.verify = function(params) {
   };
   kbpgp.unbox(kparams, function(err, literals, warnings) {
     if (err) { failure.handle(err); return; }
-    jscore._process_literals(literals, warnings, success);
+    jscore._process_literals(literals, warnings, keyring, success);
   });
 };
 
@@ -173,18 +181,19 @@ jscore.decrypt = function(params) {
     };
     kbpgp.unbox(kparams, function(err, literals, warnings) {
       if (err) { failure.handle(err); return; }
-      jscore._process_literals(literals, warnings, success);
+      jscore._process_literals(literals, warnings, keyring, success);
     });    
   }, failure);
 };
 
 jscore.unbox = function(params) {
-  var message_armored = params.message_armored,
+  var message_armored = params.message_armored,    
     success = params.success,
     keyring = params.keyring,
-    failure = new ErrorHandler(params.failure);
+    failure = new ErrorHandler(params.failure);    
 
   if (!keyring) keyring = new KeyRing();  // Testing will pass in its own keyring
+
   var kparams = {
     armored: message_armored,
     keyfetch: keyring,
@@ -192,12 +201,12 @@ jscore.unbox = function(params) {
   };
   kbpgp.unbox(kparams, function(err, literals, warnings) {
     if (err) { failure.handle(err); return; }
-    jscore._process_literals(literals, warnings, success);
+    jscore._process_literals(literals, warnings, keyring, success);
   });
 };
 
 // Process literals from decrypt/verify
-jscore._process_literals = function(literals, warnings, success) {
+jscore._process_literals = function(literals, warnings, keyring, success) {
   var text = literals[0].toString();
   var data_signers = literals[0].get_data_signers();      
 
@@ -209,7 +218,7 @@ jscore._process_literals = function(literals, warnings, success) {
       signers.push(key.get_pgp_fingerprint().toString("hex"));
     }
   }
-  success(text, signers, warnings.warnings());
+  success(text, signers, warnings.warnings(), keyring.fetched);
 };
 
 jscore.generateKeyPair = function(params) {
@@ -439,7 +448,7 @@ jscore.exportPublicKey = function(params) {
       // }, failure);
     });
   }, failure);
-}
+};
 
 jscore.info = function(params) {
   var armored = params.armored,
@@ -511,7 +520,7 @@ jscore.info = function(params) {
 
       info.public_key_bundle = pgp_public;
 
-      if (info.public_key_bundle.indexOf("-----BEGIN PGP PUBLIC KEY") != 0) {
+      if (info.public_key_bundle.indexOf("-----BEGIN PGP PUBLIC KEY") !== 0) {
         failure.handle(new Error("Bundle should be public key"));
         return;
       }
@@ -523,6 +532,35 @@ jscore.info = function(params) {
   }, failure);
 };
 
+function KeyFetchDryRun() {
+  this.fetched = [];
+}
+KeyFetchDryRun.prototype.fetch = function(key_ids, ops, callback) {  
+  var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
+  this.fetched.push({
+    key_ids: hexkeyids,
+    ops: ops
+  });
+  callback(new Error("Dry run"));
+};
+
+jscore.unboxDryRun = function(params) {
+  var message_armored = params.message_armored,
+    callback = params.callback;    
+  var keyring = new KeyFetchDryRun();
+  var kparams = {
+    armored: message_armored,
+    keyfetch: keyring,
+    strict: false,
+  };
+  kbpgp.unbox(kparams, function(err, literals, warnings) {
+    if (err && err.message != "Dry run") {
+      callback(err.message, warnings.warnings(), keyring.fetched);
+    } else {
+      callback(null, warnings.warnings(), keyring.fetched);
+    }
+  });
+};
 
 //Export
 // key.sign({}, function(err) {

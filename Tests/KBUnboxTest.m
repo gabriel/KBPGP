@@ -2,7 +2,6 @@
 
 #import "KBCrypto.h"
 #import "KBPGPKeyRing.h"
-#import "KBTestKeyRing.h"
 
 #import <GHKit/GHKit.h>
 #import <ObjectiveSugar/ObjectiveSugar.h>
@@ -27,35 +26,22 @@
   }
   _crypto = [[KBCrypto alloc] init];
   
-  KBPGPKeyRing *keyRing = [[KBPGPKeyRing alloc] init];
-  
   GHWeakSelf blockSelf = self;
-  keyRing.process = ^(NSArray *keys, KBKeyRingProcessCompletionBlock completion) {
-    NSMutableArray *keyBundles = [NSMutableArray array];
-    
-    NSMutableArray *publicKeys = [[keys select:^BOOL(id<KBKey> key) { return !key.secretKey; }] mutableCopy];
-    NSMutableArray *secretKeys = [[keys select:^BOOL(id<KBKey> key) { return !!key.secretKey; }] mutableCopy];
-    
-    for (id<KBKey> key in publicKeys) {
-      [keyBundles addObject:key.publicKeyBundle];
-    }
-    
+  KBKeyRingPasswordBlock passwordBlock = ^(NSArray *secretKeys, KBKeyRingPasswordCompletionBlock completion) {
     __block NSInteger count = 0;
-    for (id<KBKey> key in secretKeys) {
-      [blockSelf.crypto armoredKeyBundleFromSecretKey:key.secretKey password:@"toomanysecrets2" keyBundlePassword:nil success:^(NSString *keyBundle) {
+    NSMutableArray *keyBundles = [NSMutableArray array];
+    for (P3SKB *secretKey in secretKeys) {
+      [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey password:@"toomanysecrets2" keyBundlePassword:nil success:^(NSString *keyBundle) {
         [keyBundles addObject:keyBundle];
         if (++count == [secretKeys count]) completion(keyBundles);
       } failure:^(NSError *error) {
         if (++count == [secretKeys count]) completion(keyBundles);
       }];
     }
-    
-    if ([secretKeys count] == 0) {
-      completion(@[]);
-    }
   };
   
-  _crypto.keyRing = keyRing;
+  KBPGPKeyRing *keyRing = [[KBPGPKeyRing alloc] init];
+  [_crypto setKeyRing:keyRing passwordBlock:passwordBlock];
   [_crypto PGPKeyForKeyBundle:[self loadFile:@"user1_private.asc"] keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey1) {
     [keyRing addPGPKey:PGPKey1];
   
@@ -74,15 +60,15 @@
 
 - (void)testUnbox:(dispatch_block_t)completion {
   NSString *messageArmored = [self loadFile:@"user1_message_gpgui.asc"];
-  [_crypto unbox:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings) {
+  [_crypto unboxMessageArmored:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches) {
     GRAssertEqualStrings(plainText, @"this is a signed test message");
     completion();
   } failure:GRErrorHandler];
 }
 
 - (void)testUnboxMissingSignerKey:(dispatch_block_t)completion {
-  NSString *messageArmored = [self loadFile:@"user1_message_unk.asc"];
-  [_crypto unbox:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings) {
+  NSString *messageArmored = [self loadFile:@"user1_message_unk.asc"]; // Encrypted to alice and user1, signed by alice. Alice is an unknown key
+  [_crypto unboxMessageArmored:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches) {
     GRAssertEqualStrings(plainText, @"unknown signer (alice)");
     completion();
   } failure:GRErrorHandler];

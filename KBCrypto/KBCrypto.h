@@ -11,6 +11,7 @@
 #import "KBKeyGenProgress.h"
 #import "KBPGPKey.h"
 #import "KBSigner.h"
+#import "KBCryptoKeyRing.h"
 #import "KBPGPKeyRing.h"
 
 #import <TSTripleSec/P3SKB.h>
@@ -22,7 +23,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 };
 
 typedef void (^KBCyptoErrorBlock)(NSError *error);
-typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArray *warnings);
+typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches);
 
 /*!
  Keybase PGP.
@@ -32,7 +33,10 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
 // Defaults to main queue
 @property dispatch_queue_t completionQueue;
 
-@property (nonatomic) KBKeyRing *keyRing;
+/*!
+ Set key ring.
+ */
+- (void)setKeyRing:(id<KBKeyRing>)keyRing passwordBlock:(KBKeyRingPasswordBlock)passwordBlock;
 
 /*!
  Encrypt.
@@ -114,7 +118,7 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  - *error*: Error
  
  */
-- (void)unbox:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure;
+- (void)unboxMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Armor public key.

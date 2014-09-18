@@ -10,6 +10,8 @@ In build:
     mocha test
     mocha test -g "should encrypt"
 
+Use jshint to make sure there aren't any syntax errors.
+
 
 # Using openpgp.js
 

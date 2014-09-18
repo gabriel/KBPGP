@@ -11,7 +11,7 @@
 #import "KBKeyRing.h"
 #import "KBPGPKey.h"
 
-@interface KBPGPKeyRing : KBKeyRing
+@interface KBPGPKeyRing : NSObject <KBKeyRing>
 
 - (void)addPGPKey:(KBPGPKey *)PGPKey;
 
