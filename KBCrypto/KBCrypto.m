@@ -34,16 +34,21 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
     return NO;
   }
   
+  if (!_queue) _queue = dispatch_queue_create("KBCrypto", NULL);
+
   _JSCore = JSCore;
+  _JSCore.completionQueue = _queue;
   
   if (!_keyRing) _keyRing = [[KBKeyRing alloc] init]; // Default keyring
+  _keyRing.completionQueue = _queue;
   
   _JSCore.context[@"jscore"][@"KeyRing"] = _keyRing;
   return YES;
 }
 
-- (void)setKeyRing:(id<KBKeyRing>)keyRing {
+- (void)setKeyRing:(KBKeyRing *)keyRing {
   _keyRing = keyRing;
+  _keyRing.completionQueue = _queue;
   if (_JSCore) {
     _JSCore.context[@"jscore"][@"KeyRing"] = _keyRing;
   }
@@ -65,20 +70,19 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }
   
   GHWeakSelf blockSelf = self;
-  //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  [self _call:^{
     [blockSelf.JSCore.context[@"jscore"][method] callWithArguments:@[params]];
-  //});
+  }];
+}
+
+- (void)_call:(dispatch_block_t)block {
+  dispatch_async(_queue, block);
 }
 
 - (void)_callback:(dispatch_block_t)callback {
   dispatch_queue_t completionQueue = _completionQueue;
   if (!completionQueue) completionQueue = dispatch_get_main_queue();
   dispatch_async(completionQueue, callback);
-}
-
-- (void)_call:(dispatch_block_t)block {
-  if (!_queue) _queue = dispatch_queue_create("KBCrypto", NULL);
-  dispatch_async(_queue, block);
 }
 
 - (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure {
@@ -144,7 +148,7 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }
   
   if (password) {
-    [self armoredKeyBundleFromSecretKey:key previousPassword:password password:password success:^(NSString *encoded) {
+    [self armoredKeyBundleFromSecretKey:key password:password keyBundlePassword:password success:^(NSString *encoded) {
       success(encoded);
     } failure:failure];
   } else {
@@ -201,19 +205,19 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }}];
 }
 
-- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure {
+- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure {
   NSParameterAssert(secretKey);
   
   GHWeakSelf blockSelf = self;
   [self _call:^{
     NSError *error = nil;
-    NSData *data = [secretKey decryptPrivateKeyWithPassword:previousPassword error:&error];
+    NSData *data = [secretKey decryptPrivateKeyWithPassword:password error:&error];
     if (!data) {
       [blockSelf _callback: ^{ failure(error); }];
       return;
     }
     
-    [blockSelf _call:@"armorPrivateKey" params:@{@"data": [data na_hexString], @"passphrase": KBCOrNull(password), @"success": ^(NSString *encoded) {
+    [blockSelf _call:@"armorPrivateKey" params:@{@"data": [data na_hexString], @"passphrase": KBCOrNull(keyBundlePassword), @"success": ^(NSString *encoded) {
       [blockSelf _callback:^{ success(encoded); }];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
@@ -221,9 +225,9 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }];
 }
 
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure {
+- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure {
   if (PGPKey.secretKey) {
-    [self armoredKeyBundleFromSecretKey:PGPKey.secretKey previousPassword:previousPassword password:password success:success failure:failure];
+    [self armoredKeyBundleFromSecretKey:PGPKey.secretKey password:password keyBundlePassword:keyBundlePassword success:success failure:failure];
   } else {
     NSAssert(PGPKey.publicKeyBundle, @"No bundle");
     [self _callback:^{ success(PGPKey.publicKeyBundle); }];
@@ -357,14 +361,23 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   // Password here is nil because we use the public key to generate info
   [self _PGPKeyForBundle:[secretKey keyBundle] keyBundlePassword:nil password:nil success:^(KBPGPKey *PGPKey) {
     [PGPKey setSecretKey:secretKey];
-    success(PGPKey);
+    success(PGPKey); // ok to not have this in a _callback
   } failure:failure];
 }
 
 - (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
   [self _call:@"setPassword" params:@{@"armored": armoredKeyBundle, @"previous": KBCOrNull(previousPassword), @"passphrase": KBCOrNull(password), @"success": ^(NSString *keyBundle) {
-    success(keyBundle);
+    [blockSelf _callback:^{ success(keyBundle); }];
+  }, @"failure": ^(NSString *error) {
+    [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
+  }}];
+}
+
+- (void)checkPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle password:(NSString *)password success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure {
+  GHWeakSelf blockSelf = self;
+  [self _call:@"checkPassword" params:@{@"armored": armoredKeyBundle, @"passphrase": KBCOrNull(password), @"success": ^(NSString *keyBundle) {
+    [blockSelf _callback:^{ success(); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];

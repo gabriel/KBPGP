@@ -123,7 +123,7 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
 
 - (NSString *)subKeyDescription {
   //NSStringFromKBPGPKeyFlags(_flags),
-  return [NSString stringWithFormat:@"%@ %d %@ %@", _keyId, (int)_numBits, NSStringFromKBKeyAlgorithm(_algorithm), NSStringFromKBKeyCapabilities([self capabilities])];
+  return [NSString stringWithFormat:@"%@\n%d %@\n%@", [_keyId uppercaseString], (int)_numBits, NSStringFromKBKeyAlgorithm(_algorithm), NSStringFromKBKeyCapabilities([self capabilities])];
 }
 
 - (KBKeyCapabilities)capabilities {

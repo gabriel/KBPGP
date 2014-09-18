@@ -100,7 +100,7 @@ jscore.sign = function(params) {
 };
 
 function KeyRing() {  
-  this.pgpkr = new kbpgp.keyring.PgpKeyRing();
+  this.pgpkr = new kbpgp.keyring.PgpKeyRing();  
 }
 KeyRing.prototype.fetch = function(key_ids, ops, callback) {
   var that = this;
@@ -129,17 +129,14 @@ KeyRing.prototype.add_key_bundles = function(bundles, callback) {
     return;
   }
 
-  var that = this;
-  for (var i = 0; i < bundles.length; i++) {
-    var bundle = bundles[i];    
-    jscore._decodeKey(bundle, "keyring", function(km) {
-      that.pgpkr.add_key_manager(km);
-      if ((i+1) == bundles.length) callback(null);
-    }, new ErrorHandler(function(err) {
-      // Ignore errors for invalid bundles, they just won't be in the keyring
-      if ((i+1) == bundles.length) callback(null);
-    }));
-  }
+  var that = this;  
+  jscore.importKey(bundles[0], "keyring", function(err, km) {
+    bundles.splice(0, 1);
+    if (!err) {
+      that.pgpkr.add_key_manager(km);         
+    }
+    that.add_key_bundles(bundles, callback);
+  });
 };
 
 jscore.verify = function(params) {

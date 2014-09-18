@@ -32,7 +32,7 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
 // Defaults to main queue
 @property dispatch_queue_t completionQueue;
 
-@property (nonatomic) id<KBKeyRing> keyRing;
+@property (nonatomic) KBKeyRing *keyRing;
 
 /*!
  Encrypt.
@@ -125,12 +125,12 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  Amored key bundle from PGP key.
  Can be a public or private armored key.
  */
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure;
+- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Armored private key bundle from P3SKB.
  */
-- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
 
 /*!
  Get an armored public key bundle from any type of private bundle.
@@ -168,6 +168,11 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  Strip password from armored key bundle.
  */
 - (void)setPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle previousPassword:(NSString *)previousPassword password:(NSString *)password success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure;
+
+/*!
+ Check armored key bundle password.
+ */
+- (void)checkPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle password:(NSString *)password success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark Debugging
 

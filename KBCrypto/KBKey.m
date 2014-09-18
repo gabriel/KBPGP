@@ -16,14 +16,17 @@ NSString *KBPGPKeyIdFromFingerprint(NSString *fingerprint) {
   return [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];
 }
 
-NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint) {
-  if ([fingerprint length] < 16) return fingerprint;
-  NSString *str = [[fingerprint substringFromIndex:[fingerprint length] - 16] lowercaseString];
-  return [@[[str substringWithRange:NSMakeRange(0, 4)],
-            [str substringWithRange:NSMakeRange(4, 4)],
-            [str substringWithRange:NSMakeRange(8, 4)],
-            [str substringWithRange:NSMakeRange(12, 4)]] componentsJoinedByString:@" "];
-
+NSString *NSStringFromKBKeyFingerprint(NSString *fingerprint, NSInteger indexForLineBreak) {
+  NSMutableString *s = [[NSMutableString alloc] init];
+  for (NSInteger i = 1; i <= fingerprint.length; i++) {
+    [s appendString:[NSString stringWithFormat:@"%c", [fingerprint characterAtIndex:i-1]]];
+    if (indexForLineBreak == i) {
+      [s appendString:@"\n"];
+    } else {
+      if (i % 4 == 0) [s appendString:@" "];
+    }
+  }
+  return [s uppercaseString];
 }
 
 NSString *NSStringFromKBKeyCapabilities(KBKeyCapabilities capabilities) {

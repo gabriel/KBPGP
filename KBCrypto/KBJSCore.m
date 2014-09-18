@@ -41,17 +41,11 @@
       GHDebug(@"Document write: %@", msg);
     };
     
+    GHWeakSelf blockSelf = self;
     _context[@"setTimeout"] = ^(JSValue *function, JSValue *timeout) {
       int64_t time = (int64_t)([timeout toInt32] * NSEC_PER_MSEC);
       //GHDebug(@"Time: %d", [timeout toInt32]);
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, time), dispatch_get_current_queue(), ^{
-        [function callWithArguments:@[]];
-      });
-    };
-    
-    _context[@"process"] = @{};
-    _context[@"process"][@"nextTick"] = ^(JSValue *function) {
-      dispatch_async(dispatch_get_current_queue(), ^{
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, time), blockSelf.completionQueue, ^{
         [function callWithArguments:@[]];
       });
     };

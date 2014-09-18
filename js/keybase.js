@@ -46294,8 +46294,7 @@ arguments[4][109][0].apply(exports,arguments)
       this.auto_stop_bits = opts.auto_stop_bits || 4096;
       this.max_bits_per_delta = opts.max_bits_per_delta || 4;
       this.entropies = [];
-      this.running = true;
-      this.timer_race_loop();
+      this.running = false;
     }
 
     Generator.prototype.generate = function(bits_wanted, cb) {

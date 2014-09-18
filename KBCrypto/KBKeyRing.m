@@ -82,10 +82,15 @@
 }
 
 - (void)fetch:(NSArray *)keyIds ops:(NSUInteger)ops success:(JSValue *)success failure:(JSValue *)failure {
+  GHWeakSelf blockSelf = self;
   [self lookupPGPKeyIds:keyIds capabilities:ops success:^(NSArray *keyBundles) {
-    [success callWithArguments:@[keyBundles]];
+    dispatch_async(blockSelf.completionQueue, ^{
+      [success callWithArguments:@[keyBundles]];
+    });
   } failure:^(NSError *error) {
-    [failure callWithArguments:@[error.localizedDescription]];
+    dispatch_async(blockSelf.completionQueue, ^{
+      [failure callWithArguments:@[error.localizedDescription]];
+    });
   }];
 }
 

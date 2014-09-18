@@ -42,12 +42,16 @@
     
     __block NSInteger count = 0;
     for (id<KBKey> key in secretKeys) {
-      [blockSelf.crypto armoredKeyBundleFromSecretKey:key.secretKey previousPassword:@"toomanysecrets2" password:nil success:^(NSString *keyBundle) {
+      [blockSelf.crypto armoredKeyBundleFromSecretKey:key.secretKey password:@"toomanysecrets2" keyBundlePassword:nil success:^(NSString *keyBundle) {
         [keyBundles addObject:keyBundle];
         if (++count == [secretKeys count]) completion(keyBundles);
       } failure:^(NSError *error) {
         if (++count == [secretKeys count]) completion(keyBundles);
       }];
+    }
+    
+    if ([secretKeys count] == 0) {
+      completion(@[]);
     }
   };
   

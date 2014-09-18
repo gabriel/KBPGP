@@ -13,6 +13,7 @@
 @interface KBJSCore : NSObject
 
 @property (readonly) JSContext *context;
+@property dispatch_queue_t completionQueue;
 
 - (NSString *)randomHexString:(NSUInteger)numBytes;
 

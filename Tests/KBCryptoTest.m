@@ -26,7 +26,7 @@
   return [KBTestKeyRing loadFile:file];
 }
 
-- (id<KBKeyRing>)keyRing {
+- (KBKeyRing *)keyRing {
   KBTestKeyRing *keyRing = [[KBTestKeyRing alloc] init];
   
   [keyRing addVerifiedKeyFingerprint:@"afb10f6a5895f5b1d67851861296617a289d5c6b"];
@@ -256,7 +256,7 @@
   [_crypto dearmor:privateKeyArmored success:^(NSData *privateKeyData) {
     P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:privateKeyData password:@"toomanysecrets" publicKey:nil error:nil];
     GRAssertNotNil(secretKey);
-    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey previousPassword:@"toomanysecrets" password:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
+    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey password:@"toomanysecrets" keyBundlePassword:@"toomanysecrets" success:^(NSString *privateKeyRearmored) {
 //      NSString *key1 = [privateKeyArmored gh_lastSplitWithString:@"\n\n" options:0];
 //      NSString *key2 = [privateKeyRearmored gh_lastSplitWithString:@"\n\n" options:0];
 //      GRAssertEqualStrings(key1, key2);
@@ -287,7 +287,7 @@
     GRAssertNotNil(key);
     GRTestLog(@"key: %@", key);
     
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:key previousPassword:nil password:nil success:^(NSString *encoded) {
+    [blockSelf.crypto armoredKeyBundleFromPGPKey:key password:nil keyBundlePassword:nil success:^(NSString *encoded) {
       GRTestLog(@"%@", encoded);
       completion();
     } failure:GRErrorHandler];
@@ -336,7 +336,7 @@
     GRAssertNotNil(PGPKey.secretKey);
     GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:PGPKey previousPassword:@"toomanysecrets" password:@"toomanysecrets" success:^(NSString *encoded) {
+    [blockSelf.crypto armoredKeyBundleFromPGPKey:PGPKey password:@"toomanysecrets" keyBundlePassword:@"toomanysecrets" success:^(NSString *encoded) {
       GRAssertNotNil(encoded);
       GRTestLog(@"%@", encoded);
       completion();
