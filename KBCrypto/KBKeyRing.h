@@ -17,11 +17,3 @@
 - (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure;
 
 @end
-
-
-@interface KBKeyRingFetch : NSObject
-
-@property NSArray *PGPKeyIds;
-@property KBKeyCapabilities capabilities;
-
-@end

@@ -9,26 +9,16 @@
 #import "KBSigner.h"
 
 @interface KBSigner ()
-@property NSString *keyFingerprint;
-@property (getter=isVerified) BOOL verified;
+@property KBPGPKey *PGPKey;
 @end
 
 @implementation KBSigner
 
-- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint verified:(BOOL)verified {
+- (instancetype)initWithPGPKey:(KBPGPKey *)PGPKey {
   if ((self = [super init])) {
-    _keyFingerprint = keyFingerprint;
-    _verified = verified;
+    _PGPKey = PGPKey;
   }
   return self;
-}
-
-- (NSUInteger)hash {
-  return [_keyFingerprint hash];
-}
-
-- (BOOL)isEqual:(id)object {
-  return ([object isKindOfClass:KBSigner.class] && [[object keyFingerprint] isEqualToString:_keyFingerprint] && [object isVerified] == _verified);
 }
 
 @end

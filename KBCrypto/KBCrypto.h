@@ -13,6 +13,7 @@
 #import "KBSigner.h"
 #import "KBCryptoKeyRing.h"
 #import "KBPGPKeyRing.h"
+#import "KBPGPMessage.h"
 
 #import <TSTripleSec/P3SKB.h>
 
@@ -23,7 +24,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
 };
 
 typedef void (^KBCyptoErrorBlock)(NSError *error);
-typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches);
+typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 
 /*!
  Keybase PGP.
@@ -37,6 +38,8 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  Set key ring.
  */
 - (void)setKeyRing:(id<KBKeyRing>)keyRing passwordBlock:(KBKeyRingPasswordBlock)passwordBlock;
+
+#pragma mark Encrypt/Decrypt/Sign/Verify/Unbox
 
 /*!
  Encrypt.
@@ -70,16 +73,9 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  @param messageArmored Armored PGP message
  @param keyBundle Bundle to decrypt with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param password
- @param success
-  
-    - *plainText*: Decrypted/verified text
-    - *signers*: Signed with key fingerprints
-    - *warnings*: List of warnings
- 
- @param failure
- 
-    - *error*: Error
- 
+ @param success PGP Message
+ @param failure Error
+
  */
 - (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
@@ -89,14 +85,8 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  The keyring will be used to lookup keys to verify signatures.
  
  @param messageArmored Armored PGP message
- @param success
- 
-    - *plainText*: Verified text
-    - *signers*: Signed with key fingerprints
- 
- @param failure
- 
-    - *error*: Error
+ @param success PGP Message
+ @param failure Error
  
  */
 - (void)verifyMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
@@ -108,17 +98,13 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  The keyring will be used to lookup keys to decrypt and verify.
  
  @param messageArmored Armored PGP message
- @param success
- 
- - *plainText*: Verified text
- - *signers*: Signed with key fingerprints
- 
- @param failure
- 
- - *error*: Error
- 
+ @param success PGP Message
+ @param failure Error
+
  */
 - (void)unboxMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure;
+
+#pragma mark Armor/Dearmor
 
 /*!
  Armor public key.
@@ -146,11 +132,16 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  */
 - (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure;
 
+#pragma mark Generate Key
+
 /*!
  Generates key pair.
  Uses RSA with appropriate defaults.
  */
 - (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(KBCyptoErrorBlock)failure;
+
+
+#pragma mark PGPKey
 
 /*!
  Load PGP key info from bundle.
@@ -167,6 +158,8 @@ typedef void (^KBCryptoUnboxBlock)(NSString *plainText, NSArray *signers, NSArra
  Generate PGP key from secret key.
  */
 - (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+
+#pragma mark Password
 
 /*!
  Strip password from armored key bundle.

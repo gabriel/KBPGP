@@ -152,9 +152,10 @@ jscore.verify = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
+  var keyring = new KeyRing();
   var kparams = {
     armored: message_armored,
-    keyfetch: new KeyRing(),
+    keyfetch: keyring,
   };
   kbpgp.unbox(kparams, function(err, literals, warnings) {
     if (err) { failure.handle(err); return; }
@@ -207,7 +208,7 @@ jscore.unbox = function(params) {
 
 // Process literals from decrypt/verify
 jscore._process_literals = function(literals, warnings, keyring, success) {
-  var text = literals[0].toString();
+  var hex = literals[0].toString("hex");
   var data_signers = literals[0].get_data_signers();      
 
   var signers = [];      
@@ -218,7 +219,7 @@ jscore._process_literals = function(literals, warnings, keyring, success) {
       signers.push(key.get_pgp_fingerprint().toString("hex"));
     }
   }
-  success(text, signers, warnings.warnings(), keyring.fetched);
+  success(hex, signers, warnings.warnings(), keyring.fetched);
 };
 
 jscore.generateKeyPair = function(params) {
@@ -532,35 +533,34 @@ jscore.info = function(params) {
   }, failure);
 };
 
-function KeyFetchDryRun() {
-  this.fetched = [];
-}
-KeyFetchDryRun.prototype.fetch = function(key_ids, ops, callback) {  
-  var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
-  this.fetched.push({
-    key_ids: hexkeyids,
-    ops: ops
-  });
-  callback(new Error("Dry run"));
-};
+// function KeyFetchDryRun() {
+//   this.fetched = [];
+// }
+// KeyFetchDryRun.prototype.fetch = function(key_ids, ops, callback) {  
+//   var hexkeyids = key_ids.map(function(k) { return k.toString("hex"); });
+//   this.fetched.push({
+//     key_ids: hexkeyids,
+//     ops: ops
+//   });
+//   callback(new Error("Dry run"));
+// };
 
-jscore.unboxDryRun = function(params) {
-  var message_armored = params.message_armored,
-    callback = params.callback;    
-  var keyring = new KeyFetchDryRun();
-  var kparams = {
-    armored: message_armored,
-    keyfetch: keyring,
-    strict: false,
-  };
-  kbpgp.unbox(kparams, function(err, literals, warnings) {
-    if (err && err.message != "Dry run") {
-      callback(err.message, warnings.warnings(), keyring.fetched);
-    } else {
-      callback(null, warnings.warnings(), keyring.fetched);
-    }
-  });
-};
+// jscore.unboxDryRun = function(params) {
+//   var message_armored = params.message_armored,
+//     callback = params.callback;
+
+//   var keyring = new KeyFetchDryRun();
+//   var kparams = {
+//     armored: message_armored,
+//     keyfetch: keyring,
+//     strict: false,
+//   };
+//   kbpgp.unbox(kparams, function(err, literals, warnings) {
+//     var errmsg = err.message;
+//     if (errmsg == "Dry run") errmsg = null;
+//     callback(errmsg, warnings.warnings(), keyring.fetched);    
+//   });
+// };
 
 //Export
 // key.sign({}, function(err) {

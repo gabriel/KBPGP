@@ -14,57 +14,58 @@
 #import <ObjectiveSugar/ObjectiveSugar.h>
 
 @interface KBPGPKeyRing ()
-@property NSMutableDictionary *keys;
+@property NSMutableDictionary *keyLookup;
+@property NSMutableArray *PGPKeys;
 @end
 
 @implementation KBPGPKeyRing
 
 - (id)init {
   if ((self = [super init])) {
-    _keys = [NSMutableDictionary dictionary];
+    _keyLookup = [NSMutableDictionary dictionary];
+    _PGPKeys = [NSMutableArray array];
   }
   return self;
 }
 
-- (void)addKey:(id<KBKey>)key PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities {
+- (void)_addPGPKey:(KBPGPKey *)PGPKey PGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities {
   GHDebug(@"%@ %@", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities));
   
+  [_PGPKeys addObject:PGPKey];
   for (NSString *keyId in PGPKeyIds) {
-    NSMutableArray *keys = _keys[[keyId lowercaseString]];
+    NSMutableArray *keys = _keyLookup[[keyId lowercaseString]];
     if (!keys) {
       keys = [NSMutableArray array];
-      _keys[keyId] = keys;
+      _keyLookup[keyId] = keys;
     }
     [keys addObject:@{
-                      @"key": key,
+                      @"key": PGPKey,
                       @"capabilities": @(capabilities)
                       }];
   }
 }
 
 - (void)addPGPKey:(KBPGPKey *)PGPKey {
-  [self addKey:PGPKey PGPKeyIds:@[PGPKey.keyId] capabilities:PGPKey.capabilities];  
+  [self _addPGPKey:PGPKey PGPKeyIds:@[PGPKey.keyId] capabilities:PGPKey.capabilities];
   for (KBPGPSubKey *subKey in PGPKey.subKeys) {
-    [self addKey:PGPKey PGPKeyIds:@[subKey.keyId] capabilities:subKey.capabilities];
+    [self _addPGPKey:PGPKey PGPKeyIds:@[subKey.keyId] capabilities:subKey.capabilities];
   }
 }
 
+- (KBPGPKey *)PGPKeyFromFingerprint:(NSString *)fingerprint {
+  return [_PGPKeys detect:^BOOL(KBPGPKey *PGPKey) { return [PGPKey.fingerprint isEqual:fingerprint]; }];
+}
+
 - (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keys))success failure:(void (^)(NSError *error))failure {
-  
   NSMutableArray *foundKeys = [NSMutableArray array];
   for (NSString *keyId in PGPKeyIds) {
-    BOOL found = NO;
-    NSArray *keys = _keys[[keyId lowercaseString]];
+    NSArray *keys = _keyLookup[[keyId lowercaseString]];
     if (keys) {
       for (NSDictionary *key in keys) {
         if (([key[@"capabilities"] integerValue] & capabilities) != 0) {
           [foundKeys addObject:key[@"key"]];
-          found = YES;
         }
       }
-    }
-    if (!found) {
-      
     }
   }
   
@@ -74,9 +75,11 @@
 }
 
 - (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure {
-  NSArray *signers = [keyFingerprints map:^id(NSString *keyFingerprint) {
-    return [[KBSigner alloc] initWithKeyFingerprint:keyFingerprint verified:NO];
-  }];
+  NSMutableArray *signers = [NSMutableArray array];
+  for (NSString *keyFingerprint in keyFingerprints) {
+    KBPGPKey *PGPKey = [self PGPKeyFromFingerprint:keyFingerprint];
+    if (PGPKey) [signers addObject:[[KBSigner alloc] initWithPGPKey:PGPKey]];
+  }
   success(signers);
 }
 

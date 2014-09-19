@@ -60,16 +60,18 @@
 
 - (void)testUnbox:(dispatch_block_t)completion {
   NSString *messageArmored = [self loadFile:@"user1_message_gpgui.asc"];
-  [_crypto unboxMessageArmored:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches) {
-    GRAssertEqualStrings(plainText, @"this is a signed test message");
+  [_crypto unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
+    GRAssertEqualStrings(message.text, @"this is a signed test message");
     completion();
   } failure:GRErrorHandler];
 }
 
 - (void)testUnboxMissingSignerKey:(dispatch_block_t)completion {
   NSString *messageArmored = [self loadFile:@"user1_message_unk.asc"]; // Encrypted to alice and user1, signed by alice. Alice is an unknown key
-  [_crypto unboxMessageArmored:messageArmored success:^(NSString *plainText, NSArray *signers, NSArray *warnings, NSArray *fetches) {
-    GRAssertEqualStrings(plainText, @"unknown signer (alice)");
+  [_crypto unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
+    GRAssertEqualStrings(message.text, @"unknown signer (alice)");
+    GRAssertEqualObjects((@[@"2b9be885a5de4eb9"]), message.verifyKeyIds);
+    GRAssertEqualObjects((@[@"303494a3903f2fc6", @"d53374f55303d0ea"]), message.decryptKeyIds);
     completion();
   } failure:GRErrorHandler];
 }

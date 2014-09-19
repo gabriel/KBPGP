@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KBPGPKey.h"
+
 @interface KBSigner : NSObject
 
-@property (readonly) NSString *keyFingerprint;
-@property (readonly, getter=isVerified) BOOL verified;
+@property (readonly) KBPGPKey *PGPKey;
 
-- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint verified:(BOOL)verified;
+- (instancetype)initWithPGPKey:(KBPGPKey *)PGPKey;
 
 @end

@@ -264,19 +264,19 @@ describe("JSCore", function() {
     });
   });
 
-  it("should unbox dryrun", function(done) {
-    jscore.unboxDryRun({
-      message_armored: datafile("user1_message_unk.asc"),      
-      callback: function(errmsg, warnings, fetched) {
-        //console.log("err: " + errmsg);
-        //console.log("warnings: " + jsondump(warnings));
-        //console.log("fetched: " + jsondump(fetched));
-        assert.equal(fetched[0]["key_ids"][0], "303494a3903f2fc6");
-        assert.equal(fetched[0]["key_ids"][1], "d53374f55303d0ea");        
-        done();
-      }
-    });
-  });
+  // it("should unbox dryrun", function(done) {
+  //   jscore.unboxDryRun({
+  //     message_armored: datafile("user1_message_unk.asc"),      
+  //     callback: function(errmsg, warnings, fetched) {
+  //       //console.log("err: " + errmsg);
+  //       //console.log("warnings: " + jsondump(warnings));
+  //       //console.log("fetched: " + jsondump(fetched));
+  //       assert.equal(fetched[0]["key_ids"][0], "303494a3903f2fc6");
+  //       assert.equal(fetched[0]["key_ids"][1], "d53374f55303d0ea");        
+  //       done();
+  //     }
+  //   });
+  // });
 
   // it("should be in keyring", function(done) {
   //   var decrypt_with = datafile("user1_private_unlocked.asc");

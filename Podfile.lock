@@ -15,21 +15,19 @@ PODS:
 
 DEPENDENCIES:
   - GHKit
-  - GRUnit (from `../GRUnit`)
+  - GRUnit
   - Mantle
   - NAChloride
   - ObjectiveSugar
   - TSTripleSec (from `../TSTripleSec/`)
 
 EXTERNAL SOURCES:
-  GRUnit:
-    :path: ../GRUnit
   TSTripleSec:
     :path: ../TSTripleSec/
 
 SPEC CHECKSUMS:
   GHKit: a92861bbf7a5878c2638afb08e6790ffc102cc29
-  GRUnit: 92450e5f8591626bea345ae78d5a039528e0904c
+  GRUnit: cb8243ba243ddba111b4ef741aa2cd6912dc6dd1
   libsodium: 6e51df562e39e747c64cc25162b0f57132114fae
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
