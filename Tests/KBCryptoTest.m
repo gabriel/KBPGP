@@ -36,7 +36,7 @@
     [keyRing addPGPKey:PGPKey1];
     
     [blockSelf.crypto PGPKeyForKeyBundle:[self loadFile:@"user2_public.asc"] keyBundlePassword:nil password:nil success:^(KBPGPKey *PGPKey2) {
-      PGPKey2.verification = KBPGPVerificationManual;
+      PGPKey2.verification = KBKeyVerificationManual;
       [keyRing addPGPKey:PGPKey2];
       
       completion();
@@ -98,7 +98,7 @@
   [_crypto encryptText:@"This is a secret signed message" keyBundle:[self loadFile:@"user2_public.asc"] keyBundleForSign:[self loadFile:@"user1_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user2_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret signed message");
-      GRAssertEqualStrings(@"afb10f6a5895f5b1d67851861296617a289d5c6b", [message.signers[0] PGPKey].fingerprint);
+      GRAssertEqualStrings(@"afb10f6a5895f5b1d67851861296617a289d5c6b", [message.signers[0] keyFingerprint]);
       completion();
     } failure:GRErrorHandler];
   } failure:GRErrorHandler];
@@ -109,7 +109,7 @@
   [_crypto encryptText:@"This is a secret signed message" keyBundle:[self loadFile:@"user1_public.asc"] keyBundleForSign:[self loadFile:@"user2_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret signed message");
-      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] PGPKey].fingerprint);
+      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] keyFingerprint]);
       completion();
     } failure:GRErrorHandler];
   } failure:GRErrorHandler];
@@ -144,7 +144,7 @@
     // user1_message_gpgui.asc is encrypted for user1 and user2 and signed by user2, using the gpg services encrypt gui
     [_crypto decryptMessageArmored:[self loadFile:@"user1_message_gpgui.asc"] keyBundle:[self loadFile:recipient] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"this is a signed test message");
-      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] PGPKey].fingerprint);
+      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] fingerprint]);
       if (++index == [recipients count]) completion();
     } failure:GRErrorHandler];
   }

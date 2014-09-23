@@ -15,10 +15,8 @@
 @property (readonly) NSString *bundle; // Armored message bundle
 
 @property (readonly) NSData *data; // Unencrypted data (maybe nil if not decrypted)
-@property (readonly) NSArray */*of KBSigner*/signers;
+@property (readonly) NSArray */*of id<KBSigner>*/signers;
 @property (readonly) NSArray */*of NSString */warnings;
-
-+ (KBPGPMessage *)messageWithVerifyKeyIds:(NSArray *)verifyKeyIds decryptKeyIds:(NSArray *)decryptKeyIds bundle:(NSString *)bundle;
 
 + (KBPGPMessage *)messageWithVerifyKeyIds:(NSArray *)verifyKeyIds decryptKeyIds:(NSArray *)decryptKeyIds bundle:(NSString *)bundle data:(NSData *)data signers:(NSArray *)signers warnings:(NSArray *)warnings;
 

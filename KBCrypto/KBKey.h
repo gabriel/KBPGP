@@ -24,6 +24,11 @@ typedef NS_ENUM (NSInteger, KBKeyAlgorithm) {
   KBKeyAlgorithmECDSA = 19
 };
 
+typedef NS_ENUM (NSInteger, KBKeyVerification) {
+  KBKeyVerificationNone = 0,
+  KBKeyVerificationManual = 1 << 0,
+};
+
 @protocol KBKey <NSObject>
 @property (readonly) NSString *publicKeyBundle;
 @property (readonly) NSString *fingerprint;

@@ -22,11 +22,6 @@ typedef NS_ENUM (NSInteger, KBPGPKeyFlags) {
   KBPGPKeyFlagsShared = 0x80,
 };
 
-typedef NS_ENUM (NSInteger, KBPGPVerification) {
-  KBPGPVerificationNone = 0,
-  KBPGPVerificationManual = 1 << 0,
-};
-
 KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags);
 
 @class KBPGPKey;
@@ -53,7 +48,7 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 @property (nonatomic) P3SKB *secretKey;
 
 // Type of verification
-@property KBPGPVerification verification;
+@property KBKeyVerification verification;
 
 - (KBKeyCapabilities)capabilities;
 
@@ -72,6 +67,8 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 - (NSString *)typeDescription;
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2;
+
+- (NSArray *)keyIds;
 
 @end
 

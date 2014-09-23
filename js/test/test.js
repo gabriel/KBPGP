@@ -42,8 +42,9 @@ describe("JSCore", function() {
       decrypt_with: datafile("user1_private.asc"),
       keyring: keyring,
       passphrase: "toomanysecrets",
-      success: function(plain_text, signers, warnings) {
-        assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "this is a test message to gabrielhlocal2");          
         done();
       },
       failure:failure
@@ -56,8 +57,9 @@ describe("JSCore", function() {
       decrypt_with: datafile("user1_private.asc"),
       keyring: keyring,
       passphrase: "toomanysecrets",
-      success: function(plain_text, signers, warnings) {
-        assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "this is a test message to gabrielhlocal2");          
         done();
       },
       failure:failure
@@ -79,8 +81,9 @@ describe("JSCore", function() {
           decrypt_with: datafile("user1_private.asc"),
           keyring: keyring,      
           passphrase: "toomanysecrets",        
-          success: function(plain_text, signers, warnings) {
-            assert.equal(plain_text, "this is a secret message from user2 signed by user1")
+          success: function(hex, signers, warnings) {
+            var plaintext = new Buffer(hex, "hex").toString("utf8");
+            assert.equal(plaintext, "this is a secret message from user2 signed by user1")
             assert.deepEqual(signers, ["664cf3d7151ed6e38aa051c54bf812991a9c76ab"]);
             done();
           },
@@ -97,8 +100,9 @@ describe("JSCore", function() {
       message_armored: datafile("user1_message_kb.asc"),
       decrypt_with: datafile("user1_private_unlocked.asc"),
       keyring: keyring,
-      success: function(plain_text, signers, warnings) {
-        assert.equal(plain_text, "this is a test message to gabrielhlocal2");          
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "this is a test message to gabrielhlocal2");          
         done();
       },
       failure:failure
@@ -207,7 +211,7 @@ describe("JSCore", function() {
               message_armored: datafile("user1_message_kb.asc"),
               decrypt_with: armored2,
               keyring: keyring,
-              success: function(plain_text, signers, warnings) {
+              success: function(hex, signers, warnings) {
                 done();
               },
               failure:failure
@@ -255,8 +259,23 @@ describe("JSCore", function() {
     jscore.unbox({
       message_armored: datafile("user1_message_unk.asc"),
       keyring: unbox_keyring,      
-      success: function(plain_text, signers, warnings) {
-        assert.equal(plain_text, "unknown signer (alice)");          
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "unknown signer (alice)");          
+        console.log("warnings: " + jsondump(warnings));        
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it ("should unbox bad", function(done) {
+    jscore.unbox({
+      message_armored: datafile("bad_message.asc"),
+      keyring: keyring,      
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "unknown signer (alice)");          
         console.log("warnings: " + jsondump(warnings));        
         done();
       },

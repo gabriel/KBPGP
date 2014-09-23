@@ -19,14 +19,6 @@
 
 @implementation KBPGPMessage
 
-+ (KBPGPMessage *)messageWithVerifyKeyIds:(NSArray *)verifyKeyIds decryptKeyIds:(NSArray *)decryptKeyIds bundle:(NSString *)bundle {
-  KBPGPMessage *message = [[KBPGPMessage alloc] init];
-  message.verifyKeyIds = verifyKeyIds;
-  message.decryptKeyIds = decryptKeyIds;
-  message.bundle = bundle;
-  return message;
-}
-
 + (KBPGPMessage *)messageWithVerifyKeyIds:(NSArray *)verifyKeyIds decryptKeyIds:(NSArray *)decryptKeyIds bundle:(NSString *)bundle data:(NSData *)data signers:(NSArray *)signers warnings:(NSArray *)warnings {
   KBPGPMessage *message = [[KBPGPMessage alloc] init];
   message.verifyKeyIds = verifyKeyIds;
@@ -63,7 +55,7 @@
   [encoder encodeObject:_verifyKeyIds forKey:@"verifyKeyIds"];
   [encoder encodeObject:_decryptKeyIds forKey:@"decryptKeyIds"];
   [encoder encodeObject:_bundle forKey:@"bundle"];
-  [encoder encodeObject:_bundle forKey:@"data"];
+  [encoder encodeObject:_data forKey:@"data"];
   [encoder encodeObject:_signers forKey:@"signers"];
   [encoder encodeObject:_warnings forKey:@"warnings"];
 }

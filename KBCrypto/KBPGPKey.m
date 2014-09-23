@@ -9,6 +9,7 @@
 #import "KBPGPKey.h"
 
 #import <GHKit/GHKit.h>
+#import <ObjectiveSugar/ObjectiveSugar.h>
 
 NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   NSMutableArray *desc = [NSMutableArray array];
@@ -93,6 +94,13 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
   } else {
     return @"Public Key";
   }
+}
+
+- (NSArray *)keyIds {
+  NSMutableArray *keyIds = [NSMutableArray array];
+  [keyIds addObject:self.keyId];
+  if (_subKeys) [keyIds addObjectsFromArray:[_subKeys map:^id(KBPGPSubKey *subKey) { return subKey.keyId; }]];
+  return keyIds;
 }
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2 {

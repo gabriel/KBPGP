@@ -78,7 +78,7 @@
   NSMutableArray *signers = [NSMutableArray array];
   for (NSString *keyFingerprint in keyFingerprints) {
     KBPGPKey *PGPKey = [self PGPKeyFromFingerprint:keyFingerprint];
-    if (PGPKey) [signers addObject:[[KBSigner alloc] initWithPGPKey:PGPKey]];
+    if (PGPKey) [signers addObject:[[KBSigner alloc] initWithKeyFingerprint:PGPKey.fingerprint verification:PGPKey.verification]];
   }
   success(signers);
 }

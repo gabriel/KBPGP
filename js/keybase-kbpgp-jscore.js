@@ -158,8 +158,7 @@ jscore.verify = function(params) {
     keyfetch: keyring,
   };
   kbpgp.unbox(kparams, function(err, literals, warnings) {
-    if (err) { failure.handle(err); return; }
-    jscore._process_literals(literals, warnings, keyring, success);
+    jscore._process_literals(err, literals, warnings, keyring, success, failure);
   });
 };
 
@@ -181,8 +180,7 @@ jscore.decrypt = function(params) {
       strict: false,
     };
     kbpgp.unbox(kparams, function(err, literals, warnings) {
-      if (err) { failure.handle(err); return; }
-      jscore._process_literals(literals, warnings, keyring, success);
+      jscore._process_literals(err, literals, warnings, keyring, success, failure);
     });    
   }, failure);
 };
@@ -201,13 +199,20 @@ jscore.unbox = function(params) {
     strict: false,
   };
   kbpgp.unbox(kparams, function(err, literals, warnings) {
-    if (err) { failure.handle(err); return; }
-    jscore._process_literals(literals, warnings, keyring, success);
+    jscore._process_literals(err, literals, warnings, keyring, success, failure);
   });
 };
 
-// Process literals from decrypt/verify
-jscore._process_literals = function(literals, warnings, keyring, success) {
+// Process literals from decrypt/verify/unbox
+jscore._process_literals = function(err, literals, warnings, keyring, success, failure) {
+  if (err) { 
+    failure.handle(err);      
+    return;
+  } else if (literals.length == 0) {
+    failure.handle(new Error("Empty"));
+    return;
+  }
+
   var hex = literals[0].toString("hex");
   var data_signers = literals[0].get_data_signers();      
 
