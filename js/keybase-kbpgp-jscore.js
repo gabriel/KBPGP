@@ -65,10 +65,10 @@ jscore.encrypt = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  jscore._decodeKeys(encrypt_for, sign_with, passphrase, function(public_key, private_key) {
+  jscore._decodePublicPrivate(encrypt_for, sign_with, passphrase, function(public_keys, private_key) {
     var kparams = {
       msg: text,
-      encrypt_for: public_key
+      encrypt_for: public_keys
     };
     if (private_key) kparams.sign_with = private_key;
     kbpgp.box(kparams, function(err, result_string, result_buffer) {
@@ -138,7 +138,7 @@ KeyRing.prototype.add_key_bundles = function(bundles, callback) {
   }
 
   var that = this;  
-  jscore.importKey(bundles[0], "keyring", function(err, km) {
+  jscore.decodeKey(bundles[0], "keyring", function(err, km) {
     bundles.splice(0, 1);
     if (!err) {
       that.pgpkr.add_key_manager(km);         
@@ -208,7 +208,7 @@ jscore._process_literals = function(err, literals, warnings, keyring, success, f
   if (err) { 
     failure.handle(err);      
     return;
-  } else if (literals.length == 0) {
+  } else if (literals.length === 0) {
     failure.handle(new Error("Empty"));
     return;
   }
@@ -391,16 +391,33 @@ jscore.dearmor = function(params) {
   }
 };
 
-jscore._decodeKey = function(bundle, passphrase, success, failure) {
-  jscore._decodeKey2(bundle, passphrase, true, success, failure);
-};
-
-jscore.importKey = function(bundle, passphrase, callback) {
+jscore.decodeKey = function(bundle, passphrase, callback) {
   jscore._decodeKey(bundle, passphrase, function(km) {
     callback(null, km);
   }, new ErrorHandler(function(err) {
     callback(err);
   }));
+};
+
+jscore._decodeKeys = function(bundles, success, failure) {
+  jscore._nextDecodeKeys(bundles, [], success, failure);
+};
+
+jscore._nextDecodeKeys = function(bundles, keys, success, failure) {
+  if (bundles.length === 0) {
+    success(keys);
+    return;
+  }
+
+  jscore._decodeKey(bundles[0], null, function(key) {
+    bundles.splice(0, 1);
+    keys.push(key);
+    jscore._nextDecodeKeys(bundles, keys, success, failure);
+  }, failure);
+};
+
+jscore._decodeKey = function(bundle, passphrase, success, failure) {
+  jscore._decodeKey2(bundle, passphrase, true, success, failure);
 };
 
 jscore._decodeKey2 = function(bundle, passphrase, unlock, success, failure) {
@@ -425,14 +442,14 @@ jscore._decodeKey2 = function(bundle, passphrase, unlock, success, failure) {
   });
 };
 
-jscore._decodeKeys = function(public_key_bundle, private_key_bundle, passphrase, success, failure) {
-  jscore._decodeKey(public_key_bundle, null, function(public_key) {
+jscore._decodePublicPrivate = function(public_key_bundles, private_key_bundle, passphrase, success, failure) {
+  jscore._decodeKeys(public_key_bundles, function(public_keys) {
     if (!private_key_bundle) {
-      success(public_key, null);
+      success(public_keys, null);
       return;
     }
     jscore._decodeKey(private_key_bundle, passphrase, function(private_key) {
-      success(public_key, private_key);
+      success(public_keys, private_key);
     }, failure);
   }, failure);
 };

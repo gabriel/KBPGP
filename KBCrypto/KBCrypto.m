@@ -91,19 +91,19 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   dispatch_async(completionQueue, callback);
 }
 
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure {
+- (void)encryptText:(NSString *)text keyBundles:(NSArray *)keyBundles success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
-  [self _call:@"encrypt" params:@{@"encrypt_for": keyBundle, @"text": text, @"success": ^(NSString *messageArmored) {
+  [self _call:@"encrypt" params:@{@"encrypt_for": keyBundles, @"text": text, @"success": ^(NSString *messageArmored) {
     [blockSelf _callback:^{ success(messageArmored); }];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];
 }
 
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure {
+- (void)encryptText:(NSString *)text keyBundles:(NSArray *)keyBundles keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
   [self _armorBundle:keyBundleForSign password:passwordForSign success:^(NSString *armoredBundleForSign, BOOL isSecret) {
-    [blockSelf _call:@"encrypt" params:@{@"encrypt_for": keyBundle, @"sign_with": KBCOrNull(armoredBundleForSign), @"passphrase": KBCOrNull(passwordForSign), @"text": text, @"success": ^(NSString *messageArmored) {
+    [blockSelf _call:@"encrypt" params:@{@"encrypt_for": keyBundles, @"sign_with": KBCOrNull(armoredBundleForSign), @"passphrase": KBCOrNull(passwordForSign), @"text": text, @"success": ^(NSString *messageArmored) {
       [blockSelf _callback:^{ success(messageArmored); }];
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];

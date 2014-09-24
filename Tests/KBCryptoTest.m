@@ -47,7 +47,7 @@
 
 - (void)testEncryptDecrypt:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto encryptText:@"This is a secret message" keyBundle:[self loadFile:@"user1_public.asc"] success:^(NSString *messageArmored) {
+  [_crypto encryptText:@"This is a secret message" keyBundles:@[[self loadFile:@"user1_public.asc"]] success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret message");
       
@@ -58,7 +58,7 @@
 
 - (void)testEncryptDecryptWithGPG:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto encryptText:@"This is a secret message" keyBundle:[self loadFile:@"user2_public.asc"] success:^(NSString *messageArmored) {
+  [_crypto encryptText:@"This is a secret message" keyBundles:@[[self loadFile:@"user2_public.asc"]] success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user2_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret message");
       completion();
@@ -95,18 +95,24 @@
 
 - (void)testEncryptSignDecryptVerify:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto encryptText:@"This is a secret signed message" keyBundle:[self loadFile:@"user2_public.asc"] keyBundleForSign:[self loadFile:@"user1_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
+  [_crypto encryptText:@"This is a secret signed message" keyBundles:@[[self loadFile:@"user2_public.asc"], [self loadFile:@"user1_public.asc"]] keyBundleForSign:[self loadFile:@"user1_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user2_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret signed message");
       GRAssertEqualStrings(@"afb10f6a5895f5b1d67851861296617a289d5c6b", [message.signers[0] keyFingerprint]);
-      completion();
+      
+      [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
+        GRAssertEqualStrings(message.text, @"This is a secret signed message");
+        GRAssertEqualStrings(@"afb10f6a5895f5b1d67851861296617a289d5c6b", [message.signers[0] keyFingerprint]);
+        completion();
+        
+      } failure:GRErrorHandler];
     } failure:GRErrorHandler];
   } failure:GRErrorHandler];
 }
 
 - (void)testEncryptSignDecryptVerifyFromGPG:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto encryptText:@"This is a secret signed message" keyBundle:[self loadFile:@"user1_public.asc"] keyBundleForSign:[self loadFile:@"user2_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
+  [_crypto encryptText:@"This is a secret signed message" keyBundles:@[[self loadFile:@"user1_public.asc"]] keyBundleForSign:[self loadFile:@"user2_private.asc"] passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
     [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret signed message");
       GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] keyFingerprint]);
@@ -144,7 +150,7 @@
     // user1_message_gpgui.asc is encrypted for user1 and user2 and signed by user2, using the gpg services encrypt gui
     [_crypto decryptMessageArmored:[self loadFile:@"user1_message_gpgui.asc"] keyBundle:[self loadFile:recipient] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"this is a signed test message");
-      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] fingerprint]);
+      GRAssertEqualObjects(@"664cf3d7151ed6e38aa051c54bf812991a9c76ab", [message.signers[0] keyFingerprint]);
       if (++index == [recipients count]) completion();
     } failure:GRErrorHandler];
   }
@@ -196,7 +202,7 @@
     NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
     NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
     
-    [blockSelf.crypto encryptText:text keyBundle:publicKeyArmored keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
+    [blockSelf.crypto encryptText:text keyBundles:@[publicKeyArmored] keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
       [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:keyBundleAsP3SKB password:@"Setec Astronomy" success:^(KBPGPMessage *message) {
         GRAssertEqualStrings(text, message.text);
         completion();
@@ -223,7 +229,7 @@
     NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
     NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
     
-    [blockSelf.crypto encryptText:text keyBundle:publicKeyArmored keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
+    [blockSelf.crypto encryptText:text keyBundles:@[publicKeyArmored] keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
       [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:keyBundleAsP3SKB password:@"Setec Astronomy" success:^(KBPGPMessage *message) {
         GRAssertEqualStrings(text, message.text);
         completion();

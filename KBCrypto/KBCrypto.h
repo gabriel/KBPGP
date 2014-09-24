@@ -44,18 +44,18 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 /*!
  Encrypt.
  @param text Text to encrypt
- @param keyBundle Bundle to encrypt with. Key bundle can be amrored public PGP key.
+ @param keyBundles Bundles to encrypt with. Key bundles can be amrored public PGP key or a base64 P3SKB.
  */
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
+- (void)encryptText:(NSString *)text keyBundles:(NSArray *)keyBundles success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Encrypt and sign.
  @param text Text to encrypt
- @param keyBundle Bundle to encrypt with. Key bundle can be amrored public PGP key.
+ @param keyBundles Bundles to encrypt with. Key bundle can be amrored public PGP key or a base64 P3SKB.
  @param keyBundleForSign Bundle to sign with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
  @param passwordForSign Password for keyBundleForSign
  */
-- (void)encryptText:(NSString *)text keyBundle:(NSString *)keyBundle keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
+- (void)encryptText:(NSString *)text keyBundles:(NSArray *)keyBundles keyBundleForSign:(NSString *)keyBundleForSign passwordForSign:(NSString *)passwordForSign success:(void (^)(NSString *messageArmored))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Sign (clearsign).
@@ -67,12 +67,13 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 
 /*!
  Decrypt (and verify if signed).
+ Use unbox to have the keyring lookup key information.
  
  The keyring will be used to lookup keys to verify signatures.
  
  @param messageArmored Armored PGP message
  @param keyBundle Bundle to decrypt with. Key bundle can be armored private PGP key, or base64 encoded P3SKB bundle.
- @param password
+ @param password Password for keyBundle
  @param success PGP Message
  @param failure Error
 
