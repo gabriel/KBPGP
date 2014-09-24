@@ -121,7 +121,6 @@
 		00B229BB19CCBE1E0021B75C /* KBPGPMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGPMessage.h; sourceTree = "<group>"; };
 		00B229BC19CCBE1E0021B75C /* KBPGPMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPMessage.m; sourceTree = "<group>"; };
 		00C6441D19D0F95D00DF16CE /* bad_message.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bad_message.asc; sourceTree = "<group>"; };
-		00C6441E19D0F95D00DF16CE /* TemplateIcon2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TemplateIcon2x.png; sourceTree = "<group>"; };
 		3A46128C529E4E29AD414C3E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		662CBE1D64BA49118E226154 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F2E476D89B84695AB566D69 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,7 +236,6 @@
 				0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */,
 				0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */,
 				00C6441D19D0F95D00DF16CE /* bad_message.asc */,
-				00C6441E19D0F95D00DF16CE /* TemplateIcon2x.png */,
 			);
 			name = Data;
 			path = Tests/Data;

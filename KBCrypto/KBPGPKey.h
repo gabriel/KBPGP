@@ -70,6 +70,8 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 
 - (NSArray *)keyIds;
 
+- (BOOL)hasEmail:(NSString *)email;
+
 @end
 
 

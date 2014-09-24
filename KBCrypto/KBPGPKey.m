@@ -103,6 +103,13 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
   return keyIds;
 }
 
+- (BOOL)hasEmail:(NSString *)email {
+  for (KBPGPUserId *userId in _userIds) {
+    if ([userId isEqual:email]) return YES;
+  }
+  return NO;
+}
+
 - (NSComparisonResult)compare:(KBPGPKey *)key2 {
   KBPGPUserId *userId1 = [self primaryUserId];
   KBPGPUserId *userId2 = [key2 primaryUserId];
