@@ -105,7 +105,7 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
 
 - (BOOL)hasEmail:(NSString *)email {
   for (KBPGPUserId *userId in _userIds) {
-    if ([userId isEqual:email]) return YES;
+    if ([userId.email isEqual:email]) return YES;
   }
   return NO;
 }
