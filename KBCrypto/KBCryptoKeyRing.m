@@ -29,7 +29,12 @@
 - (void)fetchKeyBundlesForPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keyBundles))success failure:(void (^)(NSError *error))failure {
   GHWeakSelf blockSelf = self;
   [_keyRing lookupPGPKeyIds:PGPKeyIds capabilities:capabilities success:^(NSArray *keys) {
-    [blockSelf processKeys:keys completion:^(NSArray *keyBundles) {
+    if ([keys count] == 0) {
+      success(@[]);
+      return;
+    }
+    [blockSelf processKeys:keys capabilities:capabilities completion:^(NSArray *keyBundles) {
+      GHDebug(@"Process keys (%d), bundles (%d)", (int)[keys count], (int)[keyBundles count]);
       success(keyBundles);
     }];
   } failure:failure];
@@ -39,14 +44,16 @@
   [_keyRing verifyKeyFingerprints:keyFingerprints success:success failure:failure];
 }
 
-- (void)processKeys:(NSArray *)keys completion:(void (^)(NSArray *keyBundles))completion {
+- (void)processKeys:(NSArray *)keys capabilities:(KBKeyCapabilities)capabilities completion:(void (^)(NSArray *keyBundles))completion {
   NSMutableArray *keyBundles = [NSMutableArray array];
   
   NSMutableArray *secretKeys = [NSMutableArray array];
   
+  BOOL isSignOrDecrypt = ((capabilities & KBKeyCapabilitiesDecrypt) != 0) || ((capabilities & KBKeyCapabilitiesSign) != 0);
+  
   for (id<KBKey> key in keys) {
-    if (key.secretKey) {
-      [secretKeys addObject:key.secretKey];
+    if (key.secretKey && isSignOrDecrypt) {
+      [secretKeys addObject:key];
     } else {
       [keyBundles addObject:key.publicKeyBundle];
     }
@@ -61,10 +68,6 @@
     [keyBundles addObjectsFromArray:secretKeyBundles];
     completion(keyBundles);
   });
-  
-  if ([secretKeys count] == 0) {
-    completion(@[]);
-  }
 }
 
 #pragma mark Fetch (JSContext)

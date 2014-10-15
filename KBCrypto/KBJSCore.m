@@ -13,7 +13,7 @@
 
 @implementation KBJSCore
 
-- (instancetype)init {
+- (instancetype)initWithQueue:(dispatch_queue_t)queue {
   if ((self = [super init])) {
     _context = [[JSContext alloc] initWithVirtualMachine:[[JSVirtualMachine alloc] init]];
     _context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
@@ -21,7 +21,7 @@
       GHDebug(@"Exception: %@, %@", [exception description], obj);
       [NSException raise:NSGenericException format:@"JS Exception"];
     };
-    
+
     _context[@"console"] = @{};
     _context[@"console"][@"log"] = ^(id obj) {
       GHDebug(@"Console: %@", obj);
@@ -40,16 +40,21 @@
     _context[@"document"][@"write"] = ^(NSString *msg) {
       GHDebug(@"Document write: %@", msg);
     };
-    
-    GHWeakSelf blockSelf = self;
+    //__block NSInteger count = 0;
     _context[@"setTimeout"] = ^(JSValue *function, JSValue *timeout) {
       int64_t time = (int64_t)([timeout toInt32] * NSEC_PER_MSEC);
-      //GHDebug(@"Time: %d", [timeout toInt32]);
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, time), blockSelf.completionQueue, ^{
-        [function callWithArguments:@[]];
-      });
+      //GHDebug(@"%d ms", (int)[timeout toInt32]);
+      if (time < 10) {
+        dispatch_async(queue, ^{
+          [function callWithArguments:@[]];
+        });
+      } else {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, time), queue, ^{
+          [function callWithArguments:@[]];
+        });
+      }
     };
-    
+
     _context[@"jscore"] = @{};
     _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
@@ -79,7 +84,7 @@
     [NSException raise:NSGenericException format:@"Invalid digest"];
     return nil;
   }
-  
+  GHDebug(@"JSCore content:%@, %d", path, (int)[content length]);
   return content;
 }
 

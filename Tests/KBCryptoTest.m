@@ -10,11 +10,6 @@
 
 @implementation KBCryptoTest
 
-- (void)tearDown {
-  [_crypto clearContext];
-  _crypto = nil;
-}
-
 - (NSString *)loadFile:(NSString *)file {
   NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
   NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
@@ -43,6 +38,17 @@
       
     } failure:GRErrorHandler];
   } failure:GRErrorHandler];
+}
+
+- (void)tearDown {
+  //[_crypto clearContext];
+  //_crypto = nil;
+}
+
+- (void)testReady:(dispatch_block_t)completion {
+  [_crypto checkReady:^{
+    completion();
+  }];
 }
 
 - (void)testEncryptDecrypt:(dispatch_block_t)completion {
@@ -136,12 +142,12 @@
   }
 }
 
-- (void)testDecryptWithP3SKB:(dispatch_block_t)completion {
-  [_crypto decryptMessageArmored:[self loadFile:@"user1_message_kb.asc"] keyBundle:[self loadFile:@"user1_private.p3skb"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
-    GRAssertEqualStrings(message.text, @"this is a test message to gabrielhlocal2");
-    completion();
-  } failure:GRErrorHandler];
-}
+//- (void)testDecryptWithP3SKB:(dispatch_block_t)completion {
+//  [_crypto decryptMessageArmored:[self loadFile:@"user1_message_kb.asc"] keyBundle:[self loadFile:@"user1_private.p3skb"] password:@"toomanysecrets" success:^(KBPGPMessage *message) {
+//    GRAssertEqualStrings(message.text, @"this is a test message to gabrielhlocal2");
+//    completion();
+//  } failure:GRErrorHandler];
+//}
 
 - (void)testDecryptSignedMultipleRecipients:(dispatch_block_t)completion {
   NSArray *recipients = @[@"user1_private.asc", @"user2_private.asc"];

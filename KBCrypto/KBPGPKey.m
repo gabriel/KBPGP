@@ -10,6 +10,7 @@
 
 #import <GHKit/GHKit.h>
 #import <ObjectiveSugar/ObjectiveSugar.h>
+#import <TSTripleSec/TSTripleSec.h>
 
 NSString *NSStringFromKBPGPKeyFlags(KBPGPKeyFlags flags) {
   NSMutableArray *desc = [NSMutableArray array];
@@ -64,7 +65,11 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
 }
 
 - (KBKeyCapabilities)capabilities {
-  return KBKeyCapabiltiesFromFlags(_flags);
+  KBKeyCapabilities capabilities = KBKeyCapabiltiesFromFlags(_flags);
+  for (KBPGPSubKey *subKey in _subKeys) {
+    capabilities |= subKey.capabilities;
+  }
+  return capabilities;
 }
 
 - (KBPGPUserId *)primaryUserId {
@@ -96,18 +101,31 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
   }
 }
 
+- (NSString *)decryptSecretKeyArmoredWithPassword:(NSString *)password error:(NSError * __autoreleasing *)error {
+  if (!_secretKeyArmoredEncrypted) return nil;
+  TSTripleSec *tripleSec = [[TSTripleSec alloc] init];
+  NSData *data = [tripleSec decrypt:_secretKeyArmoredEncrypted key:[password dataUsingEncoding:NSUTF8StringEncoding] error:error];
+  if (!data) return nil;
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
 - (NSArray *)keyIds {
   NSMutableArray *keyIds = [NSMutableArray array];
   [keyIds addObject:self.keyId];
-  if (_subKeys) [keyIds addObjectsFromArray:[_subKeys map:^id(KBPGPSubKey *subKey) { return subKey.keyId; }]];
+  if (_subKeys) [keyIds addObjectsFromArray:[_subKeys map:^id(KBPGPSubKey *subKey) { return [subKey.keyId lowercaseString]; }]];
   return keyIds;
 }
 
+- (BOOL)hasKeyId:(NSString *)keyId {
+  return !![self.keyIds detect:^BOOL(NSString *k) {
+    return [k isEqual:keyId];
+  }];
+}
+
 - (BOOL)hasEmail:(NSString *)email {
-  for (KBPGPUserId *userId in _userIds) {
-    if ([userId.email isEqual:email]) return YES;
-  }
-  return NO;
+  return !![_userIds detect:^BOOL(KBPGPUserId *userId) {
+    return [userId.email isEqual:email];
+  }];
 }
 
 - (NSComparisonResult)compare:(KBPGPKey *)key2 {

@@ -14,8 +14,9 @@
 #import "KBCryptoKeyRing.h"
 #import "KBPGPKeyRing.h"
 #import "KBPGPMessage.h"
-
+#import "KBCryptoUtil.h"
 #import <TSTripleSec/P3SKB.h>
+
 
 typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   KBCryptoErrorCodeDefault = -1,
@@ -113,20 +114,9 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 - (void)armoredKeyBundleFromPublicKey:(NSData *)data success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *failure))failure;
 
 /*!
- Amored key bundle from PGP key.
- Can be a public or private armored key.
- */
-- (void)armoredKeyBundleFromPGPKey:(KBPGPKey *)PGPKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure;
-
-/*!
  Armored private key bundle from P3SKB.
  */
 - (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
-
-/*!
- Get an armored public key bundle from any type of private bundle.
- */
-- (void)armoredPublicKeyBundleFromKeyBundle:(NSString *)keyBundle success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Dearmor. Can be a armored pgp key or message.
@@ -145,20 +135,23 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 #pragma mark PGPKey
 
 /*!
- Load PGP key info from bundle.
+ Generate PGP key from private key.
 
- If you don't specify a password, the secretKey property will not be set.
- 
- @param keyBundle Armored private or public key.
- @param keyBundlePassword If private key, password for private key part.
- @param password Password New password to set using P3SKB.
+ @param privateKeyBundle Armored private key.
+ @param keyBundlePassword Password for private key bundle
+ @param password Password New password to set
  */
-- (void)PGPKeyForKeyBundle:(NSString *)keyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+- (void)PGPKeyForPrivateKeyBundle:(NSString *)privateKeyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+
+/*!
+ Generate PGP key from public key.
+ */
+- (void)PGPKeyForPublicKeyBundle:(NSString *)keyBundle success:(void (^)(KBPGPKey *key))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Generate PGP key from secret key.
  */
-- (void)PGPKeyForSecretKey:(P3SKB *)secretKey success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+- (void)PGPKeyForSecretKey:(P3SKB *)secretKey password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark Password
 
@@ -172,9 +165,15 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  */
 - (void)checkPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle password:(NSString *)password success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
-#pragma mark Debugging
+/*!
+ Add armored key bundle to key ring.
+ */
+- (void)addArmoredKeyBundle:(NSString *)armoredKeyBundle success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
 - (void)clearContext;
+
+- (void)checkReady:(dispatch_block_t)completion;
+- (void)isReady:(void (^)(BOOL ready))completion;
 
 @end
 

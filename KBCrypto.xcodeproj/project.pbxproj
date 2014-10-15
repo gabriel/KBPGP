@@ -37,6 +37,12 @@
 		004BC8E9198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBCryptoKeyRing.m */; };
 		004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8EF198C187C000C039B /* KBJSCoreTest.m */; };
 		0054F14F1990503700908F74 /* user1_private.p3skb in Resources */ = {isa = PBXBuildFile; fileRef = 0054F14E1990503700908F74 /* user1_private.p3skb */; };
+		005563AB19E36DAC001A86AB /* KBCryptoReadyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */; };
+		005563B619E4970B001A86AB /* KBOSLCryptoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B519E4970B001A86AB /* KBOSLCryptoTest.m */; };
+		005563B919E497DD001A86AB /* KBCryptoUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBCryptoUtil.m */; };
+		005563BA19E497DD001A86AB /* KBCryptoUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBCryptoUtil.m */; };
+		005563BC19E49D6F001A86AB /* testkey.pem in Resources */ = {isa = PBXBuildFile; fileRef = 005563BB19E49D6F001A86AB /* testkey.pem */; };
+		005563BF19E4B206001A86AB /* user3_message.asc in Resources */ = {isa = PBXBuildFile; fileRef = 005563BD19E4B206001A86AB /* user3_message.asc */; };
 		00596C8B19C8E9C800D16DAA /* KBPGPKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8A19C8E9C800D16DAA /* KBPGPKeyRing.m */; };
 		00596C8C19C8E9C800D16DAA /* KBPGPKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8A19C8E9C800D16DAA /* KBPGPKeyRing.m */; };
 		00596C8F19C8EE5700D16DAA /* KBUnboxTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */; };
@@ -104,6 +110,12 @@
 		004BC8EF198C187C000C039B /* KBJSCoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBJSCoreTest.m; path = Tests/KBJSCoreTest.m; sourceTree = "<group>"; };
 		004BC8F1198C1C09000C039B /* KBCrypto.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = KBCrypto.podspec; sourceTree = "<group>"; };
 		0054F14E1990503700908F74 /* user1_private.p3skb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_private.p3skb; sourceTree = "<group>"; };
+		005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBCryptoReadyTest.m; path = Tests/KBCryptoReadyTest.m; sourceTree = "<group>"; };
+		005563B519E4970B001A86AB /* KBOSLCryptoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBOSLCryptoTest.m; path = Tests/KBOSLCryptoTest.m; sourceTree = "<group>"; };
+		005563B719E497DD001A86AB /* KBCryptoUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCryptoUtil.h; sourceTree = "<group>"; };
+		005563B819E497DD001A86AB /* KBCryptoUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCryptoUtil.m; sourceTree = "<group>"; };
+		005563BB19E49D6F001A86AB /* testkey.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testkey.pem; sourceTree = "<group>"; };
+		005563BD19E4B206001A86AB /* user3_message.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_message.asc; sourceTree = "<group>"; };
 		00596C8919C8E9C800D16DAA /* KBPGPKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGPKeyRing.h; sourceTree = "<group>"; };
 		00596C8A19C8E9C800D16DAA /* KBPGPKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPKeyRing.m; sourceTree = "<group>"; };
 		00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBUnboxTest.m; path = Tests/KBUnboxTest.m; sourceTree = "<group>"; };
@@ -121,13 +133,15 @@
 		00B229BB19CCBE1E0021B75C /* KBPGPMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGPMessage.h; sourceTree = "<group>"; };
 		00B229BC19CCBE1E0021B75C /* KBPGPMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPMessage.m; sourceTree = "<group>"; };
 		00C6441D19D0F95D00DF16CE /* bad_message.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bad_message.asc; sourceTree = "<group>"; };
+		13496C16B19E1FE76BC921DD /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		3A46128C529E4E29AD414C3E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		662CBE1D64BA49118E226154 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B0819B939280D0C862ABEB9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		7F2E476D89B84695AB566D69 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		88ADA26297094C29A5043A0B /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Tests/main.m; sourceTree = "<group>"; };
 		91F6C6EF890E495EA678C79D /* Tests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tests.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		952C299E57A5446FB4346DD6 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.xcconfig"; path = "Pods/Pods-Tests.xcconfig"; sourceTree = "<group>"; };
+		C3EBDCF92FED570D504F1897 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		F30FD72284DCABF561C556CC /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,8 +176,7 @@
 				2E0105EBA54D4C8A9A158921 /* Tests */,
 				004BC87E198B192B000C039B /* Products */,
 				3746E1830062493083C021D6 /* Frameworks */,
-				952C299E57A5446FB4346DD6 /* Pods.xcconfig */,
-				F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */,
+				DD4BCC7251C4344C8348EE66 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -198,6 +211,8 @@
 				0082940819CCF820001EDCC9 /* KBSigner.m */,
 				00AEEF0A1999867300D9A741 /* KBKeyGenProgress.h */,
 				00AEEF0B1999867300D9A741 /* KBKeyGenProgress.m */,
+				005563B719E497DD001A86AB /* KBCryptoUtil.h */,
+				005563B819E497DD001A86AB /* KBCryptoUtil.m */,
 			);
 			path = KBCrypto;
 			sourceTree = "<group>";
@@ -215,6 +230,7 @@
 		004BC8BB198B1C3D000C039B /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				005563BB19E49D6F001A86AB /* testkey.pem */,
 				004BC8BF198B1C3D000C039B /* user1_clearsign_fail.asc */,
 				004BC8C0198B1C3D000C039B /* user1_clearsign_gpg1.asc */,
 				004BC8C1198B1C3D000C039B /* user1_clearsign_kb.asc */,
@@ -236,6 +252,7 @@
 				0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */,
 				0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */,
 				00C6441D19D0F95D00DF16CE /* bad_message.asc */,
+				005563BD19E4B206001A86AB /* user3_message.asc */,
 			);
 			name = Data;
 			path = Tests/Data;
@@ -250,6 +267,8 @@
 				00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */,
 				00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */,
 				004BC8EF198C187C000C039B /* KBJSCoreTest.m */,
+				005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */,
+				005563B519E4970B001A86AB /* KBOSLCryptoTest.m */,
 				88ADA26297094C29A5043A0B /* main.m */,
 			);
 			name = Tests;
@@ -271,6 +290,17 @@
 				3A46128C529E4E29AD414C3E /* Foundation.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		DD4BCC7251C4344C8348EE66 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6B0819B939280D0C862ABEB9 /* Pods.debug.xcconfig */,
+				13496C16B19E1FE76BC921DD /* Pods.release.xcconfig */,
+				F30FD72284DCABF561C556CC /* Pods-Tests.release.xcconfig */,
+				C3EBDCF92FED570D504F1897 /* Pods-Tests.debug.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -351,6 +381,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				005563BF19E4B206001A86AB /* user3_message.asc in Resources */,
 				0042E39119918E9400C8676B /* keybase.js in Resources */,
 				0042E39219918E9600C8676B /* keybase-kbpgp-jscore.js in Resources */,
 				004BC8D1198B1C3D000C039B /* user1_clearsign_kb.asc in Resources */,
@@ -371,6 +402,7 @@
 				004BC8CD198B1C3D000C039B /* user2_private.asc in Resources */,
 				004BC8CE198B1C3D000C039B /* user2_public.asc in Resources */,
 				00AEEF0319942D3400D9A741 /* user1_private_unlocked.asc in Resources */,
+				005563BC19E49D6F001A86AB /* testkey.pem in Resources */,
 				004BC8D8198B1C3D000C039B /* user1_sign_gpg2.asc in Resources */,
 				0007D3D8199D4DC3008EF782 /* user3_ecc_public.asc in Resources */,
 				004BC8D4198B1C3D000C039B /* user1_message_kb.asc in Resources */,
@@ -422,7 +454,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-Tests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Tests/Pods-Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BBB2C214326E49B399E5734E /* Copy Pods Resources */ = {
@@ -437,7 +469,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -449,6 +481,7 @@
 			files = (
 				00B229BD19CCBE1E0021B75C /* KBPGPMessage.m in Sources */,
 				004BC8E8198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */,
+				005563B919E497DD001A86AB /* KBCryptoUtil.m in Sources */,
 				00AEEF0C1999867300D9A741 /* KBKeyGenProgress.m in Sources */,
 				0007D3DD199D5F03008EF782 /* KBPGPKey.m in Sources */,
 				0082940919CCF820001EDCC9 /* KBSigner.m in Sources */,
@@ -470,8 +503,11 @@
 				0082940A19CCF820001EDCC9 /* KBSigner.m in Sources */,
 				00B229BE19CCBE1E0021B75C /* KBPGPMessage.m in Sources */,
 				004BC8E1198B2102000C039B /* KBCrypto.m in Sources */,
+				005563AB19E36DAC001A86AB /* KBCryptoReadyTest.m in Sources */,
+				005563BA19E497DD001A86AB /* KBCryptoUtil.m in Sources */,
 				CD4CD2BBDDAB456688663A8D /* main.m in Sources */,
 				0007D3DE199D5F03008EF782 /* KBPGPKey.m in Sources */,
+				005563B619E4970B001A86AB /* KBOSLCryptoTest.m in Sources */,
 				004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */,
 				004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */,
 				004BC8E9198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */,
@@ -567,7 +603,7 @@
 		};
 		004BC892198B192B000C039B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
+			baseConfigurationReference = 6B0819B939280D0C862ABEB9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -577,7 +613,7 @@
 		};
 		004BC893198B192B000C039B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 952C299E57A5446FB4346DD6 /* Pods.xcconfig */;
+			baseConfigurationReference = 13496C16B19E1FE76BC921DD /* Pods.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -587,10 +623,11 @@
 		};
 		7EDB9D63F0F8486683F92A4F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
+			baseConfigurationReference = C3EBDCF92FED570D504F1897 /* Pods-Tests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/xcodeproj.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -605,7 +642,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -615,10 +652,11 @@
 		};
 		F74EE1D981DD41A4AB469418 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F58B122E3FCB42B89D0DBBD2 /* Pods-Tests.xcconfig */;
+			baseConfigurationReference = F30FD72284DCABF561C556CC /* Pods-Tests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DSTROOT = /tmp/xcodeproj.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -626,7 +664,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"$(inherited)",

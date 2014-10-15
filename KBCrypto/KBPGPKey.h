@@ -69,8 +69,16 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 - (NSComparisonResult)compare:(KBPGPKey *)key2;
 
 - (NSArray *)keyIds;
+- (BOOL)hasKeyId:(NSString *)keyId;
 
 - (BOOL)hasEmail:(NSString *)email;
+
+
+// Keep armored version around too.
+// This is so we don't need to re-armor when using kbpgp. This is also TripleSec'ed.
+@property NSData *secretKeyArmoredEncrypted;
+
+- (NSString *)decryptSecretKeyArmoredWithPassword:(NSString *)password error:(NSError * __autoreleasing *)error;
 
 @end
 

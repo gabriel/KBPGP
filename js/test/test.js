@@ -155,7 +155,7 @@ describe("JSCore", function() {
   });
 
   it("should export public key for private key", function(done) {
-    var armored = datafile("user1_private.asc")
+    var armored = datafile("user1_private.asc");
     jscore.exportPublicKey({
       armored: armored, 
       success: function(public_key) {
@@ -167,7 +167,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for public key", function(done) {
-    var armored = datafile("user1_public.asc")
+    var armored = datafile("user1_public.asc");
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -178,7 +178,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for gpg key", function(done) {
-    var armored = datafile("user2_private.asc")
+    var armored = datafile("user2_private.asc");
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -189,7 +189,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for ecc key", function(done) {
-    var armored = datafile("user3_ecc_private.asc")
+    var armored = datafile("user3_ecc_private.asc");
     jscore.info({
       armored: armored,
       success: function(info) {
@@ -200,7 +200,7 @@ describe("JSCore", function() {
   });
 
   it("should set password", function(done) {
-    var armored = datafile("user1_private.asc")
+    var armored = datafile("user1_private.asc");
     jscore.setPassword({
       armored: armored,
       previous: "toomanysecrets",
@@ -213,7 +213,7 @@ describe("JSCore", function() {
   });
 
   it("should clear password", function(done) {
-    var armored = datafile("user1_private.asc")
+    var armored = datafile("user1_private.asc");
     jscore.setPassword({
       armored: armored,
       previous: "toomanysecrets",
@@ -241,7 +241,7 @@ describe("JSCore", function() {
   });
 
   it("should check password", function(done) {
-    var armored = datafile("user1_private.asc")
+    var armored = datafile("user1_private.asc");
     jscore.checkPassword({
       armored: armored,
       passphrase: "toomanysecrets",
@@ -266,6 +266,27 @@ describe("JSCore", function() {
     });    
   });
 
+  it("should unbox gpg", function(done) {
+    var unboxkeyring = new kbpgp.keyring.PgpKeyRing();
+    jscore.decodeKey(datafile("user1_private.asc"), "toomanysecrets", function(err, km) {
+      unboxkeyring.add_key_manager(km);      
+    });
+    jscore.decodeKey(datafile("user2_public.asc"), null, function(err, km2) {
+      unboxkeyring.add_key_manager(km2);      
+    });    
+
+    jscore.unbox({
+      message_armored: datafile("user1_message_gpgui.asc"),
+      keyring: unboxkeyring,      
+      success: function(hex, signers, warnings) {
+        var plaintext = new Buffer(hex, "hex").toString("utf8");
+        assert.equal(plaintext, "this is a signed test message");                  
+        done();
+      },
+      failure:failure
+    });
+  });
+
   it("should unbox with warnings", function(done) {
     var unboxkeyring = new kbpgp.keyring.PgpKeyRing();
     jscore.decodeKey(datafile("user1_private.asc"), "toomanysecrets", function(err, km) {
@@ -284,6 +305,19 @@ describe("JSCore", function() {
       failure:failure
     });
   });
+
+  // it("should get private info", function(done) {
+  //   var armored = datafile("user2_private.asc");
+  //   jscore.info({
+  //     armored: armored,
+  //     passphrase: "toomanysecrets",
+  //     success: function(info) {
+  //       console.log("info: " + jsondump(info));   
+  //       done();
+  //     },
+  //     failure:failure
+  //   });
+  // });
 
   // it ("should unbox bad", function(done) {
   //   jscore.unbox({

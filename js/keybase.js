@@ -380,7 +380,7 @@ var requirejs, require, define;
             //unlikely to work in other AMD implementations.
             setTimeout(function () {
                 main(undef, deps, callback, relName);
-            }, 4);
+            }, 10);
         }
 
         return req;

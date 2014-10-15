@@ -30,13 +30,10 @@
   KBKeyRingPasswordBlock passwordBlock = ^(NSArray *secretKeys, KBKeyRingPasswordCompletionBlock completion) {
     __block NSInteger count = 0;
     NSMutableArray *keyBundles = [NSMutableArray array];
-    for (P3SKB *secretKey in secretKeys) {
-      [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey password:@"toomanysecrets2" keyBundlePassword:nil success:^(NSString *keyBundle) {
-        [keyBundles addObject:keyBundle];
-        if (++count == [secretKeys count]) completion(keyBundles);
-      } failure:^(NSError *error) {
-        if (++count == [secretKeys count]) completion(keyBundles);
-      }];
+    for (KBPGPKey *secretKey in secretKeys) {
+      NSString *keyBundle = [secretKey decryptSecretKeyArmoredWithPassword:@"toomanysecrets2" error:nil];
+      [keyBundles addObject:keyBundle];
+      if (++count == [secretKeys count]) completion(keyBundles);
     }
   };
   
@@ -54,14 +51,12 @@
   } failure:GRErrorHandler];
 }
 
-- (void)tearDown {
-  [_crypto clearContext];
-}
-
 - (void)testUnbox:(dispatch_block_t)completion {
   NSString *messageArmored = [self loadFile:@"user1_message_gpgui.asc"];
+  GHDebug(@"Unbox");
   [_crypto unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
     GRAssertEqualStrings(message.text, @"this is a signed test message");
+    GHDebug(@"Done");
     completion();
   } failure:GRErrorHandler];
 }
