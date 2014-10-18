@@ -30,7 +30,7 @@
 
 - (void)testSerialize:(dispatch_block_t)completion {
   NSString *bundle = [self loadFile:@"user1_private.asc"];
-  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey) {
+  [_crypto PGPKeyForPrivateKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey) {
 
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:PGPKey];
     KBPGPKey *PGPKey2 = [NSKeyedUnarchiver unarchiveObjectWithData:data];

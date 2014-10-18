@@ -237,7 +237,7 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }}];
 }
 
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint))success failure:(KBCyptoErrorBlock)failure {
+- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
   
   GHWeakSelf blockSelf = self;
   
@@ -270,18 +270,8 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
     return ok;
   };
   
-  params[@"success"] = ^(NSString *publicKeyHex, NSString *privateKeyHex, NSString *keyFingerprint) {
-    
-    NSError *error = nil;
-    P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:[privateKeyHex na_dataFromHexString] password:password publicKey:[publicKeyHex na_dataFromHexString] error:&error];
-    if (!secretKey) {
-      [blockSelf _callback:^{ failure(error); }];
-      return;
-    }
-    
-    [blockSelf armoredKeyBundleFromPublicKey:[secretKey publicKey] success:^(NSString *publicKeyArmored) {
-      [blockSelf _callback:^{ success(secretKey, publicKeyArmored, keyFingerprint); }];
-    } failure:failure];
+  params[@"success"] = ^(NSDictionary *dict, NSString *publicKeyArmored, NSString *publicKeyHex, NSString *privateKeyArmoredNoPassword, NSString *privateKeyHexNoPassword) {
+    [self _PGPKeyForExport:dict publicKeyArmored:publicKeyArmored publicKeyHex:publicKeyHex privateKeyArmoredNoPassword:privateKeyArmoredNoPassword privateKeyHexNoPassword:privateKeyHexNoPassword password:password success:success failure:failure];
   };
   
   params[@"failure"] = ^(NSString *error) {
@@ -312,41 +302,48 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }}];
 }
 
+- (void)_PGPKeyForExport:(NSDictionary *)info publicKeyArmored:(NSString *)publicKeyArmored publicKeyHex:(NSString *)publicKeyHex privateKeyArmoredNoPassword:(NSString *)privateKeyArmoredNoPassword privateKeyHexNoPassword:(NSString *)privateKeyHexNoPassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
+  
+  NSMutableDictionary *mdict = [info mutableCopy];
+  mdict[@"public_key_bundle"] = publicKeyArmored;
+  
+  GHWeakSelf blockSelf = self;
+  NSError *error = nil;
+  KBPGPKey *key = [MTLJSONAdapter modelOfClass:KBPGPKey.class fromJSONDictionary:mdict error:&error];
+  if (!key) {
+    [blockSelf _callback:^{ failure(error); }];
+    return;
+  }
+  
+  if (privateKeyHexNoPassword && password) {
+    GHDebug(@"Encrypting secret key");
+    P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:[privateKeyHexNoPassword na_dataFromHexString] password:password publicKey:[publicKeyHex na_dataFromHexString] error:nil];
+    if (!secretKey) {
+      [blockSelf _callback:^{ failure(KBCryptoError(@"Couldn't dearmor")); }];
+      return;
+    }
+    
+    GHDebug(@"Encrypting armored key");
+    TSTripleSec *tripleSec = [[TSTripleSec alloc] init];
+    NSData *secretKeyArmoredEncrypted = [tripleSec encrypt:[privateKeyArmoredNoPassword dataUsingEncoding:NSUTF8StringEncoding] key:[password dataUsingEncoding:NSUTF8StringEncoding] error:nil];
+    key.secretKeyArmoredEncrypted = secretKeyArmoredEncrypted;
+    
+    key.secretKey = secretKey;
+    GHDebug(@"Done");
+    [blockSelf _callback:^{ success(key); }];
+  } else {
+    [blockSelf _callback:^{ success(key); }];
+  }
+}
+
 - (void)PGPKeyForPrivateKeyBundle:(NSString *)privateKeyBundle keyBundlePassword:(NSString *)keyBundlePassword password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
   GHWeakSelf blockSelf = self;
   
   [self _call:@"info" params:@{@"armored": privateKeyBundle, @"passphrase": KBCOrNull(keyBundlePassword), @"success": ^(NSDictionary *dict) {
     [blockSelf _call:@"exportAll" params:@{@"armored": privateKeyBundle, @"passphrase": KBCOrNull(keyBundlePassword), @"success": ^(NSString *publicKeyArmored, NSString *publicKeyHex, NSString *privateKeyArmoredNoPassword, NSString *privateKeyHexNoPassword) {
     
-      NSMutableDictionary *mdict = [dict mutableCopy];
-      mdict[@"public_key_bundle"] = publicKeyArmored;
+      [self _PGPKeyForExport:dict publicKeyArmored:publicKeyArmored publicKeyHex:publicKeyHex privateKeyArmoredNoPassword:privateKeyArmoredNoPassword privateKeyHexNoPassword:privateKeyHexNoPassword password:password success:success failure:failure];
       
-      NSError *error = nil;
-      KBPGPKey *key = [MTLJSONAdapter modelOfClass:KBPGPKey.class fromJSONDictionary:mdict error:&error];
-      if (!key) {
-        [blockSelf _callback:^{ failure(error); }];
-        return;
-      }
-      
-      if (privateKeyHexNoPassword && password) {
-        GHDebug(@"Encrypting secret key");
-        P3SKB *secretKey = [P3SKB P3SKBWithPrivateKey:[privateKeyHexNoPassword na_dataFromHexString] password:password publicKey:[publicKeyHex na_dataFromHexString] error:nil];
-        if (!secretKey) {
-          [blockSelf _callback:^{ failure(KBCryptoError(@"Couldn't dearmor")); }];
-          return;
-        }
-        
-        GHDebug(@"Encrypting armored key");
-        TSTripleSec *tripleSec = [[TSTripleSec alloc] init];
-        NSData *secretKeyArmoredEncrypted = [tripleSec encrypt:[privateKeyArmoredNoPassword dataUsingEncoding:NSUTF8StringEncoding] key:[password dataUsingEncoding:NSUTF8StringEncoding] error:nil];
-        key.secretKeyArmoredEncrypted = secretKeyArmoredEncrypted;
-        
-        key.secretKey = secretKey;
-        GHDebug(@"Done");
-        [blockSelf _callback:^{ success(key); }];
-      } else {
-       [blockSelf _callback:^{ success(key); }];
-      }
     }, @"failure": ^(NSString *error) {
       [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
     }}];

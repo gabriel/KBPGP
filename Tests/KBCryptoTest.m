@@ -27,10 +27,10 @@
   GHWeakSelf blockSelf = self;
   KBPGPKeyRing *keyRing = [[KBPGPKeyRing alloc] init];
   [_crypto setKeyRing:keyRing passwordBlock:nil];
-  [_crypto PGPKeyForKeyBundle:[self loadFile:@"user1_public.asc"] keyBundlePassword:nil password:nil success:^(KBPGPKey *PGPKey1) {
+  [_crypto PGPKeyForPublicKeyBundle:[self loadFile:@"user1_public.asc"] success:^(KBPGPKey *PGPKey1) {
     [keyRing addPGPKey:PGPKey1];
     
-    [blockSelf.crypto PGPKeyForKeyBundle:[self loadFile:@"user2_public.asc"] keyBundlePassword:nil password:nil success:^(KBPGPKey *PGPKey2) {
+    [blockSelf.crypto PGPKeyForPublicKeyBundle:[self loadFile:@"user2_public.asc"] success:^(KBPGPKey *PGPKey2) {
       PGPKey2.verification = KBKeyVerificationManual;
       [keyRing addPGPKey:PGPKey2];
       
@@ -197,19 +197,18 @@
 
 - (void)testGenerateKeyRSA:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
-  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"Setec Astronomy" progress:^BOOL(KBKeyGenProgress *progress) {
+  NSString *password = @"Setec Astronomy";
+  [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:password progress:^BOOL(KBKeyGenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
-  } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
-    GRAssertNotNil([secretKey decryptPrivateKeyWithPassword:@"Setec Astronomy" error:nil]);
+  } success:^(KBPGPKey *PGPKey) {
+    GRTestLog(@"%@", PGPKey.publicKeyBundle);
+    NSString *privateKeyBundle = [PGPKey decryptSecretKeyArmoredWithPassword:password error:nil];
     
-    GRTestLog(@"%@", publicKeyArmored);
-    
-    NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
     NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
     
-    [blockSelf.crypto encryptText:text keyBundles:@[publicKeyArmored] keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
-      [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:keyBundleAsP3SKB password:@"Setec Astronomy" success:^(KBPGPMessage *message) {
+    [blockSelf.crypto encryptText:text keyBundles:@[PGPKey.publicKeyBundle] keyBundleForSign:privateKeyBundle passwordForSign:nil success:^(NSString *messageArmored) {
+      [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:privateKeyBundle password:password success:^(KBPGPMessage *message) {
         GRAssertEqualStrings(text, message.text);
         completion();
       } failure:GRErrorHandler];
@@ -219,28 +218,13 @@
 
 - (void)testGenerateKeyECC:(dispatch_block_t)completion {
   NSString *password = @"Setec Astronomy";
-  GHWeakSelf blockSelf = self;
+  //GHWeakSelf blockSelf = self;
   [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmECDSA password:password progress:^BOOL(KBKeyGenProgress *progress) {
     GRTestLog(@"Progress: %@", [progress progressDescription]);
     return (!self.isCancelling);
-  } success:^(P3SKB *secretKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
-    GRAssertNotNil([secretKey decryptPrivateKeyWithPassword:password error:nil]);
-    
-    //GRTestLog(@"%@", publicKeyArmored);
-    
-//    [blockSelf.crypto armoredKeyBundleFromSecretKey:secretKey previousPassword:password password:password success:^(NSString *privateKeyArmored) {
-//      GRTestLog(privateKeyArmored);
-//    } failure:GRErrorHandler];
-    
-    NSString *keyBundleAsP3SKB = [[secretKey data] base64EncodedStringWithOptions:0];
-    NSString *text = @"Hi, my name is Werner Brandes. My voice is my passport. Verify Me.";
-    
-    [blockSelf.crypto encryptText:text keyBundles:@[publicKeyArmored] keyBundleForSign:keyBundleAsP3SKB passwordForSign:@"Setec Astronomy" success:^(NSString *messageArmored) {
-      [blockSelf.crypto decryptMessageArmored:messageArmored keyBundle:keyBundleAsP3SKB password:@"Setec Astronomy" success:^(KBPGPMessage *message) {
-        GRAssertEqualStrings(text, message.text);
-        completion();
-      } failure:GRErrorHandler];
-    } failure:GRErrorHandler];
+  } success:^(KBPGPKey *PGPKey) {
+    GRTestLog(@"%@", PGPKey.publicKeyBundle);
+    completion();
   } failure:GRErrorHandler];
 }
 
@@ -248,7 +232,7 @@
   __block NSInteger iter = 0;
   [_crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^BOOL(KBKeyGenProgress *progress) {
     return (iter++ < 10);
-  } success:^(P3SKB *privateKey, NSString *publicKeyArmored, NSString *keyFingerprint) {
+  } success:^(KBPGPKey *PGPKey) {
     //GRFail(@"Should have cancelled");
     [NSException raise:@"Fail" format:@"Should fail"];
   } failure:^(NSError *error) {
@@ -291,21 +275,16 @@
 
 - (void)testPGPKeyFromPublicArmored:(dispatch_block_t)completion {
   NSString *bundle = [self loadFile:@"user1_public.asc"];
-  GHWeakSelf blockSelf = self;
-  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:nil password:nil success:^(KBPGPKey *key) {
+  [_crypto PGPKeyForPublicKeyBundle:bundle success:^(KBPGPKey *key) {
     GRAssertNotNil(key);
     GRTestLog(@"key: %@", key);
-    
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:key password:nil keyBundlePassword:nil success:^(NSString *encoded) {
-      GRTestLog(@"%@", encoded);
-      completion();
-    } failure:GRErrorHandler];
+    completion();
   } failure:GRErrorHandler];
 }
 
 - (void)testPGPKeyFromPrivateArmored:(dispatch_block_t)completion {
   NSString *bundle = [self loadFile:@"user1_private.asc"];
-  [_crypto PGPKeyForKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
+  [_crypto PGPKeyForPrivateKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
     GRAssertNotNil(PGPKey.secretKey);
     GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     
@@ -339,25 +318,11 @@
 
 - (void)testPGPKeyFromP3SKB:(dispatch_block_t)completion {
   P3SKB *secretKey = [P3SKB P3SKBFromKeyBundle:[self loadFile:@"user1_private.p3skb"] error:nil];
-  GHWeakSelf blockSelf = self;
-  [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *PGPKey) {
+  [_crypto PGPKeyForSecretKey:secretKey password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
     GRTestLog(@"key: %@", PGPKey);
     GRAssertNotNil(PGPKey.secretKey);
     GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     
-    [blockSelf.crypto armoredKeyBundleFromPGPKey:PGPKey password:@"toomanysecrets" keyBundlePassword:@"toomanysecrets" success:^(NSString *encoded) {
-      GRAssertNotNil(encoded);
-      GRTestLog(@"%@", encoded);
-      completion();
-    } failure:GRErrorHandler];
-  } failure:GRErrorHandler];
-}
-
-- (void)testArmorPublicKeyFromPGPKey:(dispatch_block_t)completion {
-  P3SKB *secretKey = [P3SKB P3SKBFromKeyBundle:[self loadFile:@"user1_private.p3skb"] error:nil];
-  [_crypto PGPKeyForSecretKey:secretKey success:^(KBPGPKey *PGPKey) {
-    GRTestLog(PGPKey.publicKeyBundle);
-    GRAssertTrue([PGPKey.publicKeyBundle gh_startsWith:@"-----BEGIN PGP PUBLIC KEY"]);
     completion();
   } failure:GRErrorHandler];
 }

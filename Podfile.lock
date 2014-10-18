@@ -2,14 +2,14 @@ PODS:
   - GHKit (1.0.9)
   - GRUnit (1.0.11)
   - libsodium (1.0.0)
-  - Mantle (1.5):
+  - Mantle (1.5.1):
     - Mantle/extobjc
-  - Mantle/extobjc (1.5)
+  - Mantle/extobjc (1.5.1)
   - MPMessagePack (0.1.8)
   - NAChloride (1.1.1):
     - libsodium
   - ObjectiveSugar (1.1.0)
-  - OpenSSL-Universal (1.0.1.i)
+  - OpenSSL (1.0.1.j)
   - TSTripleSec (0.1.8):
     - MPMessagePack
     - NAChloride
@@ -20,12 +20,14 @@ DEPENDENCIES:
   - Mantle
   - NAChloride
   - ObjectiveSugar
-  - OpenSSL-Universal
+  - OpenSSL (from `../OpenSSL`)
   - TSTripleSec (from `../TSTripleSec/`)
 
 EXTERNAL SOURCES:
   GRUnit:
     :path: ../GRUnit
+  OpenSSL:
+    :path: ../OpenSSL
   TSTripleSec:
     :path: ../TSTripleSec/
 
@@ -33,11 +35,11 @@ SPEC CHECKSUMS:
   GHKit: a92861bbf7a5878c2638afb08e6790ffc102cc29
   GRUnit: c71b4cfc6e67b1f7539a724e6344390aef94693a
   libsodium: fe2e966890bd680204048ff800e2f72bfb1b6669
-  Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92
+  Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 56f5ed342554234da0c304b0f3b2318434570f74
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
-  OpenSSL-Universal: 47c29b0c3e5b781ac74276a662c4fbe78ea5d4d8
+  OpenSSL: 71cbbd2f3594121215b73f424e4122afa464a1f3
   TSTripleSec: b5f719f1698a7e880431f2c15da6f52907949fa7
 
-COCOAPODS: 0.34.1
+COCOAPODS: 0.34.4

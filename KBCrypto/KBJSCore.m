@@ -10,6 +10,7 @@
 
 #import <GHKit/GHKit.h>
 #import <NAChloride/NAChloride.h>
+#import "KBBigNum.h"
 
 @implementation KBJSCore
 
@@ -64,6 +65,18 @@
         [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
       }
       return hexString;
+    };
+    
+    _context[@"jscore"][@"generatePrime"] = ^(JSValue *numBits) {
+      return [KBBigNum generatePrime:[numBits toInt32]];
+    };
+    
+    _context[@"jscore"][@"bnModPow"] = ^(JSValue *a, JSValue *p, JSValue *m) {
+      return [KBBigNum modPow:[a toString] p:[p toString] m:[m toString]];
+    };
+    
+    _context[@"jscore"][@"bnModInverse"] = ^(JSValue *a, JSValue *m) {
+      return [KBBigNum modInverse:[a toString] m:[m toString]];
     };
   }
   return self;

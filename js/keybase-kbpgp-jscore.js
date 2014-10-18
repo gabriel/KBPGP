@@ -286,25 +286,11 @@ jscore.generateKeyPair = function(params) {
 
   generatef(opts, function(err, key) {    
     if (err) { failure.handle(err); return; }
-    key.sign({}, function(err) {
-      if (err) { failure.handle(err); return; }
-      key.export_pgp_private_to_client({
-        passphrase: passphrase
-      }, function(err, pgp_private) {
-        if (err) { failure.handle(err); return; }
 
-        key.export_pgp_public({}, function(err, pgp_public) {
-          if (err) { failure.handle(err); return; }
-
-          var pgp_public_hex = kbpgp.armor.decode(pgp_public);
-          if (pgp_public_hex[0]) { failure.handle(pgp_public_hex[0]); return; }
-          var pgp_private_hex = kbpgp.armor.decode(pgp_private);
-          if (pgp_private_hex[0]) { failure.handle(pgp_private_hex[0]); return; }
-
-          success(pgp_public_hex[1].body.toString("hex"), pgp_private_hex[1].body.toString("hex"), 
-            key.get_pgp_fingerprint().toString("hex"));
-        });
-      });
+    jscore._info(key, function(info) {
+      jscore._exportKey(key, function(a, b, c, d) {
+        success(info, a, b, c, d);
+      }, failure);
     });
   });
 };
@@ -346,7 +332,7 @@ jscore.armorPrivateKey = function(params) {
 
   if (armored) {
     jscore._decodeKey(armored, null, function(key) {      
-      key.sign({}, function(err) {
+      key.sign({}, function(err) {        
         if (err) { failure.handle(err); return; }
         key.export_pgp_private_to_client({
           passphrase: passphrase,
@@ -466,23 +452,61 @@ jscore._decodePublicPrivate = function(public_key_bundles, private_key_bundle, p
   }, failure);
 };
 
-jscore.exportPublicKey = function(params) {
-  var armored = params.armored,
-    success = params.success,
-    failure = new ErrorHandler(params.failure);
+jscore._info = function(key, success) {
+  var info = {};
 
-  jscore._decodeKey2(armored, null, false, function(key) {
-    key.sign({}, function(err) {
-      if (err) { failure.handle(err); return; }
+  // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
 
-      pgp_public = key.pgp.export_keys({"private": false});
-      success(pgp_public);
+  var primary = key.primary; // KeyWrapper (Primary/Subkey)
+  var keymat = key.get_all_pgp_key_materials(); 
+  var pkeymat = keymat[0][0];
+  var has_private = pkeymat.has_private() ? true : false;
 
-      // key.export_pgp_public({}, function(err, pgp_public) {
-      //   success(pgp_public);
-      // }, failure);
+  info.fingerprint = key.get_pgp_fingerprint().toString("hex");
+  info.pgp_key_id = pkeymat.get_key_id().toString("hex");
+  //info.short_id = key.get_pgp_short_key_id().toString("hex");
+  info.flags = pkeymat.flags;
+  info.type = primary.key.type;
+  info.timestamp = pkeymat.timestamp;
+  info.is_locked = pkeymat.is_locked();
+  
+  info.self_signed = pkeymat.is_self_signed();    
+  if (primary.key.pub.nbits) info.nbits = primary.key.pub.nbits();
+
+  // userids: pkeymat.get_signed_userids()[0].userid.toString("utf8")
+
+  info.subkeys = [];
+
+  var subkeys = key.subkeys;
+  var i;
+  for (i = 0; i < subkeys.length; i++) {
+    var subkeymat = keymat[i+1][0];
+    var subinfo = {
+      pgp_key_id: subkeymat.get_key_id().toString("hex"),
+      flags: subkeymat.flags,
+      timestamp: subkeymat.timestamp,
+      type: subkeys[i].key.type
+    };
+    //console.log("subkeymat skm: " + jsondump(subkeymat.skm));      
+    
+    if (subkeys[i].key.pub.nbits) subinfo.nbits = subkeys[i].key.pub.nbits();
+
+    info.subkeys.push(subinfo);
+  }     
+
+  info.userids = [];
+  var userids = key.get_userids_mark_primary();
+  for (i = 0; i < userids.length; i++) {
+    info.userids.push({
+      is_primary: userids[i].primary,
+      username: userids[i].get_username(),
+      email: userids[i].get_email(),
+      comment: userids[i].get_comment(),
+      //most_recent_sig: userids[i].most_recent_sig,
     });
-  }, failure);
+  }
+
+  success(info);
 };
 
 jscore.info = function(params) {
@@ -496,62 +520,36 @@ jscore.info = function(params) {
 
   // No password is needed to get all the info
   jscore._decodeKey2(armored, passphrase, unlock, function(key) {
+    jscore._info(key, success);
+  }, failure);
+};
 
-    var info = {};
+jscore._exportKey = function(key, success, failure) {
+  key.sign({}, function(err) {
+    if (err) { failure.handle(err); return; }
 
-    // KeyManager -> PgpEngine -> KeyWrapper (Primary/Subkey) -> Pair (KeyMaterial) -> Pub/Priv
+    pgp_public = key.pgp.export_keys({"private": false});      
 
-    var primary = key.primary; // KeyWrapper (Primary/Subkey)
-    var keymat = key.get_all_pgp_key_materials(); 
-    var pkeymat = keymat[0][0];
-    var has_private = pkeymat.has_private() ? true : false;
+    var pgp_public_decode = kbpgp.armor.decode(pgp_public);
+    if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
+    var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
 
-    info.fingerprint = key.get_pgp_fingerprint().toString("hex");
-    info.pgp_key_id = pkeymat.get_key_id().toString("hex");
-    //info.short_id = key.get_pgp_short_key_id().toString("hex");
-    info.flags = pkeymat.flags;
-    info.type = primary.key.type;
-    info.timestamp = pkeymat.timestamp;
-    info.is_locked = pkeymat.is_locked();
-    
-    info.self_signed = pkeymat.is_self_signed();    
-    if (primary.key.pub.nbits) info.nbits = primary.key.pub.nbits();
-
-    // userids: pkeymat.get_signed_userids()[0].userid.toString("utf8")
-
-    info.subkeys = [];
-
-    var subkeys = key.subkeys;
-    var i;
-    for (i = 0; i < subkeys.length; i++) {
-      var subkeymat = keymat[i+1][0];
-      var subinfo = {
-        pgp_key_id: subkeymat.get_key_id().toString("hex"),
-        flags: subkeymat.flags,
-        timestamp: subkeymat.timestamp,
-        type: subkeys[i].key.type
-      };
-      //console.log("subkeymat skm: " + jsondump(subkeymat.skm));      
-      
-      if (subkeys[i].key.pub.nbits) subinfo.nbits = subkeys[i].key.pub.nbits();
-
-      info.subkeys.push(subinfo);
-    }     
-
-    info.userids = [];
-    var userids = key.get_userids_mark_primary();
-    for (i = 0; i < userids.length; i++) {
-      info.userids.push({
-        is_primary: userids[i].primary,
-        username: userids[i].get_username(),
-        email: userids[i].get_email(),
-        comment: userids[i].get_comment(),
-        //most_recent_sig: userids[i].most_recent_sig,
-      });
+    if (pgp_public.indexOf("-----BEGIN PGP PUBLIC KEY") !== 0) {
+      failure.handle(new Error("Bundle should be public key"));
+      return;
     }
 
-    success(info);
-  }, failure);
+    key.export_pgp_private_to_client({
+      passphrase: null
+    }, function(err, pgp_private) {        
+
+      var pgp_private_decode = kbpgp.armor.decode(pgp_private);
+      if (pgp_private_decode[0]) { failure.handle(pgp_private_decode[0]); return; }      
+      var pgp_private_hex = pgp_private_decode[1].body.toString("hex");
+
+      success(pgp_public, pgp_public_hex, pgp_private, pgp_private_hex);      
+    });      
+  });
 };
 
 jscore.exportAll = function(params) {
@@ -564,35 +562,7 @@ jscore.exportAll = function(params) {
   if (passphrase) unlock = true;
 
   jscore._decodeKey2(armored, passphrase, true, function(key) {
-    key.sign({}, function(err) {
-      if (err) { failure.handle(err); return; }
-
-      pgp_public = key.pgp.export_keys({"private": false});      
-
-      var pgp_public_decode = kbpgp.armor.decode(pgp_public);
-      if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
-      var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
-
-      if (pgp_public.indexOf("-----BEGIN PGP PUBLIC KEY") !== 0) {
-        failure.handle(new Error("Bundle should be public key"));
-        return;
-      }
-
-      if (has_private) {
-        key.export_pgp_private_to_client({
-          passphrase: null
-        }, function(err, pgp_private) {        
-
-          var pgp_private_decode = kbpgp.armor.decode(pgp_private);
-          if (pgp_private_decode[0]) { failure.handle(pgp_private_decode[0]); return; }      
-          var pgp_private_hex = pgp_private_decode[1].body.toString("hex");
-
-          success(pgp_public, pgp_public_hex, pgp_private, pgp_private_hex);      
-        });
-      } else {
-        success(pgp_public, pgp_public_hex, null, null);      
-      }
-    });
+    jscore._exportKey(key, success, failure);
   }, failure);
 };
 
