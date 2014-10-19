@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM (NSUInteger, KBKeyGenProgressType) {
-  KBKeyGenProgressTypeFindCandidateP = 1,
-  KBKeyGenProgressTypeFindCandidateQ,
-  KBKeyGenProgressTypeTesting
+  KBKeyGenProgressTypePrimeP = 1,
+  KBKeyGenProgressTypePrimeQ,
+  KBKeyGenProgressTypeTestingPrime
 };
 
 @interface KBKeyGenProgress : NSObject

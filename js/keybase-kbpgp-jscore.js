@@ -246,17 +246,20 @@ jscore.generateKeyPair = function(params) {
   if (progress) {
     opts.asp = new kbpgp.ASP({
       progress_hook: function(o) {
+        //console.log("o: " + jsondump(o));
         var ok = true;
-        if (o.what == "fermat" && o.section == "p") {
+        if (o.section == "p") {
+          var p = o.p;
           ok = progress({
-            type: "find_prime_p",
-            prime: o.p.toString().slice(-3),
+            type: "prime_p",
+            prime: (p ? p.toString().slice(-3) : p),
             amount: -1
           });
-        } else if (o.what == "fermat" && o.section == "q") {
+        } else if (o.section == "q") {
+          var p = o.p;
           ok = progress({
-            type: "find_prime_q",
-            prime: o.p.toString().slice(-3),
+            type: "prime_q",
+            prime: (p ? p.toString().slice(-3) : p),
             amount: -1
           });
         } else if (o.what == "mr") {

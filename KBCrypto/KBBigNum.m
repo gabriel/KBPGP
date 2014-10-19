@@ -9,11 +9,26 @@
 #import "KBBigNum.h"
 
 #import <GHKit/GHKit.h>
+#import <NAChloride/NARandom.h>
+
 #include <openssl/bn.h>
+#include <openssl/rand.h>
 
 @implementation KBBigNum
 
++ (void)ensureSeed {
+  // OpenSSL is probably using /dev/urandom to seed itself autotmatically but
+  // lets use the Security framework to do it which is guaranteed to be /dev/urandom (or better).
+  static dispatch_once_t onceToken = 0;
+  dispatch_once(&onceToken, ^{
+    NSData *data = [NARandom randomData:520 error:nil];
+    RAND_seed([data bytes], (int)[data length]);
+  });
+}
+
 + (NSString *)generatePrime:(int)bits {
+  [self ensureSeed];
+  
   //GHDebug(@"Generate prime: %d", bits);
   BIGNUM *r = BN_new();
   BN_generate_prime_ex(r, 2048, 0, NULL, NULL, NULL);

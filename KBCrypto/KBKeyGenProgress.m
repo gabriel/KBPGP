@@ -20,12 +20,12 @@
 
 - (instancetype)initFromJSONDictionary:(NSDictionary *)JSONDictionary {
   if ((self = [super init])) {
-    if ([JSONDictionary[@"type"] isEqualToString:@"find_prime_p"]) {
-      _progressType = KBKeyGenProgressTypeFindCandidateP;
-    } else if ([JSONDictionary[@"type"] isEqualToString:@"find_prime_q"]) {
-      _progressType = KBKeyGenProgressTypeFindCandidateQ;
+    if ([JSONDictionary[@"type"] isEqualToString:@"prime_p"]) {
+      _progressType = KBKeyGenProgressTypePrimeP;
+    } else if ([JSONDictionary[@"type"] isEqualToString:@"prime_q"]) {
+      _progressType = KBKeyGenProgressTypePrimeQ;
     } else if ([JSONDictionary[@"type"] isEqualToString:@"testing"]) {
-      _progressType = KBKeyGenProgressTypeTesting;
+      _progressType = KBKeyGenProgressTypeTestingPrime;
     } else {
       NSAssert(NO, @"Invalid type");
     }
@@ -43,13 +43,13 @@
 
 - (NSString *)progressDescription {
   switch (_progressType) {
-    case KBKeyGenProgressTypeFindCandidateP: {
-      return NSStringWithFormat(@"Find Candidate Prime (P): %@", [self primeDescription]);
+    case KBKeyGenProgressTypePrimeP: {
+      return @"Found Prime (P)...";
     }
-    case KBKeyGenProgressTypeFindCandidateQ: {
-      return NSStringWithFormat(@"Find Candidate Prime (Q): %@", [self primeDescription]);
+    case KBKeyGenProgressTypePrimeQ: {
+      return @"Found Prime (Q)...";
     }
-    case KBKeyGenProgressTypeTesting: {
+    case KBKeyGenProgressTypeTestingPrime: {
       return NSStringWithFormat(@"Testing: %@ (%2.f)%%", [self primeDescription], _amount * 100);
     }
   }

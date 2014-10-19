@@ -372,6 +372,7 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
         
         key.secretKey = secretKey;
         
+        NSAssert(password, @"No password");
         GHDebug(@"Encrypting armored key");
         TSTripleSec *tripleSec = [[TSTripleSec alloc] init];
         NSData *secretKeyArmoredEncrypted = [tripleSec encrypt:[armoredBundle dataUsingEncoding:NSUTF8StringEncoding] key:[password dataUsingEncoding:NSUTF8StringEncoding] error:nil];
