@@ -101,6 +101,10 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 @property (readonly) NSString *email;
 @property (readonly, getter=isPrimary) BOOL primary;
 
++ (KBPGPUserId *)userIdWithUserName:(NSString *)userName email:(NSString *)email;
+
+- (NSString *)RFC822;
+
 - (NSString *)userIdDescription:(NSString *)joinedByString;
 
 @end

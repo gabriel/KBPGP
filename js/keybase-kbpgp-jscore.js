@@ -232,7 +232,7 @@ jscore._process_literals = function(err, literals, warnings, keyring, success, f
 };
 
 jscore.generateKeyPair = function(params) {
-  var userid = params.userid,
+  var userids = params.userids,
     passphrase = params.passphrase,
     progress = params.progress,
     algorithm = params.algorithm,
@@ -240,7 +240,7 @@ jscore.generateKeyPair = function(params) {
     failure = new ErrorHandler(params.failure);
 
   var opts = { 
-    userid: userid,
+    userids: userids,
   };
 
   if (progress) {

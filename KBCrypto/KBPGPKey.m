@@ -166,7 +166,20 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
 
 @end
 
+
+@interface KBPGPUserId ()
+@property NSString *userName;
+@property NSString *email;
+@end
+
 @implementation KBPGPUserId
+
++ (KBPGPUserId *)userIdWithUserName:(NSString *)userName email:(NSString *)email {
+  KBPGPUserId *userId = [[KBPGPUserId alloc] init];
+  userId.userName = userName;
+  userId.email = email;
+  return userId;
+}
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
   return @{
@@ -174,6 +187,18 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
            @"email": @"email",
            @"primary": @"primary",
            };
+}
+
+- (NSString *)RFC822 {
+  if ([_userName gh_isPresent] && [_email gh_isPresent]) {
+    return NSStringWithFormat(@"%@ <%@>", _userName, _email);
+  } else if ([_userName gh_isPresent]) {
+    return _userName;
+  } else if ([_email gh_isPresent]) {
+    return _email;
+  } else {
+    return @"";
+  }
 }
 
 - (NSString *)userIdDescription:(NSString *)joinedByString {

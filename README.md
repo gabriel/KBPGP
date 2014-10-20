@@ -92,7 +92,7 @@ You can get a PGP key from a bundle:
 
 ```objc
 KBCrypto *crypto = [[KBCrypto alloc] init];
-[crypto PGPKeyForKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." keyBundlePassword:nil password:nil success:^(KBPGPKey *PGPKey) { 
+[crypto PGPKeyForPublicKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(KBPGPKey *PGPKey) { 
   // PGP key
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -118,7 +118,7 @@ Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
 ```objc
 KBCrypto *crypto = [[KBCrypto alloc] init];
-[crypto generateKeyWithUserName:@"keybase.io/crypto" userEmail:@"user@email.com" keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
+[crypto generateKeyWithUserIds:... keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error
   return YES;

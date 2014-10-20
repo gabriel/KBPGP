@@ -39,7 +39,7 @@
   
   KBPGPKeyRing *keyRing = [[KBPGPKeyRing alloc] init];
   [_crypto setKeyRing:keyRing passwordBlock:passwordBlock];
-  [_crypto PGPKeyForPublicKeyBundle:[self loadFile:@"user1_private.asc"] success:^(KBPGPKey *PGPKey1) {
+  [_crypto PGPKeyForPrivateKeyBundle:[self loadFile:@"user1_private.asc"] keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets2" success:^(KBPGPKey *PGPKey1) {
     [keyRing addPGPKey:PGPKey1];
   
     [blockSelf.crypto PGPKeyForPublicKeyBundle:[self loadFile:@"user2_public.asc"] success:^(KBPGPKey *PGPKey2) {

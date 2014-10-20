@@ -127,8 +127,10 @@ describe("JSCore", function() {
 
   it("should generate key", function(done) {
     this.timeout(100000);
+    var userids = ["keybase.io/testuser <testuser@keybase.io>"];
+    
     jscore.generateKeyPair({
-      userid: "keybase.io/testuser <testuser@keybase.io>",
+      userids: userids,
       passphrase: "toomanysecrets",      
       success: function(public_key_hex, private_key_hex, key_fingerprint) {        
         done();
@@ -140,7 +142,7 @@ describe("JSCore", function() {
   it("should cancel generate key", function(done) {
     this.timeout(100000);
     jscore.generateKeyPair({
-      userid: "keybase.io/testuser <testuser@keybase.io>",
+      userids: ["keybase.io/testuser <testuser@keybase.io>"],
       passphrase: "toomanysecrets",      
       progress: function(o) {
         return false;
@@ -152,18 +154,6 @@ describe("JSCore", function() {
         done();
       }
     })
-  });
-
-  it("should export public key for private key", function(done) {
-    var armored = datafile("user1_private.asc");
-    jscore.exportPublicKey({
-      armored: armored, 
-      success: function(public_key) {
-        assert.equal(public_key.slice(0, 25), "-----BEGIN PGP PUBLIC KEY");        
-        done();
-      },
-      failure:failure
-    });
   });
 
   it("should get info for public key", function(done) {

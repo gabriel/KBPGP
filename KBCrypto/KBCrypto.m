@@ -237,17 +237,13 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }}];
 }
 
-- (void)generateKeyWithUserName:(NSString *)userName userEmail:(NSString *)userEmail keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
+- (void)generateKeyWithUserIds:(NSArray */*of KBPGPUserId*/)userIds keyAlgorithm:(KBKeyAlgorithm)keyAlgorithm password:(NSString *)password progress:(BOOL (^)(KBKeyGenProgress *progress))progress success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
   
   GHWeakSelf blockSelf = self;
   
   NSMutableDictionary *params = [NSMutableDictionary dictionary];
-  if (userEmail) {
-    params[@"userid"] = NSStringWithFormat(@"%@ <%@>", userName, userEmail);
-  } else {
-    params[@"userid"] = userName;
-  }
-  
+  params[@"userids"] = [userIds map:^id(KBPGPUserId *userId) { return [userId RFC822]; }];
+
   switch (keyAlgorithm) {
     case KBKeyAlgorithmRSA: params[@"algorithm"] = @"rsa"; break;
     case KBKeyAlgorithmECDSA: params[@"algorithm"] = @"ecc"; break;
