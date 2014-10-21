@@ -1,7 +1,7 @@
 KBCrypto
 ===========
 
-PGP for iOS/OSX, using [kbpgp](https://github.com/keybase/kbpgp).
+PGP for iOS/OSX, using [kbpgp](https://github.com/keybase/kbpgp). Requires >= iOS 8.0.
 
 # Install
 
@@ -10,7 +10,7 @@ PGP for iOS/OSX, using [kbpgp](https://github.com/keybase/kbpgp).
 ## Podfile
 
 ```ruby
-platform :ios, "7.0"
+platform :ios, "8.0"
 pod "KBCrypto"
 ```
 
