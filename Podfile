@@ -5,7 +5,7 @@ pod "ObjectiveSugar"
 pod "NAChloride"
 pod "TSTripleSec", :path => "../TSTripleSec/"
 pod "Mantle"
-pod "OpenSSL", :path => "../OpenSSL"
+pod "OpenSSL-gabriel", :path => "../OpenSSL-gabriel/"
 
 target :Tests do
   pod "GRUnit", :path => "../GRUnit"

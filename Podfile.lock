@@ -9,7 +9,7 @@ PODS:
   - NAChloride (1.1.1):
     - libsodium
   - ObjectiveSugar (1.1.0)
-  - OpenSSL (1.0.1.j)
+  - OpenSSL-gabriel (1.0.1.j)
   - TSTripleSec (0.1.8):
     - MPMessagePack
     - NAChloride
@@ -20,14 +20,14 @@ DEPENDENCIES:
   - Mantle
   - NAChloride
   - ObjectiveSugar
-  - OpenSSL (from `../OpenSSL`)
+  - OpenSSL-gabriel (from `../OpenSSL-gabriel/`)
   - TSTripleSec (from `../TSTripleSec/`)
 
 EXTERNAL SOURCES:
   GRUnit:
     :path: ../GRUnit
-  OpenSSL:
-    :path: ../OpenSSL
+  OpenSSL-gabriel:
+    :path: ../OpenSSL-gabriel/
   TSTripleSec:
     :path: ../TSTripleSec/
 
@@ -39,7 +39,7 @@ SPEC CHECKSUMS:
   MPMessagePack: 9263ecf6d77f0f0de43e3b4959137c2579d8f5a6
   NAChloride: 56f5ed342554234da0c304b0f3b2318434570f74
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
-  OpenSSL: 71cbbd2f3594121215b73f424e4122afa464a1f3
+  OpenSSL-gabriel: 983ace94bfce3ecdf0ebeb7d365fcb7ebc98d153
   TSTripleSec: b5f719f1698a7e880431f2c15da6f52907949fa7
 
 COCOAPODS: 0.34.4

@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.dependency 'ObjectiveSugar'
   s.dependency 'GHKit'
   s.dependency 'Mantle'
-  s.dependency 'OpenSSL'
+  s.dependency 'OpenSSL-gabriel'
   s.source_files = 'KBCrypto/**/*.{c,h,m}'
   s.requires_arc = true
 

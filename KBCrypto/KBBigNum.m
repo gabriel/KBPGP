@@ -31,7 +31,7 @@
   
   //GHDebug(@"Generate prime: %d", bits);
   BIGNUM *r = BN_new();
-  BN_generate_prime_ex(r, 2048, 0, NULL, NULL, NULL);
+  BN_generate_prime_ex(r, bits, 0, NULL, NULL, NULL);
   char *h = BN_bn2dec(r);
   NSString *decStr = [NSString stringWithUTF8String:h];
   BN_free(r);
