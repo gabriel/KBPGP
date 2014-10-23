@@ -569,6 +569,35 @@ jscore.exportAll = function(params) {
   }, failure);
 };
 
+jscore.updateUserIds = function(params) {
+  var armored = params.armored,
+    passphrase = params.passphrase,
+    userids = params.userids,
+    success = params.success,
+    failure = new ErrorHandler(params.failure);
+
+  jscore._decodeKey(armored, passphrase, function(key) {
+    var userids2 = [];
+    for (var i = 0; i < userids.length; i++) {
+      userids2.push(new kbpgp.opkts.UserID(userids[i]));
+    }
+    
+    km = new kbpgp.KeyManager({
+      primary: key.primary,
+      subkeys: key.subkeys,
+      userids: userids2
+    });
+
+    jscore._info(km, function(info) {
+      jscore._exportKey(km, function(a, b, c, d) {
+        success(info, a, b, c, d);
+      }, failure);
+    });
+  });
+};
+
+// ---
+
 jscore.ready = function(params) {
   var cb = params["cb"];  
   var ready = !!kbpgp;

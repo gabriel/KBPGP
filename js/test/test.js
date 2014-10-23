@@ -296,6 +296,21 @@ describe("JSCore", function() {
     });
   });
 
+  it("should update userids", function(done) {
+    var userids = ["Test User1 <test1@test.com>", "Test User2 <test2@test.com>", "Test User3 <test3@test.com>", 
+      "Test User4 <test4@test.com>"];
+    jscore.updateUserIds({
+      userids: userids,
+      armored: datafile("user1_private.asc"),
+      passphrase: "toomanysecrets",
+      success: function(bundle) {
+        // TODO
+        done();
+      },
+      failure:failure
+    });
+  });
+
   // it("should get private info", function(done) {
   //   var armored = datafile("user2_private.asc");
   //   jscore.info({

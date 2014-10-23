@@ -165,6 +165,12 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  */
 - (void)checkPasswordForArmoredKeyBundle:(NSString *)armoredKeyBundle password:(NSString *)password success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
+#pragma mark User Ids
+
+- (void)updateUserIds:(NSArray *)userIds PGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+
+#pragma mark
+
 /*!
  Add armored key bundle to key ring.
  */

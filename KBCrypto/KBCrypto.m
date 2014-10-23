@@ -120,30 +120,6 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   }}];
 }
 
-//- (void)_armoredForSecretKeyBundle:(NSString *)bundle success:(void (^)(NSString *armoredBundle))success failure:(KBCyptoErrorBlock)failure {
-//  if (!bundle) {
-//    failure(KBCryptoError(@"Not a valid bundle"));
-//    return;
-//  }
-//  
-//  NSData *data = [[NSData alloc] initWithBase64EncodedString:bundle options:0];
-//  if (!data) {
-//    failure(KBCryptoError(@"Not a valid bundle"));
-//    return;
-//  }
-//  
-//  NSError *error = nil;
-//  P3SKB *key = [P3SKB P3SKBFromData:data error:&error];
-//  if (!key) {
-//    failure(error);
-//    return;
-//  }
-//  
-//  [self armoredKeyBundleFromSecretKey:key password:nil keyBundlePassword:nil success:^(NSString *encoded) {
-//    success(encoded);
-//  } failure:failure];
-//}
-
 - (void)_parseFetches:(NSArray *)fetches verifyKeyIds:(NSMutableArray *)verifyKeyIds decryptKeyIds:(NSMutableArray *)decryptKeyIds {
   for (NSDictionary *fetch in fetches) {
     NSArray *keyIds = fetch[@"key_ids"];
@@ -232,6 +208,18 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   [self _call:@"dearmor" params:@{@"armored": armored, @"success": ^(NSString *hex) {
     NSData *data = [hex na_dataFromHexString];
     [blockSelf _callback:^{ success(data); }];
+  }, @"failure": ^(NSString *error) {
+    [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
+  }}];
+}
+
+- (void)updateUserIds:(NSArray *)userIds PGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure {
+  GHWeakSelf blockSelf = self;
+  
+  userIds = [userIds map:^id(KBPGPUserId *userId) { return [userId RFC822]; }];
+  NSString *privateKeyBundle = [PGPKey decryptSecretKeyArmoredWithPassword:password error:nil];
+  [self _call:@"updateUserIds" params:@{@"armored": privateKeyBundle, @"passphrase": KBCOrNull(password), @"userids": userIds, @"success": ^(NSDictionary *dict, NSString *publicKeyArmored, NSString *publicKeyHex, NSString *privateKeyArmoredNoPassword, NSString *privateKeyHexNoPassword) {
+    [self _PGPKeyForExport:dict publicKeyArmored:publicKeyArmored publicKeyHex:publicKeyHex privateKeyArmoredNoPassword:privateKeyArmoredNoPassword privateKeyHexNoPassword:privateKeyHexNoPassword password:password success:success failure:failure];
   }, @"failure": ^(NSString *error) {
     [blockSelf _callback:^{ failure(KBCryptoError(error)); }];
   }}];

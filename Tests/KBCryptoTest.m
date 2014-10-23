@@ -323,4 +323,22 @@
   } failure:GRErrorHandler];
 }
 
+- (void)testUserIds:(dispatch_block_t)completion {
+  GHWeakSelf blockSelf = self;
+  NSString *bundle = [self loadFile:@"user1_private.asc"];
+  NSArray *userIds = @[
+                       [KBPGPUserId userIdWithUserName:@"Test User1" email:@"test1@test.com"],
+                       [KBPGPUserId userIdWithUserName:@"Test User2" email:@"test2@test.com"],
+                       [KBPGPUserId userIdWithUserName:@"Test User3" email:@"test3@test.com"],
+                       [KBPGPUserId userIdWithUserName:@"Test User4" email:@"test4@test.com"]];
+                       
+  [_crypto PGPKeyForPrivateKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
+    [blockSelf.crypto updateUserIds:userIds PGPKey:PGPKey password:@"toomanysecrets" success:^(KBPGPKey *PGPKey2) {
+      NSString *updatedPrivateBundle = [PGPKey2 decryptSecretKeyArmoredWithPassword:@"toomanysecrets" error:nil];
+      GRTestLog(@"Updated: %@", updatedPrivateBundle);
+      completion();
+    } failure:GRErrorHandler];
+  } failure:GRErrorHandler];
+}
+
 @end

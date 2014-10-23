@@ -112,7 +112,7 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
 
 - (NSArray *)keyIds {
   NSMutableArray *keyIds = [NSMutableArray array];
-  [keyIds addObject:self.keyId];
+  [keyIds addObject:[self.keyId lowercaseString]];
   if (_subKeys) [keyIds addObjectsFromArray:[_subKeys map:^id(KBPGPSubKey *subKey) { return [subKey.keyId lowercaseString]; }]];
   return keyIds;
 }
