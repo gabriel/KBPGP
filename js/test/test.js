@@ -296,10 +296,10 @@ describe("JSCore", function() {
     });
   });
 
-  it("should update userids", function(done) {
+  it("should set userids", function(done) {
     var userids = ["Test User1 <test1@test.com>", "Test User2 <test2@test.com>", "Test User3 <test3@test.com>", 
       "Test User4 <test4@test.com>"];
-    jscore.updateUserIds({
+    jscore.setUserIds({
       userids: userids,
       armored: datafile("user1_private.asc"),
       passphrase: "toomanysecrets",

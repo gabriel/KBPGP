@@ -569,7 +569,7 @@ jscore.exportAll = function(params) {
   }, failure);
 };
 
-jscore.updateUserIds = function(params) {
+jscore.setUserIds = function(params) {
   var armored = params.armored,
     passphrase = params.passphrase,
     userids = params.userids,

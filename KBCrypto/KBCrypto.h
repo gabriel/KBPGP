@@ -167,7 +167,7 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 
 #pragma mark User Ids
 
-- (void)updateUserIds:(NSArray *)userIds PGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
+- (void)setUserIds:(NSArray *)userIds PGPKey:(KBPGPKey *)PGPKey password:(NSString *)password success:(void (^)(KBPGPKey *PGPKey))success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark
 

@@ -103,6 +103,8 @@ typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
 
 + (KBPGPUserId *)userIdWithUserName:(NSString *)userName email:(NSString *)email;
 
++ (KBPGPUserId *)userIdForKeybaseUserName:(NSString *)keybaseUserName;
+
 - (NSString *)RFC822;
 
 - (NSString *)userIdDescription:(NSString *)joinedByString;

@@ -181,6 +181,10 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
   return userId;
 }
 
++ (KBPGPUserId *)userIdForKeybaseUserName:(NSString *)keybaseUserName {
+  return [self userIdWithUserName:NSStringWithFormat(@"keybase.io/%@", keybaseUserName) email:NSStringWithFormat(@"%@@keybase.io", keybaseUserName)];
+}
+
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
   return @{
            @"userName": @"username",

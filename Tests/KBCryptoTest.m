@@ -333,7 +333,7 @@
                        [KBPGPUserId userIdWithUserName:@"Test User4" email:@"test4@test.com"]];
                        
   [_crypto PGPKeyForPrivateKeyBundle:bundle keyBundlePassword:@"toomanysecrets" password:@"toomanysecrets" success:^(KBPGPKey *PGPKey) {
-    [blockSelf.crypto updateUserIds:userIds PGPKey:PGPKey password:@"toomanysecrets" success:^(KBPGPKey *PGPKey2) {
+    [blockSelf.crypto setUserIds:userIds PGPKey:PGPKey password:@"toomanysecrets" success:^(KBPGPKey *PGPKey2) {
       NSString *updatedPrivateBundle = [PGPKey2 decryptSecretKeyArmoredWithPassword:@"toomanysecrets" error:nil];
       GRTestLog(@"Updated: %@", updatedPrivateBundle);
       completion();
