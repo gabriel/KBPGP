@@ -28,7 +28,7 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags);
 @class KBPGPUserId;
 @class KBPGPSubKey;
 
-typedef void (^KBPGPKeyCompletionBlock)(KBPGPKey *PGPKey);
+typedef void (^KBPGPKeyBlock)(KBPGPKey *PGPKey);
 
 @interface KBPGPKey : MTLModel <KBKey, MTLJSONSerializing>
 @property (readonly) NSString *publicKeyBundle;
