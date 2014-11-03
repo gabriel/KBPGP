@@ -45,12 +45,6 @@
   //_crypto = nil;
 }
 
-- (void)testReady:(dispatch_block_t)completion {
-  [_crypto checkReady:^{
-    completion();
-  }];
-}
-
 - (void)testEncryptDecrypt:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
   [_crypto encryptText:@"This is a secret message" keyBundles:@[[self loadFile:@"user1_public.asc"]] success:^(NSString *messageArmored) {

@@ -16,12 +16,11 @@
 }
 
 - (void)tearDown {
-  [_crypto clearContext];
   _crypto = nil;
 }
 
-- (void)testReady:(dispatch_block_t)completion {
-  [_crypto checkReady:^{
+- (void)testReset:(dispatch_block_t)completion {
+  [_crypto resetIfNotReady:^{
     completion();
   }];
 }

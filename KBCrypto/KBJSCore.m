@@ -10,18 +10,14 @@
 
 #import <GHKit/GHKit.h>
 #import <NAChloride/NAChloride.h>
-#import "KBBigNum.h"
+#import "GHBigNum.h"
 
 @implementation KBJSCore
 
-- (instancetype)initWithQueue:(dispatch_queue_t)queue {
+- (instancetype)initWithQueue:(dispatch_queue_t)queue exceptionHandler:(KBJSCoreExceptionHandler)exceptionHandler {
   if ((self = [super init])) {
     _context = [[JSContext alloc] initWithVirtualMachine:[[JSVirtualMachine alloc] init]];
-    _context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
-      id obj = [exception toObject];
-      GHDebug(@"Exception: %@, %@", [exception description], obj);
-      [NSException raise:NSGenericException format:@"JS Exception"];
-    };
+    _context.exceptionHandler = exceptionHandler;
 
     _context[@"console"] = @{};
     _context[@"console"][@"log"] = ^(id obj) {
@@ -68,15 +64,20 @@
     };
     
     _context[@"jscore"][@"generatePrime"] = ^(JSValue *numBits) {
-      return [KBBigNum generatePrime:[numBits toInt32]];
+      return [[GHBigNum generatePrime:[numBits toInt32]] decimalString];
     };
     
     _context[@"jscore"][@"bnModPow"] = ^(JSValue *a, JSValue *p, JSValue *m) {
-      return [KBBigNum modPow:[a toString] p:[p toString] m:[m toString]];
+      GHBigNum *ba = [GHBigNum bigNumWithDecimalString:[a toString]];
+      GHBigNum *bp = [GHBigNum bigNumWithDecimalString:[p toString]];
+      GHBigNum *bm = [GHBigNum bigNumWithDecimalString:[m toString]];
+      return [[GHBigNum modPow:ba p:bp m:bm] decimalString];
     };
     
     _context[@"jscore"][@"bnModInverse"] = ^(JSValue *a, JSValue *m) {
-      return [KBBigNum modInverse:[a toString] m:[m toString]];
+      GHBigNum *ba = [GHBigNum bigNumWithDecimalString:[a toString]];
+      GHBigNum *bm = [GHBigNum bigNumWithDecimalString:[m toString]];
+      return [[GHBigNum modInverse:ba m:bm] decimalString];
     };
   }
   return self;

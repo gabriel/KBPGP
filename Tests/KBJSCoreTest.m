@@ -11,7 +11,7 @@
 @implementation KBJSCoreTest
 
 - (void)testJSRandom {
-  KBJSCore *JSCore = [[KBJSCore alloc] initWithQueue:nil];
+  KBJSCore *JSCore = [[KBJSCore alloc] initWithQueue:nil exceptionHandler:nil];
   JSContext *context = JSCore.context;
   
   [context evaluateScript:@"var randomHex = jscore.getRandomHexString(32);"];

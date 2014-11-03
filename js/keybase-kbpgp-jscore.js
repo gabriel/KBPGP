@@ -100,10 +100,13 @@ jscore.sign = function(params) {
 };
 
 function KeyRing() {  
-  this.pgpkr = new kbpgp.keyring.PgpKeyRing();  
   this.fetched = [];
 }
 KeyRing.prototype.fetch = function(key_ids, ops, callback) {
+
+  if (!this.pgpkr) {
+    this.pgpkr = new kbpgp.keyring.PgpKeyRing();
+  }
 
   // Keep track of fetch info
   this.fetched.push({
@@ -131,6 +134,9 @@ KeyRing.prototype.fetch = function(key_ids, ops, callback) {
   });
 };
 KeyRing.prototype.add_key_manager = function(key) {
+  if (!this.pgpkr) {
+    this.pgpkr = new kbpgp.keyring.PgpKeyRing();
+  }
   this.pgpkr.add_key_manager(key);
 };
 KeyRing.prototype.add_key_bundles = function(bundles, callback) {
@@ -143,7 +149,7 @@ KeyRing.prototype.add_key_bundles = function(bundles, callback) {
   jscore.decodeKey(bundles[0], "keyring", function(err, km) {
     bundles.splice(0, 1);
     if (!err) {
-      that.pgpkr.add_key_manager(km);         
+      that.add_key_manager(km);         
     }
     that.add_key_bundles(bundles, callback);
   });
@@ -249,17 +255,15 @@ jscore.generateKeyPair = function(params) {
         //console.log("o: " + jsondump(o));
         var ok = true;
         if (o.section == "p") {
-          var p = o.p;
           ok = progress({
             type: "prime_p",
-            prime: (p ? p.toString().slice(-3) : p),
+            prime: (o.p ? o.p.toString().slice(-3) : o.p),
             amount: -1
           });
         } else if (o.section == "q") {
-          var p = o.p;
           ok = progress({
             type: "prime_q",
-            prime: (p ? p.toString().slice(-3) : p),
+            prime: (o.p ? o.p.toString().slice(-3) : o.p),
             amount: -1
           });
         } else if (o.what == "mr") {
@@ -599,7 +603,7 @@ jscore.setUserIds = function(params) {
 // ---
 
 jscore.ready = function(params) {
-  var cb = params["cb"];  
+  var cb = params.cb;  
   var ready = !!kbpgp;
   return cb(ready);
 };

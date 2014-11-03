@@ -176,9 +176,9 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  */
 - (void)addArmoredKeyBundle:(NSString *)armoredKeyBundle success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
-- (void)clearContext;
+#pragma mark Debugging
 
-- (void)checkReady:(dispatch_block_t)completion;
+- (void)resetIfNotReady:(dispatch_block_t)completion;
 - (void)isReady:(void (^)(BOOL ready))completion;
 
 @end

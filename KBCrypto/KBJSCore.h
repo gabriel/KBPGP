@@ -10,12 +10,14 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
+typedef void(^KBJSCoreExceptionHandler)(JSContext *context, JSValue *exception);
+
 @interface KBJSCore : NSObject
 
 @property (readonly) JSContext *context;
 @property dispatch_queue_t queue;
 
-- (instancetype)initWithQueue:(dispatch_queue_t)queue;
+- (instancetype)initWithQueue:(dispatch_queue_t)queue exceptionHandler:(KBJSCoreExceptionHandler)exceptionHandler;
 
 - (NSString *)randomHexString:(NSUInteger)numBytes;
 

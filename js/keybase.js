@@ -46244,7 +46244,9 @@ module.exports={
 
 //require(['openpgp'], function() {});
 
-require(['kbpgp'], function() {});
+require(['kbpgp'], function() {
+  kbpgp = require("kbpgp");
+});
 
 define("main", function(){});
 

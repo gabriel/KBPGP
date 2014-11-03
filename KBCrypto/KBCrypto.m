@@ -37,26 +37,16 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
 }
 
 - (void)generateContext {
-  KBJSCore *JSCore = [[KBJSCore alloc] initWithQueue:_queue];
+  KBJSCore *JSCore = [[KBJSCore alloc] initWithQueue:_queue exceptionHandler:^(JSContext *context, JSValue *exception) {
+    id obj = [exception toObject];
+    GHDebug(@"Error: %@, %@", [exception description], obj);
+    [NSException raise:NSGenericException format:@"JS Exception: %@, %@", [exception description], obj];
+  }];
   
   [JSCore load:@"keybase.js" digest:nil]; //@"9f6490e7ccd0b21dc96d1c0daa53c4d0059b9e85418d16b083f5d91710d133da58bd9cd7449bb059757655c89deb3df9669c594e0de2d260077ceeec7bf37259"];
   [JSCore load:@"keybase-kbpgp-jscore.js" digest:nil]; //@"8e459ad88f25949d594637793cf847ec2c6b67c59820dcfc94cbde99d974e983dd52ce3e42efa1cce41d7e1ebd404756e65d2288117b27f043eff0587bfd71c8"];
   
   _JSCore = JSCore;
-}
-
-- (void)checkReady:(dispatch_block_t)completion {
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), _queue, ^{
-    [self isReady:^(BOOL ready) {
-      if (!ready) {
-        GHDebug(@"Not ready");
-        [self checkReady:completion];
-      } else {
-        GHDebug(@"Ready");
-        completion();
-      }
-    }];
-  });
 }
 
 - (void)clearContext {
@@ -406,6 +396,24 @@ NSError *KBCryptoError(NSString *message) {
   NSInteger errorCode = KBCryptoErrorCodeDefault;
   if ([message isEqualToString:@"Aborted"]) errorCode = KBCryptoErrorCodeCancelled;
   return [NSError errorWithDomain:@"KBCrypto" code:errorCode userInfo:@{NSLocalizedDescriptionKey:message}];
+}
+
+#pragma mark - 
+
+// Hack to reload if the context is fucked up :(
+- (void)resetIfNotReady:(dispatch_block_t)completion {
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), _queue, ^{
+    [self isReady:^(BOOL ready) {
+      if (!ready) {
+        GHDebug(@"Not ready, resetting");
+        [self clearContext];
+        [self generateContext];
+        [self resetIfNotReady:completion];
+      } else {
+        completion();
+      }
+    }];
+  });
 }
 
 @end
