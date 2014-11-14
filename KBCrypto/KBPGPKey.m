@@ -45,6 +45,7 @@ KBKeyCapabilities KBKeyCapabiltiesFromFlags(KBPGPKeyFlags flags) {
            @"selfSigned": @"self_signed",
            @"subKeys": @"subkeys",
            @"userIds": @"userids",
+           @"dateModified": NSNull.null,
            //@"secretKeyArmoredEncrypted": NSNull.null
            };
 }

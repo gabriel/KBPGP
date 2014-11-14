@@ -10,15 +10,13 @@
 
 @interface KBSigner ()
 @property NSString *keyFingerprint;
-@property KBKeyVerification verification;
 @end
 
 @implementation KBSigner
 
-- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint verification:(KBKeyVerification)verification {
+- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint {
   if ((self = [super init])) {
     _keyFingerprint = keyFingerprint;
-    _verification = verification;
   }
   return self;
 }
@@ -30,14 +28,12 @@
 - (id)initWithCoder:(NSCoder *)decoder {
   if ((self = [self init])) {
     _keyFingerprint = [decoder decodeObjectOfClass:NSString.class forKey:@"keyFingerprint"];
-    _verification = [decoder decodeIntegerForKey:@"verification"];
   }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
   [encoder encodeObject:_keyFingerprint forKey:@"keyFingerprint"];
-  [encoder encodeInteger:_verification forKey:@"verification"];
 }
 
 @end

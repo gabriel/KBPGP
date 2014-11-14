@@ -46,9 +46,8 @@ typedef void (^KBPGPKeyBlock)(KBPGPKey *PGPKey);
 
 // So you to add secret part to public PGP key.
 @property (nonatomic) P3SKB *secretKey;
-
-// Type of verification
-@property KBKeyVerification verification;
+// Date modified from API, so we know if we need to update
+@property (nonatomic) NSDate *dateModified;
 
 - (KBKeyCapabilities)capabilities;
 

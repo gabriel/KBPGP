@@ -12,12 +12,11 @@
 
 @protocol KBSigner
 @property (readonly, nonatomic) NSString *keyFingerprint;
-@property (readonly, nonatomic) KBKeyVerification verification;
 @end
 
 
 @interface KBSigner : NSObject <KBSigner, NSSecureCoding>
 
-- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint verification:(KBKeyVerification)verification;
+- (instancetype)initWithKeyFingerprint:(NSString *)keyFingerprint;
 
 @end
