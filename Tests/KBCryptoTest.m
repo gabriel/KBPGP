@@ -31,7 +31,6 @@
     [keyRing addPGPKey:PGPKey1];
     
     [blockSelf.crypto PGPKeyForPublicKeyBundle:[self loadFile:@"user2_public.asc"] success:^(KBPGPKey *PGPKey2) {
-      PGPKey2.verification = KBKeyVerificationManual;
       [keyRing addPGPKey:PGPKey2];
       
       completion();
@@ -304,6 +303,13 @@
   } failure:^(NSError *error) {
     completion();
   }];
+}
+
+- (void)testCheckPassword:(dispatch_block_t)completion {
+  NSString *bundle = [self loadFile:@"user4_private.asc"];
+  [_crypto checkPasswordForArmoredKeyBundle:bundle password:@"toomanysecrets" success:^{
+    completion();
+  } failure:GRErrorHandler];
 }
 
 - (void)testPGPKeyFromP3SKB:(dispatch_block_t)completion {

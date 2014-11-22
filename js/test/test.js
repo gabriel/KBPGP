@@ -157,6 +157,7 @@ describe("JSCore", function() {
   });
 
   it("should get info for public key", function(done) {
+    this.timeout(100000);
     var armored = datafile("user1_public.asc");
     jscore.info({
       armored: armored,
@@ -231,7 +232,7 @@ describe("JSCore", function() {
   });
 
   it("should check password", function(done) {
-    var armored = datafile("user1_private.asc");
+    var armored = datafile("user4_private.asc");
     jscore.checkPassword({
       armored: armored,
       passphrase: "toomanysecrets",

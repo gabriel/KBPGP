@@ -379,7 +379,7 @@ jscore.checkPassword = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);    
   jscore._decodeKey(armored, passphrase, function(key) {
-    success(true);
+    success();
   }, failure);
 };    
 
@@ -431,19 +431,16 @@ jscore._decodeKey2 = function(bundle, passphrase, unlock, success, failure) {
   }, function(err, key) {
     if (err) { failure.handle(err); return; }
 
-    if (unlock && key.is_pgp_locked()) {
+    if (unlock && key.is_pgp_locked()) {     
       key.unlock_pgp({
         passphrase: passphrase
       }, function(err) {
         if (err) { failure.handle(err); return; }
         success(key);
       });
-    } else {
-      // Workaround bug where you need to call unlock on unlocked key, will be fixed soon.
-      key.unlock_pgp({}, function(err) {
-        success(key);
-      });      
-    }    
+    } else { 
+      success(key);
+    }
   });
 };
 

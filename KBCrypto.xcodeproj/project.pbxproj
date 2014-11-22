@@ -50,6 +50,7 @@
 		0082940919CCF820001EDCC9 /* KBSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 0082940819CCF820001EDCC9 /* KBSigner.m */; };
 		0082940A19CCF820001EDCC9 /* KBSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 0082940819CCF820001EDCC9 /* KBSigner.m */; };
 		00900F5F19BE837E0018C553 /* KBPGPKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */; };
+		0092FE1C1A2010B9006E0A7E /* user4_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 0092FE1B1A2010B9006E0A7E /* user4_private.asc */; };
 		00AEEE1D1992F9EE00D9A741 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */; };
 		00AEEF011994133700D9A741 /* user1_message_gpgui.asc in Resources */ = {isa = PBXBuildFile; fileRef = 00AEEF001994133700D9A741 /* user1_message_gpgui.asc */; };
 		00AEEF0319942D3400D9A741 /* user1_private_unlocked.asc in Resources */ = {isa = PBXBuildFile; fileRef = 00AEEF0219942D3400D9A741 /* user1_private_unlocked.asc */; };
@@ -122,6 +123,7 @@
 		00596C9119C9111B00D16DAA /* user1_message_unk.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_message_unk.asc; sourceTree = "<group>"; };
 		0082940819CCF820001EDCC9 /* KBSigner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSigner.m; sourceTree = "<group>"; };
 		00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBPGPKeyTest.m; path = Tests/KBPGPKeyTest.m; sourceTree = "<group>"; };
+		0092FE1B1A2010B9006E0A7E /* user4_private.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user4_private.asc; sourceTree = "<group>"; };
 		00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Tests/Default-568h@2x.png"; sourceTree = "<group>"; };
 		00AEEEFC1993FC3F00D9A741 /* KBSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSigner.h; sourceTree = "<group>"; };
 		00AEEF001994133700D9A741 /* user1_message_gpgui.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_message_gpgui.asc; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */,
 				00C6441D19D0F95D00DF16CE /* bad_message.asc */,
 				005563BD19E4B206001A86AB /* user3_message.asc */,
+				0092FE1B1A2010B9006E0A7E /* user4_private.asc */,
 			);
 			name = Data;
 			path = Tests/Data;
@@ -402,6 +405,7 @@
 				0054F14F1990503700908F74 /* user1_private.p3skb in Resources */,
 				004BC8D3198B1C3D000C039B /* user1_message_gpg2.asc in Resources */,
 				004BC8CF198B1C3D000C039B /* user1_clearsign_fail.asc in Resources */,
+				0092FE1C1A2010B9006E0A7E /* user4_private.asc in Resources */,
 				00AEEF011994133700D9A741 /* user1_message_gpgui.asc in Resources */,
 				00AEEF05199436B800D9A741 /* user1_private_unlocked2.asc in Resources */,
 				004BC8D0198B1C3D000C039B /* user1_clearsign_gpg1.asc in Resources */,

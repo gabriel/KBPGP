@@ -18678,8 +18678,13 @@ for (var k in syms) {
 	   return r;
 	 }
 	 
-	 // (public) 1/this % m (HAC 14.61)
-	 function bnModInverse(m) {
+	// (public) 1/this % m (HAC 14.61)
+	function bnModInverse(m) {
+       if (jscore && jscore.bnModInverse) {
+         var r = nbi();
+         var s = jscore.bnModInverse(this.toString(), m.toString())
+         return r.fromString(s, 10);
+       }
 	   var ac = m.isEven();
 	   if((this.isEven() && ac) || m.signum() == 0) return BigInteger.ZERO;
 	   var u = m.clone(), v = this.clone();
@@ -18745,7 +18750,7 @@ for (var k in syms) {
 	 /* added by Recurity Labs */
 	 
 	 function nbits(x) {
-	 	var n = 1, t;
+        var n = 1, t;
 	 	if ((t = x >>> 16) != 0) {
 	 		x = t;
 	 		n += 16;
@@ -41203,7 +41208,7 @@ module.exports=require(121)
 
   })(Base);
 
-  decrypt = function(_arg, cb) {
+  decrypt = function(_arg, cb) {    
     var data, dec, err, key, progress_hook, pt, ___iced_passed_deferral, __iced_deferrals, __iced_k;
     __iced_k = __iced_k_noop;
     ___iced_passed_deferral = iced.findDeferral(arguments);
