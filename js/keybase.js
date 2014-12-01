@@ -10593,9 +10593,13 @@ _break()
     };
 
     KeyMaterial.prototype.fulfills_flags = function(flags) {
-      var akf;
+      var akf, ret;
+      if (this.is_revoked()) {
+        return false;
+      }
       akf = this.get_all_key_flags();
-      return ((akf & flags) === flags) || this.key.fulfills_flags(flags) || (this.is_primary() && (akf === 0) && ((this.key.good_for_flags() & flags) === flags));
+      ret = ((akf & flags) === flags) || this.key.fulfills_flags(flags) || (this.is_primary() && (akf === 0) && ((this.key.good_for_flags() & flags) === flags));
+      return ret;
     };
 
     KeyMaterial.prototype.get_signed_userids = function() {
@@ -10613,6 +10617,14 @@ _break()
     KeyMaterial.prototype.push_sig = function(packetsig) {
       this.add_flags(packetsig.sig.get_key_flags());
       return KeyMaterial.__super__.push_sig.call(this, packetsig);
+    };
+
+    KeyMaterial.prototype.mark_revoked = function(sig) {
+      return this.revocation = sig;
+    };
+
+    KeyMaterial.prototype.is_revoked = function() {
+      return this.revocation != null;
     };
 
     return KeyMaterial;
@@ -12226,6 +12238,9 @@ _break()
                   sig: sig,
                   direction: SKB.UP
                 }));
+                break;
+              case T.subkey_revocation:
+                subkey.mark_revoked(sig);
             }
           }
           return cb(err);
@@ -13759,7 +13774,9 @@ _break()
                       lineno: 156
                     }));
                     __iced_deferrals._fulfill();
-                  })(__iced_k);
+                  })(function() {
+                    return __iced_k(err == null ? _this.encryption_subkey = key_material : void 0);
+                  });
                 } else {
                   return __iced_k();
                 }
@@ -13812,7 +13829,7 @@ _break()
                     return ret = arguments[1];
                   };
                 })(),
-                lineno: 176
+                lineno: 178
               }));
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -13854,7 +13871,7 @@ _break()
                 return pkcs5 = arguments[2];
               };
             })(),
-            lineno: 190
+            lineno: 192
           })));
           __iced_deferrals._fulfill();
         });
@@ -13874,7 +13891,7 @@ _break()
                       return edat = arguments[0];
                     };
                   })(),
-                  lineno: 192
+                  lineno: 194
                 })));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -13890,7 +13907,7 @@ _break()
                         return plaintext = arguments[0];
                       };
                     })(),
-                    lineno: 193
+                    lineno: 195
                   })));
                   __iced_deferrals._fulfill();
                 })(function() {
@@ -13906,7 +13923,7 @@ _break()
                           return packets = arguments[0];
                         };
                       })(),
-                      lineno: 194
+                      lineno: 196
                     })));
                     __iced_deferrals._fulfill();
                   })(function() {
@@ -13968,7 +13985,7 @@ _break()
                       return inflated = arguments[0];
                     };
                   })(),
-                  lineno: 204
+                  lineno: 206
                 })));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -13986,7 +14003,7 @@ _break()
                             return p = arguments[0];
                           };
                         })(),
-                        lineno: 206
+                        lineno: 208
                       })));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -14063,7 +14080,7 @@ _break()
                     return i = arguments[2];
                   };
                 })(),
-                lineno: 244
+                lineno: 246
               }));
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -14090,7 +14107,7 @@ _break()
                       return err = arguments[0];
                     };
                   })(),
-                  lineno: 256
+                  lineno: 258
                 }));
                 __iced_deferrals._fulfill();
               })(__iced_k);
@@ -14143,7 +14160,7 @@ _break()
                   funcname: "Message._verify"
                 });
                 _this._verify_sig(sig, esc(__iced_deferrals.defer({
-                  lineno: 270
+                  lineno: 272
                 })));
                 __iced_deferrals._fulfill();
               })(_next);
@@ -14186,7 +14203,7 @@ _break()
             funcname: "Message._process_generic"
           });
           _this._decrypt(esc(__iced_deferrals.defer({
-            lineno: 283
+            lineno: 285
           })));
           __iced_deferrals._fulfill();
         });
@@ -14199,7 +14216,7 @@ _break()
               funcname: "Message._process_generic"
             });
             _this._inflate(esc(__iced_deferrals.defer({
-              lineno: 284
+              lineno: 286
             })));
             __iced_deferrals._fulfill();
           })(function() {
@@ -14210,7 +14227,7 @@ _break()
                 funcname: "Message._process_generic"
               });
               _this._verify(esc(__iced_deferrals.defer({
-                lineno: 285
+                lineno: 287
               })));
               __iced_deferrals._fulfill();
             })(function() {
@@ -14248,7 +14265,7 @@ _break()
                     return literal = arguments[1];
                   };
                 })(),
-                lineno: 294
+                lineno: 296
               }));
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -14279,7 +14296,7 @@ _break()
                 return packets = arguments[0];
               };
             })(),
-            lineno: 301
+            lineno: 303
           })));
           __iced_deferrals._fulfill();
         });
@@ -14300,7 +14317,7 @@ _break()
                   return literals = arguments[0];
                 };
               })(),
-              lineno: 302
+              lineno: 304
             })));
             __iced_deferrals._fulfill();
           })(function() {
@@ -14337,7 +14354,7 @@ _break()
                     return err = arguments[0];
                   };
                 })(),
-                lineno: 311
+                lineno: 313
               }));
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -14375,7 +14392,7 @@ _break()
                       return literals = arguments[1];
                     };
                   })(),
-                  lineno: 320
+                  lineno: 322
                 }));
                 __iced_deferrals._fulfill();
               })(__iced_k);
@@ -14397,7 +14414,7 @@ _break()
                       return literals = arguments[1];
                     };
                   })(),
-                  lineno: 322
+                  lineno: 324
                 }));
                 __iced_deferrals._fulfill();
               })(__iced_k);
@@ -14418,7 +14435,7 @@ _break()
                       return literals = arguments[1];
                     };
                   })(),
-                  lineno: 324
+                  lineno: 326
                 }));
                 __iced_deferrals._fulfill();
               })(__iced_k);
@@ -14443,12 +14460,12 @@ _break()
   exports.Message = Message;
 
   exports.do_message = do_message = function(_arg, cb) {
-    var armored, data, data_fn, err, keyfetch, literals, msg, proc, raw, strict, warnings, ___iced_passed_deferral, __iced_deferrals, __iced_k, _ref1;
+    var armored, data, data_fn, err, esk, keyfetch, literals, msg, proc, raw, strict, warnings, ___iced_passed_deferral, __iced_deferrals, __iced_k, _ref1;
     __iced_k = __iced_k_noop;
     ___iced_passed_deferral = iced.findDeferral(arguments);
     armored = _arg.armored, raw = _arg.raw, keyfetch = _arg.keyfetch, data_fn = _arg.data_fn, data = _arg.data, strict = _arg.strict;
     literals = null;
-    err = msg = warnings = null;
+    err = msg = warnings = esk = null;
     if (armored != null) {
       _ref1 = armor.decode(armored), err = _ref1[0], msg = _ref1[1];
     } else if (raw != null) {
@@ -14480,11 +14497,12 @@ _break()
                   return literals = arguments[1];
                 };
               })(),
-              lineno: 366
+              lineno: 368
             }));
             __iced_deferrals._fulfill();
           })(function() {
-            return __iced_k(warnings = proc.warnings);
+            warnings = proc.warnings;
+            return __iced_k(esk = proc.encryption_subkey);
           });
         } else {
           return __iced_k();
@@ -14492,7 +14510,7 @@ _break()
       });
     })(this)((function(_this) {
       return function() {
-        return cb(err, literals, warnings);
+        return cb(err, literals, warnings, esk);
       };
     })(this));
   };
@@ -14503,13 +14521,13 @@ _break()
 (function (Buffer){
 // Generated by IcedCoffeeScript 1.7.1-c
 (function() {
-  var C, S2K, SHA256, SecretKeyMaterial, alloc, triplesec, _ref;
+  var C, S2K, SHA256, SecretKeyMaterial, alloc, iterated_s2k, streamers, triplesec, _iterated_s2k_cache, _ref;
 
   triplesec = require('triplesec');
 
   C = require('../const').openpgp;
 
-  _ref = require('../hash'), alloc = _ref.alloc, SHA256 = _ref.SHA256;
+  _ref = require('../hash'), alloc = _ref.alloc, SHA256 = _ref.SHA256, streamers = _ref.streamers;
 
   S2K = (function() {
     S2K.prototype._count = function(c, bias) {
@@ -14518,12 +14536,16 @@ _break()
 
     function S2K() {
       this.hash = SHA256;
+      this.streamer = streamers.SHA256();
     }
 
     S2K.prototype.set_hash_algorithm = function(which) {
-      if ((this.hash = alloc(which)) == null) {
+      if ((this.hash = alloc(which)) != null) {
+        return this.streamer = streamers[this.hash.algname]();
+      } else {
         console.warn("No such hash: " + which + "; defaulting to SHA-256");
-        return this.hash = SHA256;
+        this.hash = SHA256;
+        return this.streamer = streamers.SHA256();
       }
     };
 
@@ -14584,7 +14606,7 @@ _break()
     };
 
     S2K.prototype.produce_key = function(passphrase, numBytes) {
-      var i, isp, key, n, ret, seed;
+      var key, key2, prefix, ret, seed;
       if (numBytes == null) {
         numBytes = 16;
       }
@@ -14596,20 +14618,22 @@ _break()
             return this.hash(Buffer.concat([this.salt, passphrase]));
           case C.s2k.salt_iter:
             seed = Buffer.concat([this.salt, passphrase]);
-            n = Math.ceil(this.count / seed.length);
-            isp = Buffer.concat((function() {
-              var _i, _results;
-              _results = [];
-              for (i = _i = 0; 0 <= n ? _i < n : _i > n; i = 0 <= n ? ++_i : --_i) {
-                _results.push(seed);
-              }
-              return _results;
-            })()).slice(0, this.count);
+            key = iterated_s2k({
+              alg: this.hash.algname,
+              seed: seed,
+              count: this.count
+            });
             if ((numBytes != null) && (numBytes === 24 || numBytes === 32)) {
-              key = this.hash(isp);
-              return Buffer.concat([key, this.hash(Buffer.concat([new Buffer([0]), isp]))]);
+              prefix = new Buffer([0]);
+              key2 = iterated_s2k({
+                alg: this.hash.algname,
+                seed: seed,
+                count: this.count,
+                prefix: prefix
+              });
+              return Buffer.concat([key, key2]);
             } else {
-              return this.hash(isp);
+              return key;
             }
             break;
           default:
@@ -14622,6 +14646,50 @@ _break()
     return S2K;
 
   })();
+
+  _iterated_s2k_cache = {};
+
+  iterated_s2k = function(_arg) {
+    var alg, bigbuf, count, i, k, n, prefix, rem, rembuf, ret, seed, streamer, tot, val;
+    alg = _arg.alg, seed = _arg.seed, count = _arg.count, prefix = _arg.prefix;
+    k = "" + alg + "-" + (seed.toString('base64')) + "-" + count;
+    if (prefix != null) {
+      k += "-" + (prefix.toString('base64'));
+    }
+    if ((val = _iterated_s2k_cache[k]) != null) {
+      return val;
+    }
+    streamer = streamers[alg]();
+    if (prefix != null) {
+      streamer.update(prefix);
+    }
+    bigbuf = Buffer.concat((function() {
+      var _i, _results;
+      _results = [];
+      for (i = _i = 0; _i < 4096; i = ++_i) {
+        _results.push(seed);
+      }
+      return _results;
+    })());
+    tot = 0;
+    while (tot + bigbuf.length <= count) {
+      streamer.update(bigbuf);
+      tot += bigbuf.length;
+    }
+    rem = count - tot;
+    n = Math.ceil(rem / seed.length);
+    rembuf = Buffer.concat((function() {
+      var _i, _results;
+      _results = [];
+      for (i = _i = 0; 0 <= n ? _i < n : _i > n; i = 0 <= n ? ++_i : --_i) {
+        _results.push(seed);
+      }
+      return _results;
+    })());
+    ret = streamer(rembuf.slice(0, rem));
+    _iterated_s2k_cache[k] = ret;
+    return ret;
+  };
 
   SecretKeyMaterial = (function() {
     function SecretKeyMaterial() {
@@ -18582,7 +18650,6 @@ for (var k in syms) {
          var s = jscore.bnModPow(this.toString(), e.toString(), m.toString())
          return r.fromString(s, 10);
        }
-
 	   var i = e.bitLength(), k, r = nbv(1), z;
 	   if(i <= 0) return r;
 	   else if(i < 18) k = 1;
@@ -18678,8 +18745,8 @@ for (var k in syms) {
 	   return r;
 	 }
 	 
-	// (public) 1/this % m (HAC 14.61)
-	function bnModInverse(m) {
+	 // (public) 1/this % m (HAC 14.61)
+	 function bnModInverse(m) {
        if (jscore && jscore.bnModInverse) {
          var r = nbi();
          var s = jscore.bnModInverse(this.toString(), m.toString())
@@ -18750,7 +18817,7 @@ for (var k in syms) {
 	 /* added by Recurity Labs */
 	 
 	 function nbits(x) {
-        var n = 1, t;
+	 	var n = 1, t;
 	 	if ((t = x >>> 16) != 0) {
 	 		x = t;
 	 		n += 16;
@@ -41208,7 +41275,7 @@ module.exports=require(121)
 
   })(Base);
 
-  decrypt = function(_arg, cb) {    
+  decrypt = function(_arg, cb) {
     var data, dec, err, key, progress_hook, pt, ___iced_passed_deferral, __iced_deferrals, __iced_k;
     __iced_k = __iced_k_noop;
     ___iced_passed_deferral = iced.findDeferral(arguments);
@@ -42916,10 +42983,12 @@ module.exports=require(121)
 (function (Buffer){
 // Generated by IcedCoffeeScript 1.7.1-f
 (function() {
-  var ADRBG, PRNG, WordArray, XOR, browser_rng, e, generate, iced, m, native_rng, rng, util, __iced_k, __iced_k_noop, _browser_rng_primitive, _native_rng, _prng, _ref, _ref1;
+  var ADRBG, PRNG, WordArray, XOR, browser_rng, e, generate, iced, m, more_entropy, native_rng, rng, util, __iced_k, __iced_k_noop, _browser_rng_primitive, _native_rng, _prng, _ref, _ref1;
 
   iced = require('iced-runtime');
   __iced_k = __iced_k_noop = function() {};
+
+  more_entropy = require('more-entropy');
 
   ADRBG = require('./drbg').ADRBG;
 
@@ -42961,7 +43030,8 @@ module.exports=require(121)
   };
 
   PRNG = (function() {
-    function PRNG() {      
+    function PRNG() {
+      this.meg = new more_entropy.Generator();
       this.adrbg = new ADRBG(((function(_this) {
         return function(n, cb) {
           return _this.gen_seed(n, cb);
@@ -46210,7 +46280,7 @@ module.exports={
     "keybase"
   ],
   "author": "Maxwell Krohn",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "license": "BSD-3-Clause",
   "main": "./lib/main.js",
   "directories": {
@@ -46246,8 +46316,6 @@ module.exports={
 }
 },{}]},{},[26])(26)
 });
-
-//require(['openpgp'], function() {});
 
 require(['kbpgp'], function() {
   kbpgp = require("kbpgp");
