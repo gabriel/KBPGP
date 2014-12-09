@@ -27,6 +27,8 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
 
 - (instancetype)init {
   if ((self = [super init])) {
+    NAChlorideInit();
+    
     _queue = dispatch_queue_create("KBCrypto", DISPATCH_QUEUE_SERIAL);
     //dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
     //dispatch_set_target_queue(_queue, q);

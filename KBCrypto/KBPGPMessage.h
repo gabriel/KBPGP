@@ -22,4 +22,6 @@
 
 - (NSString *)text;
 
+- (void)updateData:(NSData *)data;
+
 @end

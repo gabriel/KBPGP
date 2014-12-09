@@ -35,6 +35,10 @@
   return [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
 }
 
+- (void)updateData:(NSData *)data {
+  _data = data;
+}
+
 #pragma mark NSCoding
 
 + (BOOL)supportsSecureCoding { return YES; }

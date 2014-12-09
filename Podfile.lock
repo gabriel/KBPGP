@@ -3,12 +3,12 @@ PODS:
     - OpenSSL-gabriel
   - GHKit (1.0.10)
   - GRUnit (1.0.11)
-  - libsodium (1.0.0)
+  - libsodium (1.0.1)
   - Mantle (1.5.1):
-    - Mantle/extobjc
+    - Mantle/extobjc (= 1.5.1)
   - Mantle/extobjc (1.5.1)
   - MPMessagePack (0.1.9)
-  - NAChloride (1.1.1):
+  - NAChloride (1.1.2):
     - libsodium
   - ObjectiveSugar (1.1.0)
   - OpenSSL-gabriel (1.0.1.j)
@@ -40,12 +40,12 @@ SPEC CHECKSUMS:
   GHBigNum: e62bc65d101ebf649fca14d83edbe892333a8ca8
   GHKit: f729fd504fd304254b8613fb3969efcbdfcf15cd
   GRUnit: c71b4cfc6e67b1f7539a724e6344390aef94693a
-  libsodium: fe2e966890bd680204048ff800e2f72bfb1b6669
+  libsodium: ac34cc59b942350fb1377380cfb31f05c3d6170e
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   MPMessagePack: 1ff8cce726fc001ee65793c4e56b85e9e189dbf5
-  NAChloride: 56f5ed342554234da0c304b0f3b2318434570f74
+  NAChloride: f5ec84c64efcdb5008f960d7d557dfac6c060a1d
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
   OpenSSL-gabriel: 983ace94bfce3ecdf0ebeb7d365fcb7ebc98d153
   TSTripleSec: b5f719f1698a7e880431f2c15da6f52907949fa7
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.35.0
