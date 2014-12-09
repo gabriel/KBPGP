@@ -156,17 +156,33 @@ KeyRing.prototype.add_key_bundles = function(bundles, callback) {
 };
 
 jscore.verify = function(params) {
-  var message_armored = params.message_armored,
+  var armored = params.armored,
+    keyring = params.keyring,
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  var keyring = jscore.kr();
+  var data_fn = null;
+  if (params.data) {
+    var data = new kbpgp.Buffer(params.data, "hex");
+    var data_fn = function(hasher, cb) {
+      hasher(data);
+      cb(null, true);
+    };
+  }
+
+  if (!keyring) keyring = jscore.kr(); // Testing will pass in its own keyring    
   var kparams = {
-    armored: message_armored,
+    armored: armored,    
+    data_fn: data_fn,
     keyfetch: keyring,
-  };
+  };  
   kbpgp.unbox(kparams, function(err, literals, warnings) {
-    jscore._process_literals(err, literals, warnings, keyring, success, failure);
+    if (err) { failure.handle(err); return; }
+    if (literals) {
+      jscore._process_literals(err, literals, warnings, keyring, success, failure);
+    } else {
+      success();
+    }
   });
 };
 

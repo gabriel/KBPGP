@@ -24,6 +24,7 @@ typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
   KBCryptoErrorCodeKeyNotFound = -3,
 };
 
+typedef void (^KBCyptoCompletionBlock)(NSError *error);
 typedef void (^KBCyptoErrorBlock)(NSError *error);
 typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 
@@ -91,8 +92,19 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  @param failure Error
  
  */
-- (void)verifyMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
+- (void)verifyArmored:(NSString *)armored success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
+/*!
+ Verify (detached).
+ 
+ The keyring will be used to lookup keys to verify signatures.
+ 
+ @param messageArmored Armored PGP signature
+ @param data Data
+ @param success PGP Message
+ @param failure Error
+ */
+- (void)verifyArmored:(NSString *)armored data:(NSData *)data success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Unbox (decrypt and/or verify).
@@ -104,24 +116,24 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  @param failure Error
 
  */
-- (void)unboxMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(void (^)(NSError *failure))failure;
+- (void)unboxMessageArmored:(NSString *)messageArmored success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark Armor/Dearmor
 
 /*!
  Armor public key.
  */
-- (void)armoredKeyBundleFromPublicKey:(NSData *)data success:(void (^)(NSString *keyBundle))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromPublicKey:(NSData *)data success:(void (^)(NSString *keyBundle))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Armored private key bundle from P3SKB.
  */
-- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(void (^)(NSError *failure))failure;
+- (void)armoredKeyBundleFromSecretKey:(P3SKB *)secretKey password:(NSString *)password keyBundlePassword:(NSString *)keyBundlePassword success:(void (^)(NSString *encoded))success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Dearmor. Can be a armored pgp key or message.
  */
-- (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(void (^)(NSError *failure))failure;
+- (void)dearmor:(NSString *)armored success:(void (^)(NSData *data))success failure:(KBCyptoErrorBlock)failure;
 
 #pragma mark Generate Key
 

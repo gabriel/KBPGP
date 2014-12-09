@@ -139,6 +139,32 @@ describe("JSCore", function() {
     })
   });
 
+  it("should verify detached", function(done) {
+    jscore.verify({
+      armored: datafile("user2_sig.asc"),
+      data: new Buffer("this is a test message to gabrielhlocal2\n", "utf8").toString("hex"),
+      keyring: keyring,
+      success: function() {
+        done();
+      },
+      failure:failure
+    });
+  });
+
+  it("should verify detached fail", function(done) {
+    jscore.verify({
+      armored: datafile("user2_sig.asc"),
+      data: new Buffer("not the right message", "utf8").toString("hex"),
+      keyring: keyring,
+      success: function() {
+        assert.ok(false, "should fail");
+      },
+      failure:function(err) {        
+        done();
+      }
+    });
+  });
+
   it("should cancel generate key", function(done) {
     this.timeout(100000);
     jscore.generateKeyPair({

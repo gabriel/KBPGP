@@ -75,7 +75,7 @@
 - (void)testSignVerify:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
   [_crypto signText:@"This is a secret message" keyBundle:[self loadFile:@"user1_private.asc"] password:@"toomanysecrets" success:^(NSString *armoredSignature) {
-    [blockSelf.crypto verifyMessageArmored:armoredSignature success:^(KBPGPMessage *message) {
+    [blockSelf.crypto verifyArmored:armoredSignature success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret message");
       completion();
     } failure:GRErrorHandler];
@@ -85,7 +85,7 @@
 - (void)testSignVerifyWithGPG:(dispatch_block_t)completion {
   GHWeakSelf blockSelf = self;
   [_crypto signText:@"This is a secret message" keyBundle:[self loadFile:@"user2_private.asc"] password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
-    [blockSelf.crypto verifyMessageArmored:clearTextArmored success:^(KBPGPMessage *message) {
+    [blockSelf.crypto verifyArmored:clearTextArmored success:^(KBPGPMessage *message) {
       GRAssertEqualStrings(message.text, @"This is a secret message");
       completion();
     } failure:GRErrorHandler];
@@ -166,7 +166,7 @@
   __block NSInteger index = 0;
   for (NSString *file in files) {
     NSString *messageArmored = [self loadFile:file];
-    [_crypto verifyMessageArmored:messageArmored success:^(KBPGPMessage *message) {
+    [_crypto verifyArmored:messageArmored success:^(KBPGPMessage *message) {
       GHDebug(@"Verified: %@, %@", file, message.text);
       NSString *expected = files[file];
       GRAssertEqualStrings(expected, message.text);
@@ -179,8 +179,29 @@
 - (void)testVerifyFailure:(dispatch_block_t)completion {
   NSString *messageArmored = [self loadFile:@"user1_clearsign_fail.asc"];
   
-  [_crypto verifyMessageArmored:messageArmored success:^(KBPGPMessage *message) {
+  [_crypto verifyArmored:messageArmored success:^(KBPGPMessage *message) {
     //GRFail(@"Should fail");
+    [NSException raise:@"Fail" format:@"Should fail"];
+  } failure:^(NSError *error) {
+    GRTestLog(@"Failed ok: %@", error);
+    completion();
+  }];
+}
+
+- (void)testVerifyDetached:(dispatch_block_t)completion {
+  NSString *messageArmored = [self loadFile:@"user2_sig.asc"];
+  
+  NSData *data = [@"this is a test message to gabrielhlocal2\n" dataUsingEncoding:NSUTF8StringEncoding];
+  [_crypto verifyArmored:messageArmored data:data success:^() {
+    completion();
+  } failure:GRErrorHandler];
+}
+
+- (void)testVerifyDetachedFailure:(dispatch_block_t)completion {
+  NSString *messageArmored = [self loadFile:@"user2_sig.asc"];
+  
+  NSData *data = [@"not the right message" dataUsingEncoding:NSUTF8StringEncoding];
+  [_crypto verifyArmored:messageArmored data:data success:^() {
     [NSException raise:@"Fail" format:@"Should fail"];
   } failure:^(NSError *error) {
     GRTestLog(@"Failed ok: %@", error);

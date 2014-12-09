@@ -25,8 +25,8 @@ typedef void(^KBJSCoreExceptionHandler)(JSContext *context, JSValue *exception);
 
 - (id)exec:(NSString *)js;
 
-- (NSString *)readFile:(NSString *)path digest:(NSString *)digest;
+- (NSString *)readFile:(NSString *)path;
 
-- (void)load:(NSString *)path digest:(NSString *)digest;
+- (void)load:(NSString *)path;
 
 @end

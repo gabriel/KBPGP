@@ -88,16 +88,11 @@
   return !!resourcePath;
 }
 
-- (NSString *)readFile:(NSString *)path digest:(NSString *)digest {
+- (NSString *)readFile:(NSString *)path {
   NSString *resourcePath = [[NSBundle mainBundle] pathForResource:[path stringByDeletingPathExtension] ofType:[path pathExtension]];
   NSString *content = [NSString stringWithContentsOfFile:resourcePath encoding:NSUTF8StringEncoding error:NULL];
   //+ (NSData *)HMACForKey:(NSData *)key data:(NSData *)data algorithm:(NAHMACAlgorithm)algorithm;
 
-  NSString *calculatedDigest = [[NADigest digestForData:[content dataUsingEncoding:NSUTF8StringEncoding] algorithm:NADigestAlgorithmSHA2_512] na_hexString];
-  if (digest && ![calculatedDigest isEqualToString:digest]) {
-    [NSException raise:NSGenericException format:@"Invalid digest"];
-    return nil;
-  }
   GHDebug(@"JSCore content:%@, %d", path, (int)[content length]);
   return content;
 }
@@ -107,8 +102,8 @@
   return [[_context evaluateScript:js] toObject];
 }
 
-- (void)load:(NSString *)path digest:(NSString *)digest {
-  [self exec:[self readFile:path digest:digest]];
+- (void)load:(NSString *)path {
+  [self exec:[self readFile:path]];
 }
 
 - (NSString *)randomHexString:(NSUInteger)numBytes {
