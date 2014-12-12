@@ -4,11 +4,10 @@ source "https://github.com/CocoaPods/Specs.git"
 pod "GHKit"
 pod "ObjectiveSugar"
 pod "NAChloride"
-pod "TSTripleSec", :path => "../TSTripleSec/"
+pod "TSTripleSec"
 pod "Mantle"
-pod "OpenSSL-gabriel", :path => "../OpenSSL-gabriel/"
-pod "GHBigNum", :path => "../GHBigNum/"
+pod "GHBigNum"
 
 target :Tests do
-  pod "GRUnit", :path => "../GRUnit"
+  pod "GRUnit"
 end

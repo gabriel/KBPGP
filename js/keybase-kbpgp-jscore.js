@@ -1,12 +1,9 @@
 window = {};
 window.crypto = {};
 window.crypto.getRandomValues = function(buf) {  
-  var hex = jscore.getRandomHexString(buf.length);
-  //console.log("Random values (" + buf.length + "): " + hex);
-  for (var i = 0; i < buf.length; i += 1) {
-    var r = parseInt(hex.substr(i*2, 2), 16);
-    buf[i] = r;
-  }
+  var data = jscore.getRandomBase64String(buf.length);
+  var buffer = new kbpgp.Buffer(data, "base64");
+  if (buffer.length != buf.length) throw new Error("Invalid length");  
 };
 
 var jsondump = function(obj) {
@@ -161,28 +158,20 @@ jscore.verify = function(params) {
     success = params.success,
     failure = new ErrorHandler(params.failure);
 
-  var data_fn = null;
+  var data = null;
   if (params.data) {
-    var data = new kbpgp.Buffer(params.data, "hex");
-    var data_fn = function(hasher, cb) {
-      hasher(data);
-      cb(null, true);
-    };
+    data = new kbpgp.Buffer(params.data, "base64");
   }
 
   if (!keyring) keyring = jscore.kr(); // Testing will pass in its own keyring    
   var kparams = {
     armored: armored,    
-    data_fn: data_fn,
+    data: data,
     keyfetch: keyring,
   };  
   kbpgp.unbox(kparams, function(err, literals, warnings) {
     if (err) { failure.handle(err); return; }
-    if (literals) {
-      jscore._process_literals(err, literals, warnings, keyring, success, failure);
-    } else {
-      success();
-    }
+    jscore._process_literals(err, literals, warnings, keyring, success, failure);    
   });
 };
 
@@ -237,7 +226,7 @@ jscore._process_literals = function(err, literals, warnings, keyring, success, f
     return;
   }
 
-  var hex = literals[0].toString("hex");
+  var data = literals[0].toString("base64");
   var data_signers = literals[0].get_data_signers();      
 
   var signers = [];      
@@ -250,7 +239,7 @@ jscore._process_literals = function(err, literals, warnings, keyring, success, f
   }
   var fetched = keyring.fetched;
   keyring.fetched = [];
-  success(hex, signers, warnings.warnings(), fetched);
+  success(data, signers, warnings.warnings(), fetched);
 };
 
 jscore.generateKeyPair = function(params) {
@@ -324,7 +313,7 @@ jscore.armorPublicKey = function(params) {
     failure = new ErrorHandler(params.failure);
 
   var C = kbpgp["const"].openpgp;
-  var buffer = new kbpgp.Buffer(data, "hex");
+  var buffer = new kbpgp.Buffer(data, "base64");
   var armored = kbpgp.armor.encode(C.message_types.public_key, buffer);
   if (armored) {
     success(armored);
@@ -340,7 +329,7 @@ jscore.armorPrivateKey = function(params) {
     failure = new ErrorHandler(params.failure);  
 
   var C = kbpgp["const"].openpgp;
-  var buffer = new kbpgp.Buffer(data, "hex");
+  var buffer = new kbpgp.Buffer(data, "base64");
   var armored = kbpgp.armor.encode(C.message_types.private_key, buffer);
 
   if (!armored) {
@@ -408,7 +397,7 @@ jscore.dearmor = function(params) {
   if (err) {
     failure.handle(err);
   } else {
-    success(msg.body.toString("hex"));
+    success(msg.body.toString("base64"));
   }
 };
 
@@ -552,7 +541,7 @@ jscore._exportKey = function(key, success, failure) {
 
     var pgp_public_decode = kbpgp.armor.decode(pgp_public);
     if (pgp_public_decode[0]) { failure.handle(pgp_public_decode[0]); return; }      
-    var pgp_public_hex = pgp_public_decode[1].body.toString("hex");
+    var pgp_public_data = pgp_public_decode[1].body.toString("base64");
 
     if (pgp_public.indexOf("-----BEGIN PGP PUBLIC KEY") !== 0) {
       failure.handle(new Error("Bundle should be public key"));
@@ -565,9 +554,9 @@ jscore._exportKey = function(key, success, failure) {
 
       var pgp_private_decode = kbpgp.armor.decode(pgp_private);
       if (pgp_private_decode[0]) { failure.handle(pgp_private_decode[0]); return; }      
-      var pgp_private_hex = pgp_private_decode[1].body.toString("hex");
+      var pgp_private_data = pgp_private_decode[1].body.toString("base64");
 
-      success(pgp_public, pgp_public_hex, pgp_private, pgp_private_hex);      
+      success(pgp_public, pgp_public_data, pgp_private, pgp_private_data);      
     });      
   });
 };

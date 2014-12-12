@@ -14,9 +14,9 @@
   KBJSCore *JSCore = [[KBJSCore alloc] initWithQueue:nil exceptionHandler:nil];
   JSContext *context = JSCore.context;
   
-  [context evaluateScript:@"var randomHex = jscore.getRandomHexString(32);"];
-  NSString *randomHex = [context[@"randomHex"] toString];
-  GRAssertEquals([randomHex length], (NSUInteger)64);
+  [context evaluateScript:@"var random = jscore.getRandomBase64String(32);"];
+  NSString *random = [context[@"random"] toString];
+  GRAssertEquals([random length], (NSUInteger)44);
 }
 
 @end

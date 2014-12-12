@@ -1,8 +1,8 @@
 PODS:
-  - GHBigNum (0.1.1):
-    - OpenSSL-gabriel
-  - GHKit (1.0.10)
-  - GRUnit (1.0.11)
+  - GHBigNum (0.1.4):
+    - OpenSSL-gabriel (~> 1.0.1.j-2)
+  - GHKit (1.0.17)
+  - GRUnit (1.0.13)
   - libsodium (1.0.1)
   - Mantle (1.5.1):
     - Mantle/extobjc (= 1.5.1)
@@ -11,41 +11,30 @@ PODS:
   - NAChloride (1.1.2):
     - libsodium
   - ObjectiveSugar (1.1.0)
-  - OpenSSL-gabriel (1.0.1.j)
-  - TSTripleSec (0.1.8):
+  - OpenSSL-gabriel (1.0.1.j-2)
+  - TSTripleSec (1.0.0):
     - MPMessagePack
     - NAChloride
 
 DEPENDENCIES:
-  - GHBigNum (from `../GHBigNum/`)
+  - GHBigNum
   - GHKit
-  - GRUnit (from `../GRUnit`)
+  - GRUnit
   - Mantle
   - NAChloride
   - ObjectiveSugar
-  - OpenSSL-gabriel (from `../OpenSSL-gabriel/`)
-  - TSTripleSec (from `../TSTripleSec/`)
-
-EXTERNAL SOURCES:
-  GHBigNum:
-    :path: ../GHBigNum/
-  GRUnit:
-    :path: ../GRUnit
-  OpenSSL-gabriel:
-    :path: ../OpenSSL-gabriel/
-  TSTripleSec:
-    :path: ../TSTripleSec/
+  - TSTripleSec
 
 SPEC CHECKSUMS:
-  GHBigNum: e62bc65d101ebf649fca14d83edbe892333a8ca8
-  GHKit: f729fd504fd304254b8613fb3969efcbdfcf15cd
-  GRUnit: c71b4cfc6e67b1f7539a724e6344390aef94693a
+  GHBigNum: 9b4e8d8770bbb58e571319e82374763e670ed5ca
+  GHKit: fdd266fc25e81da79efc481647f3dde6b274b10f
+  GRUnit: 0ea9ea1b1489c7e37b9d8864c6928b2c122a3d5a
   libsodium: ac34cc59b942350fb1377380cfb31f05c3d6170e
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   MPMessagePack: 1ff8cce726fc001ee65793c4e56b85e9e189dbf5
   NAChloride: f5ec84c64efcdb5008f960d7d557dfac6c060a1d
   ObjectiveSugar: f48793f5902c77cfc02a4ce46d2e8ecddcad4dc2
-  OpenSSL-gabriel: 983ace94bfce3ecdf0ebeb7d365fcb7ebc98d153
-  TSTripleSec: b5f719f1698a7e880431f2c15da6f52907949fa7
+  OpenSSL-gabriel: 98244ee135881a50ecde71747429a8b27ce242cd
+  TSTripleSec: 7371672f757735ab696d8c0d0fc0d98b7a38059e
 
 COCOAPODS: 0.35.0

@@ -14,7 +14,7 @@
 @property (readonly) NSArray */*of NSString*/decryptKeyIds; // To
 @property (readonly) NSString *bundle; // Armored message bundle
 
-@property (readonly) NSData *data; // Unencrypted data (maybe nil if not decrypted)
+@property NSData *data; // Unencrypted data (maybe nil if not decrypted)
 @property (readonly) NSArray */*of id<KBSigner>*/signers;
 @property (readonly) NSArray */*of NSString */warnings;
 
@@ -22,6 +22,7 @@
 
 - (NSString *)text;
 
-- (void)updateData:(NSData *)data;
+// For detached signatures
+- (void)verifiedWithSigners:(NSArray *)signers warnings:(NSArray *)warnings verifyKeyIds:(NSArray *)verifyKeyIds;
 
 @end

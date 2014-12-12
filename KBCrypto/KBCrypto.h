@@ -104,7 +104,7 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
  @param success PGP Message
  @param failure Error
  */
-- (void)verifyArmored:(NSString *)armored data:(NSData *)data success:(dispatch_block_t)success failure:(KBCyptoErrorBlock)failure;
+- (void)verifyArmored:(NSString *)armored data:(NSData *)data success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure;
 
 /*!
  Unbox (decrypt and/or verify).

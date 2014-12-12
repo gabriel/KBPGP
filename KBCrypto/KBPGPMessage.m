@@ -8,11 +8,12 @@
 
 #import "KBPGPMessage.h"
 
+#import <ObjectiveSugar/ObjectiveSugar.h>
+
 @interface KBPGPMessage ()
 @property NSArray *verifyKeyIds;
 @property NSArray *decryptKeyIds;
 @property NSString *bundle;
-@property NSData *data;
 @property NSArray *signers;
 @property NSArray *warnings;
 @end
@@ -35,8 +36,10 @@
   return [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
 }
 
-- (void)updateData:(NSData *)data {
-  _data = data;
+- (void)verifiedWithSigners:(NSArray *)signers warnings:(NSArray *)warnings verifyKeyIds:(NSArray *)verifyKeyIds {
+  _signers = [@[(_signers ? _signers : @[]), (signers ? signers : @[])] flatten];
+  _warnings = [@[(_warnings ? _warnings : @[]), (warnings ? warnings : @[])] flatten];
+  _verifyKeyIds = [@[(_verifyKeyIds ? _warnings : @[]), (verifyKeyIds ? verifyKeyIds : @[])] flatten];
 }
 
 #pragma mark NSCoding

@@ -53,14 +53,14 @@
     };
 
     _context[@"jscore"] = @{};
-    _context[@"jscore"][@"getRandomHexString"] = ^(JSValue *numBytes) {
+    _context[@"jscore"][@"getRandomBase64String"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
       NSError *error = nil;
-      NSString *hexString = [[NARandom randomData:[numBytes toUInt32] error:&error] na_hexString];
-      if (!hexString) {
+      NSString *data = GHBase64StringFromNSData([NARandom randomData:[numBytes toUInt32] error:&error]);
+      if (!data) {
         [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
       }
-      return hexString;
+      return data;
     };
     
     _context[@"jscore"][@"generatePrime"] = ^(JSValue *numBits) {
