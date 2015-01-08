@@ -16,6 +16,7 @@
 #import "KBPGPMessage.h"
 #import "KBCryptoUtil.h"
 #import <TSTripleSec/P3SKB.h>
+#import <KBKeybase/KBCrypto.h>
 
 
 typedef NS_ENUM (NSInteger, KBCryptoErrorCode) {
@@ -31,7 +32,7 @@ typedef void (^KBCryptoUnboxBlock)(KBPGPMessage *message);
 /*!
  Keybase PGP.
  */
-@interface KBCrypto : NSObject
+@interface KBCrypto : NSObject <KBCrypto>
 
 // Defaults to main queue
 @property dispatch_queue_t completionQueue;
