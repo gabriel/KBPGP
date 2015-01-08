@@ -40,10 +40,6 @@
   } failure:failure];
 }
 
-- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure {
-  [_keyRing verifyKeyFingerprints:keyFingerprints success:success failure:failure];
-}
-
 - (void)processKeys:(NSArray *)keys capabilities:(KBKeyCapabilities)capabilities completion:(void (^)(NSArray *keyBundles))completion {
   NSMutableArray *keyBundles = [NSMutableArray array];
   

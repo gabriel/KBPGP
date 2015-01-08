@@ -30,6 +30,4 @@ JSExportAs(fetch,
 
 - (id)initWithKeyRing:(id<KBKeyRing>)keyRing;
 
-- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure;
-
 @end

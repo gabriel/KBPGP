@@ -129,12 +129,12 @@ typedef void (^KBCryptoJSFailureBlock)(NSString *error);
   NSMutableArray *decryptKeyIds = [NSMutableArray array];
   [self _parseFetches:fetches verifyKeyIds:verifyKeyIds decryptKeyIds:decryptKeyIds];
   
-  [_cryptoKeyRing verifyKeyFingerprints:keyFingerprints success:^(NSArray *signers) {
-    KBPGPMessage *message = [KBPGPMessage messageWithVerifyKeyIds:verifyKeyIds decryptKeyIds:decryptKeyIds bundle:messageArmored data:data signers:signers warnings:warnings];
-    [blockSelf _callback:^{ success(message); }];
-  } failure:^(NSError *error) {
-    [blockSelf _callback:^{ failure(error); }];
+  NSArray *signers = [keyFingerprints map:^id(NSString *keyFingerprint) {
+    return [[KBSigner alloc] initWithKeyFingerprint:keyFingerprint];
   }];
+  
+  KBPGPMessage *message = [KBPGPMessage messageWithVerifyKeyIds:verifyKeyIds decryptKeyIds:decryptKeyIds bundle:messageArmored data:data signers:signers warnings:warnings];
+  [blockSelf _callback:^{ success(message); }];
 }
 
 - (void)decryptMessageArmored:(NSString *)messageArmored keyBundle:(NSString *)keyBundle password:(NSString *)password success:(KBCryptoUnboxBlock)success failure:(KBCyptoErrorBlock)failure {

@@ -7,7 +7,8 @@ pod "NAChloride"
 pod "TSTripleSec"
 pod "Mantle"
 pod "GHBigNum"
+pod "KBKeybase/Crypto", :path => "../KBKeybase"
 
 target :Tests do
-  pod "GRUnit"
+  pod "GRUnit", :path => "../GRUnit"
 end

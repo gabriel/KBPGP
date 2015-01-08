@@ -115,9 +115,9 @@ KeyRing.prototype.fetch = function(key_ids, ops, callback) {
   this.pgpkr.fetch(key_ids, ops, function(err, key, index) {
     if (err) {
       var hex_keyids = key_ids.map(function(k) { return k.toString("hex"); });      
-      console.log("Calling fetch: " + hex_keyids);
+      //console.log("Calling fetch: " + hex_keyids);
       jscore.KeyRing.fetch(hex_keyids, ops, function(bundles) {
-        console.log("Got " + bundles.length + " bundles");
+        //console.log("Got " + bundles.length + " bundles");
         that.add_key_bundles(bundles, function(err) {
           if (err) { callback(err); return; }
           that.pgpkr.fetch(key_ids, ops, callback);

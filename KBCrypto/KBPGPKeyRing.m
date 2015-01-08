@@ -52,10 +52,6 @@
   }
 }
 
-- (KBPGPKey *)PGPKeyFromFingerprint:(NSString *)fingerprint {
-  return [_PGPKeys detect:^BOOL(KBPGPKey *PGPKey) { return [PGPKey.fingerprint isEqual:fingerprint]; }];
-}
-
 - (void)lookupPGPKeyIds:(NSArray *)PGPKeyIds capabilities:(KBKeyCapabilities)capabilities success:(void (^)(NSArray *keys))success failure:(void (^)(NSError *error))failure {
   NSMutableArray *foundKeys = [NSMutableArray array];
   for (NSString *keyId in PGPKeyIds) {
@@ -72,15 +68,6 @@
   GHDebug(@"Lookup key ids: %@, %@; %d", PGPKeyIds, NSStringFromKBKeyCapabilities(capabilities), (int)[foundKeys count]);
   
   success(foundKeys);
-}
-
-- (void)verifyKeyFingerprints:(NSArray *)keyFingerprints success:(void (^)(NSArray *signers))success failure:(void (^)(NSError *error))failure {
-  NSMutableArray *signers = [NSMutableArray array];
-  for (NSString *keyFingerprint in keyFingerprints) {
-    KBPGPKey *PGPKey = [self PGPKeyFromFingerprint:keyFingerprint];
-    if (PGPKey) [signers addObject:[[KBSigner alloc] initWithKeyFingerprint:PGPKey.fingerprint]];
-  }
-  success(signers);
 }
 
 @end

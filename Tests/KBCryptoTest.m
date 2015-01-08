@@ -189,19 +189,19 @@
 }
 
 - (void)testVerifyDetached:(dispatch_block_t)completion {
-  NSString *messageArmored = [self loadFile:@"user2_sig.asc"];
+  NSString *armored = [self loadFile:@"user2_sig.asc"];
   
   NSData *data = [@"this is a test message to gabrielhlocal2\n" dataUsingEncoding:NSUTF8StringEncoding];
-  [_crypto verifyArmored:messageArmored data:data success:^(KBPGPMessage *PGPMessage) {
+  [_crypto verifyArmored:armored data:data success:^(KBPGPMessage *PGPMessage) {
     completion();
   } failure:GRErrorHandler];
 }
 
 - (void)testVerifyDetachedFailure:(dispatch_block_t)completion {
-  NSString *messageArmored = [self loadFile:@"user2_sig.asc"];
+  NSString *armored = [self loadFile:@"user2_sig.asc"];
   
   NSData *data = [@"not the right message" dataUsingEncoding:NSUTF8StringEncoding];
-  [_crypto verifyArmored:messageArmored data:data success:^(KBPGPMessage *PGPMessage) {
+  [_crypto verifyArmored:armored data:data success:^(KBPGPMessage *PGPMessage) {
     [NSException raise:@"Fail" format:@"Should fail"];
   } failure:^(NSError *error) {
     GRTestLog(@"Failed ok: %@", error);
