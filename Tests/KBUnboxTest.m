@@ -1,7 +1,6 @@
 #import <GRUnit/GRUnit.h>
 
 #import "KBCrypto.h"
-#import "KBPGPKeyRing.h"
 
 #import <GHKit/GHKit.h>
 #import <ObjectiveSugar/ObjectiveSugar.h>

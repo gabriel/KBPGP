@@ -7,7 +7,7 @@ pod "NAChloride"
 pod "TSTripleSec"
 pod "Mantle"
 pod "GHBigNum"
-pod "KBKeybase/Crypto", :path => "../KBKeybase"
+pod "KBKeybase/Core", :path => "../KBKeybase"
 
 target :Tests do
   pod "GRUnit", :path => "../GRUnit"

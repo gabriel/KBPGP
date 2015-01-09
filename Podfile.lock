@@ -3,7 +3,7 @@ PODS:
     - OpenSSL-gabriel (~> 1.0.1.j-2)
   - GHKit (1.0.20)
   - GRUnit (1.1.2)
-  - KBKeybase/Crypto (0.1.1):
+  - KBKeybase/Core (0.1.2):
     - GHKit
     - ObjectiveSugar
     - TSTripleSec
@@ -24,7 +24,7 @@ DEPENDENCIES:
   - GHBigNum
   - GHKit
   - GRUnit (from `../GRUnit`)
-  - KBKeybase/Crypto (from `../KBKeybase`)
+  - KBKeybase/Core (from `../KBKeybase`)
   - Mantle
   - NAChloride
   - ObjectiveSugar
@@ -40,7 +40,7 @@ SPEC CHECKSUMS:
   GHBigNum: 9b4e8d8770bbb58e571319e82374763e670ed5ca
   GHKit: 9466c08deeb753e144bbbfac7f76be1b38175cb0
   GRUnit: 69271be897320188e4c9fc714177f0e5d4d0a437
-  KBKeybase: 739f18c90ebf0ac5e0a35fc379ab8089557f8174
+  KBKeybase: 5b15d8229be3e25f0e496e63854288c28e2ac859
   libsodium: ac34cc59b942350fb1377380cfb31f05c3d6170e
   Mantle: 8d84cacd6c2a69ff6fbce985a2b51298a5495de3
   MPMessagePack: 9219faa657435f1b28a4a651dcb74f563d948324
@@ -49,4 +49,4 @@ SPEC CHECKSUMS:
   OpenSSL-gabriel: 98244ee135881a50ecde71747429a8b27ce242cd
   TSTripleSec: 7371672f757735ab696d8c0d0fc0d98b7a38059e
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.36.0.beta.1

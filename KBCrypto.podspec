@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.dependency 'Mantle'
   s.dependency 'TSTripleSec'
   s.dependency 'GHBigNum'
+  s.dependency 'KBKeybase/Core'
   s.source_files = 'KBCrypto/**/*.{c,h,m}'
   s.requires_arc = true
 
