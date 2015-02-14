@@ -3,6 +3,19 @@ KBPGP
 
 PGP for iOS/OSX, using [kbpgp.js](https://github.com/keybase/kbpgp). Requires >= iOS 8.0.
 
+# Why?
+
+The was no usable native library for PGP for iOS or OSX. Keybase uses [kbpgp](https://github.com/keybase/kbpgp) and iOS 8 provides a JavaScript runtime with JavaScriptCore.
+
+Some alternative methods I considered or am considering:
+
+- [ObjectivePGP](https://github.com/krzyzanowskim/ObjectivePGP)
+- A Java PGP library and use [java2objc](https://code.google.com/p/java2objc/)?
+- [GPG](https://www.gnupg.org/) ([but this](https://www.gnupg.org/faq/gnupg-faq.html#yes_gpgme))
+- OpenPGP.js with JavaScriptCore
+- Using go pgp libraries ([on iOS](https://medium.com/using-go-in-mobile-apps/))
+
+
 # Podfile
 
 ```ruby
@@ -13,8 +26,8 @@ pod "KBPGP"
 # Encrypt
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto encryptText:@"This is a secret message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] success:^(NSString *messageArmored) {
+KBPGP *pgp = [[KBPGP alloc] init];
+  [pgp encryptText:@"This is a secret message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -24,8 +37,8 @@ KBPGP *crypto = [[KBPGP alloc] init];
 # Encrypt & Sign
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto encryptText:@"This is a secret signed message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
+KBPGP *pgp = [[KBPGP alloc] init];
+  [pgp encryptText:@"This is a secret signed message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -35,8 +48,8 @@ KBPGP *crypto = [[KBPGP alloc] init];
 # Sign
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
+KBPGP *pgp = [[KBPGP alloc] init];
+  [pgp signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
   NSLog(@"%@", clearTextArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -46,10 +59,10 @@ KBPGP *crypto = [[KBPGP alloc] init];
 # Unbox (Decrypt & Verify)
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto setKeyRing:... passwordBlock:...];
+KBPGP *pgp = [[KBPGP alloc] init];
+[pgp setKeyRing:... passwordBlock:...];
 
-[crypto unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
+[pgp unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
   NSLog(@"Decrypted: %@", [message text]);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -82,13 +95,13 @@ A key is the simplest representation of a key:
 
 # PGP Key (KBPGPKey)
 
-A PGP key is a more detailed version of a key, which stores extra info such as the algorithm, size, subkeys, user ids, etc. 
+A PGP key is a more detailed version of a key, which stores extra info such as the algorithm, size, subkeys, user ids, etc.
 
 You can get a PGP key from a bundle:
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto PGPKeyForPublicKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(KBPGPKey *PGPKey) { 
+KBPGP *pgp = [[KBPGP alloc] init];
+[pgp PGPKeyForPublicKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(KBPGPKey *PGPKey) {
   // PGP key
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -113,8 +126,8 @@ return keyRing;
 Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
 ```objc
-KBPGP *crypto = [[KBPGP alloc] init];
-[crypto generateKeyWithUserIds:... keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
+KBPGP *pgp = [[KBPGP alloc] init];
+[pgp generateKeyWithUserIds:... keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error
   return YES;
@@ -130,8 +143,8 @@ KBPGP *crypto = [[KBPGP alloc] init];
 
 ```objc
 NSData *data = ...;
-[crypto armoredKeyBundleFromPublicKey:data success:^(NSString *publicKeyArmored) {
-  
+[pgp armoredKeyBundleFromPublicKey:data success:^(NSString *publicKeyArmored) {
+
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
 }];
@@ -139,10 +152,11 @@ NSData *data = ...;
 
 ```objc
 NSString *keyArmored = @"-----BEGIN PGP ...";
-[crypto dearmor:keyArmored success:^(NSData *keyData) {
+[pgp dearmor:keyArmored success:^(NSData *keyData) {
   // Key as binary
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
 }];
 ```
+
 
