@@ -11,7 +11,7 @@
 		0007D3DA199D56FD008EF782 /* user3_ecc_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */; };
 		0042E39119918E9400C8676B /* keybase.js in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8B5198B1B13000C039B /* keybase.js */; };
 		0042E39219918E9600C8676B /* keybase-kbpgp-jscore.js in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */; };
-		004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBCrypto.m */; };
+		004BC8A3198B19D2000C039B /* KBPGP.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBPGP.m */; };
 		004BC8A4198B19D2000C039B /* KBJSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89A198B19D2000C039B /* KBJSCore.m */; };
 		004BC8CC198B1C3D000C039B /* user2_clearsign_gpg2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BC198B1C3D000C039B /* user2_clearsign_gpg2.asc */; };
 		004BC8CD198B1C3D000C039B /* user2_private.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8BD198B1C3D000C039B /* user2_private.asc */; };
@@ -26,17 +26,17 @@
 		004BC8D6198B1C3D000C039B /* user1_public.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C6198B1C3D000C039B /* user1_public.asc */; };
 		004BC8D7198B1C3D000C039B /* user1_sign_gpg1.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C7198B1C3D000C039B /* user1_sign_gpg1.asc */; };
 		004BC8D8198B1C3D000C039B /* user1_sign_gpg2.asc in Resources */ = {isa = PBXBuildFile; fileRef = 004BC8C8198B1C3D000C039B /* user1_sign_gpg2.asc */; };
-		004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8C9198B1C3D000C039B /* KBCryptoTest.m */; };
+		004BC8D9198B1C3D000C039B /* KBPGPTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8C9198B1C3D000C039B /* KBPGPTest.m */; };
 		004BC8DE198B20F2000C039B /* KBJSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC89A198B19D2000C039B /* KBJSCore.m */; };
-		004BC8E1198B2102000C039B /* KBCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBCrypto.m */; };
-		004BC8E8198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBCryptoKeyRing.m */; };
-		004BC8E9198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBCryptoKeyRing.m */; };
+		004BC8E1198B2102000C039B /* KBPGP.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC898198B19D2000C039B /* KBPGP.m */; };
+		004BC8E8198B2CD5000C039B /* KBPGPJSKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBPGPJSKeyRing.m */; };
+		004BC8E9198B2CD5000C039B /* KBPGPJSKeyRing.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8E7198B2CD5000C039B /* KBPGPJSKeyRing.m */; };
 		004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 004BC8EF198C187C000C039B /* KBJSCoreTest.m */; };
 		0054F14F1990503700908F74 /* user1_private.p3skb in Resources */ = {isa = PBXBuildFile; fileRef = 0054F14E1990503700908F74 /* user1_private.p3skb */; };
-		005563AB19E36DAC001A86AB /* KBCryptoReadyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */; };
+		005563AB19E36DAC001A86AB /* KBPGPReadyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563AA19E36DAC001A86AB /* KBPGPReadyTest.m */; };
 		005563B619E4970B001A86AB /* KBOpenSSLTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B519E4970B001A86AB /* KBOpenSSLTest.m */; };
-		005563B919E497DD001A86AB /* KBCryptoUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBCryptoUtil.m */; };
-		005563BA19E497DD001A86AB /* KBCryptoUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBCryptoUtil.m */; };
+		005563B919E497DD001A86AB /* KBPGPUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBPGPUtil.m */; };
+		005563BA19E497DD001A86AB /* KBPGPUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 005563B819E497DD001A86AB /* KBPGPUtil.m */; };
 		005563BC19E49D6F001A86AB /* testkey.pem in Resources */ = {isa = PBXBuildFile; fileRef = 005563BB19E49D6F001A86AB /* testkey.pem */; };
 		005563BF19E4B206001A86AB /* user3_message.asc in Resources */ = {isa = PBXBuildFile; fileRef = 005563BD19E4B206001A86AB /* user3_message.asc */; };
 		00596C8F19C8EE5700D16DAA /* KBUnboxTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */; };
@@ -69,12 +69,12 @@
 /* Begin PBXFileReference section */
 		0007D3D7199D4DC3008EF782 /* user3_ecc_public.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_ecc_public.asc; sourceTree = "<group>"; };
 		0007D3D9199D56FD008EF782 /* user3_ecc_private.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_ecc_private.asc; sourceTree = "<group>"; };
-		004BC87D198B192B000C039B /* libKBCrypto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKBCrypto.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		004BC897198B19D2000C039B /* KBCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCrypto.h; sourceTree = "<group>"; };
-		004BC898198B19D2000C039B /* KBCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCrypto.m; sourceTree = "<group>"; };
+		004BC87D198B192B000C039B /* libKBPGP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKBPGP.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		004BC897198B19D2000C039B /* KBPGP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGP.h; sourceTree = "<group>"; };
+		004BC898198B19D2000C039B /* KBPGP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGP.m; sourceTree = "<group>"; };
 		004BC899198B19D2000C039B /* KBJSCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBJSCore.h; sourceTree = "<group>"; };
 		004BC89A198B19D2000C039B /* KBJSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBJSCore.m; sourceTree = "<group>"; };
-		004BC89B198B19D2000C039B /* KBCryptoKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCryptoKeyRing.h; sourceTree = "<group>"; };
+		004BC89B198B19D2000C039B /* KBPGPJSKeyRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGPJSKeyRing.h; sourceTree = "<group>"; };
 		004BC8A8198B19E0000C039B /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		004BC8B3198B1B13000C039B /* keybase-kbpgp-jscore.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "keybase-kbpgp-jscore.js"; sourceTree = "<group>"; };
 		004BC8B5198B1B13000C039B /* keybase.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = keybase.js; sourceTree = "<group>"; };
@@ -92,16 +92,16 @@
 		004BC8C6198B1C3D000C039B /* user1_public.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_public.asc; sourceTree = "<group>"; };
 		004BC8C7198B1C3D000C039B /* user1_sign_gpg1.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_sign_gpg1.asc; sourceTree = "<group>"; };
 		004BC8C8198B1C3D000C039B /* user1_sign_gpg2.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_sign_gpg2.asc; sourceTree = "<group>"; };
-		004BC8C9198B1C3D000C039B /* KBCryptoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBCryptoTest.m; path = Tests/KBCryptoTest.m; sourceTree = "<group>"; };
+		004BC8C9198B1C3D000C039B /* KBPGPTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBPGPTest.m; path = Tests/KBPGPTest.m; sourceTree = "<group>"; };
 		004BC8DB198B1DB0000C039B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		004BC8E7198B2CD5000C039B /* KBCryptoKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCryptoKeyRing.m; sourceTree = "<group>"; };
+		004BC8E7198B2CD5000C039B /* KBPGPJSKeyRing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPJSKeyRing.m; sourceTree = "<group>"; };
 		004BC8EF198C187C000C039B /* KBJSCoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBJSCoreTest.m; path = Tests/KBJSCoreTest.m; sourceTree = "<group>"; };
-		004BC8F1198C1C09000C039B /* KBCrypto.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = KBCrypto.podspec; sourceTree = "<group>"; };
+		004BC8F1198C1C09000C039B /* KBPGP.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = KBPGP.podspec; sourceTree = "<group>"; };
 		0054F14E1990503700908F74 /* user1_private.p3skb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_private.p3skb; sourceTree = "<group>"; };
-		005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBCryptoReadyTest.m; path = Tests/KBCryptoReadyTest.m; sourceTree = "<group>"; };
+		005563AA19E36DAC001A86AB /* KBPGPReadyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBPGPReadyTest.m; path = Tests/KBPGPReadyTest.m; sourceTree = "<group>"; };
 		005563B519E4970B001A86AB /* KBOpenSSLTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBOpenSSLTest.m; path = Tests/KBOpenSSLTest.m; sourceTree = "<group>"; };
-		005563B719E497DD001A86AB /* KBCryptoUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBCryptoUtil.h; sourceTree = "<group>"; };
-		005563B819E497DD001A86AB /* KBCryptoUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBCryptoUtil.m; sourceTree = "<group>"; };
+		005563B719E497DD001A86AB /* KBPGPUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPGPUtil.h; sourceTree = "<group>"; };
+		005563B819E497DD001A86AB /* KBPGPUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPGPUtil.m; sourceTree = "<group>"; };
 		005563BB19E49D6F001A86AB /* testkey.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testkey.pem; sourceTree = "<group>"; };
 		005563BD19E4B206001A86AB /* user3_message.asc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user3_message.asc; sourceTree = "<group>"; };
 		00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBUnboxTest.m; path = Tests/KBUnboxTest.m; sourceTree = "<group>"; };
@@ -154,10 +154,10 @@
 			isa = PBXGroup;
 			children = (
 				004BC8DB198B1DB0000C039B /* README.md */,
-				004BC8F1198C1C09000C039B /* KBCrypto.podspec */,
+				004BC8F1198C1C09000C039B /* KBPGP.podspec */,
 				004BC8A8198B19E0000C039B /* Podfile */,
 				004BC8B0198B1B13000C039B /* js */,
-				004BC87F198B192B000C039B /* KBCrypto */,
+				004BC87F198B192B000C039B /* KBPGP */,
 				2E0105EBA54D4C8A9A158921 /* Tests */,
 				004BC87E198B192B000C039B /* Products */,
 				3746E1830062493083C021D6 /* Frameworks */,
@@ -169,27 +169,27 @@
 		004BC87E198B192B000C039B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				004BC87D198B192B000C039B /* libKBCrypto.a */,
+				004BC87D198B192B000C039B /* libKBPGP.a */,
 				91F6C6EF890E495EA678C79D /* Tests.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		004BC87F198B192B000C039B /* KBCrypto */ = {
+		004BC87F198B192B000C039B /* KBPGP */ = {
 			isa = PBXGroup;
 			children = (
-				004BC897198B19D2000C039B /* KBCrypto.h */,
-				004BC898198B19D2000C039B /* KBCrypto.m */,
+				004BC897198B19D2000C039B /* KBPGP.h */,
+				004BC898198B19D2000C039B /* KBPGP.m */,
 				004BC899198B19D2000C039B /* KBJSCore.h */,
 				004BC89A198B19D2000C039B /* KBJSCore.m */,
-				004BC89B198B19D2000C039B /* KBCryptoKeyRing.h */,
-				004BC8E7198B2CD5000C039B /* KBCryptoKeyRing.m */,
+				004BC89B198B19D2000C039B /* KBPGPJSKeyRing.h */,
+				004BC8E7198B2CD5000C039B /* KBPGPJSKeyRing.m */,
 				00AEEF0A1999867300D9A741 /* KBKeyGenProgress.h */,
 				00AEEF0B1999867300D9A741 /* KBKeyGenProgress.m */,
-				005563B719E497DD001A86AB /* KBCryptoUtil.h */,
-				005563B819E497DD001A86AB /* KBCryptoUtil.m */,
+				005563B719E497DD001A86AB /* KBPGPUtil.h */,
+				005563B819E497DD001A86AB /* KBPGPUtil.m */,
 			);
-			path = KBCrypto;
+			path = KBPGP;
 			sourceTree = "<group>";
 		};
 		004BC8B0198B1B13000C039B /* js */ = {
@@ -249,11 +249,11 @@
 			children = (
 				00AEEE1C1992F9EE00D9A741 /* Default-568h@2x.png */,
 				004BC8BB198B1C3D000C039B /* Data */,
-				004BC8C9198B1C3D000C039B /* KBCryptoTest.m */,
+				004BC8C9198B1C3D000C039B /* KBPGPTest.m */,
 				00596C8E19C8EE5700D16DAA /* KBUnboxTest.m */,
 				00900F5E19BE837E0018C553 /* KBPGPKeyTest.m */,
 				004BC8EF198C187C000C039B /* KBJSCoreTest.m */,
-				005563AA19E36DAC001A86AB /* KBCryptoReadyTest.m */,
+				005563AA19E36DAC001A86AB /* KBPGPReadyTest.m */,
 				005563B519E4970B001A86AB /* KBOpenSSLTest.m */,
 				88ADA26297094C29A5043A0B /* main.m */,
 			);
@@ -292,9 +292,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		004BC87C198B192B000C039B /* KBCrypto */ = {
+		004BC87C198B192B000C039B /* KBPGP */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBCrypto" */;
+			buildConfigurationList = 004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBPGP" */;
 			buildPhases = (
 				3D682FA1C1784FFFA1640DB6 /* Check Pods Manifest.lock */,
 				004BC879198B192B000C039B /* Sources */,
@@ -305,9 +305,9 @@
 			);
 			dependencies = (
 			);
-			name = KBCrypto;
+			name = KBPGP;
 			productName = KBCrypto;
-			productReference = 004BC87D198B192B000C039B /* libKBCrypto.a */;
+			productReference = 004BC87D198B192B000C039B /* libKBPGP.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E98A237DB3874BD88840AA16 /* Tests */ = {
@@ -344,7 +344,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 004BC878198B192B000C039B /* Build configuration list for PBXProject "KBCrypto" */;
+			buildConfigurationList = 004BC878198B192B000C039B /* Build configuration list for PBXProject "KBPGP" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -356,7 +356,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				004BC87C198B192B000C039B /* KBCrypto */,
+				004BC87C198B192B000C039B /* KBPGP */,
 				E98A237DB3874BD88840AA16 /* Tests */,
 			);
 		};
@@ -467,11 +467,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				004BC8E8198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */,
-				005563B919E497DD001A86AB /* KBCryptoUtil.m in Sources */,
+				004BC8E8198B2CD5000C039B /* KBPGPJSKeyRing.m in Sources */,
+				005563B919E497DD001A86AB /* KBPGPUtil.m in Sources */,
 				00AEEF0C1999867300D9A741 /* KBKeyGenProgress.m in Sources */,
 				004BC8A4198B19D2000C039B /* KBJSCore.m in Sources */,
-				004BC8A3198B19D2000C039B /* KBCrypto.m in Sources */,
+				004BC8A3198B19D2000C039B /* KBPGP.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,14 +481,14 @@
 			files = (
 				00AEEF0D1999867300D9A741 /* KBKeyGenProgress.m in Sources */,
 				00596C8F19C8EE5700D16DAA /* KBUnboxTest.m in Sources */,
-				004BC8E1198B2102000C039B /* KBCrypto.m in Sources */,
-				005563AB19E36DAC001A86AB /* KBCryptoReadyTest.m in Sources */,
-				005563BA19E497DD001A86AB /* KBCryptoUtil.m in Sources */,
+				004BC8E1198B2102000C039B /* KBPGP.m in Sources */,
+				005563AB19E36DAC001A86AB /* KBPGPReadyTest.m in Sources */,
+				005563BA19E497DD001A86AB /* KBPGPUtil.m in Sources */,
 				CD4CD2BBDDAB456688663A8D /* main.m in Sources */,
 				005563B619E4970B001A86AB /* KBOpenSSLTest.m in Sources */,
 				004BC8F0198C187C000C039B /* KBJSCoreTest.m in Sources */,
-				004BC8D9198B1C3D000C039B /* KBCryptoTest.m in Sources */,
-				004BC8E9198B2CD5000C039B /* KBCryptoKeyRing.m in Sources */,
+				004BC8D9198B1C3D000C039B /* KBPGPTest.m in Sources */,
+				004BC8E9198B2CD5000C039B /* KBPGPJSKeyRing.m in Sources */,
 				00900F5F19BE837E0018C553 /* KBPGPKeyTest.m in Sources */,
 				004BC8DE198B20F2000C039B /* KBJSCore.m in Sources */,
 			);
@@ -499,7 +499,7 @@
 /* Begin PBXTargetDependency section */
 		5F23953B314B4CDE85C7A84F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 004BC87C198B192B000C039B /* KBCrypto */;
+			target = 004BC87C198B192B000C039B /* KBPGP */;
 			targetProxy = 85F7D4C86BE648F48D273181 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -584,7 +584,7 @@
 			baseConfigurationReference = 6B0819B939280D0C862ABEB9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KBPGP;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -594,7 +594,7 @@
 			baseConfigurationReference = 13496C16B19E1FE76BC921DD /* Pods.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KBPGP;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -660,7 +660,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		004BC878198B192B000C039B /* Build configuration list for PBXProject "KBCrypto" */ = {
+		004BC878198B192B000C039B /* Build configuration list for PBXProject "KBPGP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				004BC88F198B192B000C039B /* Debug */,
@@ -669,7 +669,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBCrypto" */ = {
+		004BC891198B192B000C039B /* Build configuration list for PBXNativeTarget "KBPGP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				004BC892198B192B000C039B /* Debug */,

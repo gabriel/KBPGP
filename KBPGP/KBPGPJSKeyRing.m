@@ -1,23 +1,23 @@
 //
-//  KBKeyRing.m
-//  KBCrypto
+//  KBPGPJSKeyRing.m
+//  KBPGP
 //
 //  Created by Gabriel on 7/29/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
 //
 
-#import "KBCryptoKeyRing.h"
-#import "KBCrypto.h"
+#import "KBPGPJSKeyRing.h"
+#import "KBPGP.h"
 #import "KBSigner.h"
 
 #import <ObjectiveSugar/ObjectiveSugar.h>
 #import <GHKit/GHKit.h>
 
-@interface KBCryptoKeyRing ()
+@interface KBPGPJSKeyRing ()
 @property id<KBKeyRing> keyRing;
 @end
 
-@implementation KBCryptoKeyRing
+@implementation KBPGPJSKeyRing
 
 - (id)initWithKeyRing:(id<KBKeyRing>)keyRing {
   if ((self = [super init])) {
@@ -41,8 +41,8 @@
 }
 
 - (void)processKeys:(NSArray *)keys capabilities:(KBKeyCapabilities)capabilities completion:(void (^)(NSArray *keyBundles))completion {
+
   NSMutableArray *keyBundles = [NSMutableArray array];
-  
   NSMutableArray *secretKeys = [NSMutableArray array];
   
   BOOL isSignOrDecrypt = ((capabilities & KBKeyCapabilitiesDecrypt) != 0) || ((capabilities & KBKeyCapabilitiesSign) != 0);

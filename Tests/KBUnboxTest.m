@@ -1,12 +1,12 @@
 #import <GRUnit/GRUnit.h>
 
-#import "KBCrypto.h"
+#import "KBPGP.h"
 
 #import <GHKit/GHKit.h>
 #import <ObjectiveSugar/ObjectiveSugar.h>
 
 @interface KBUnboxTest : GRTestCase
-@property KBCrypto *crypto;
+@property KBPGP *crypto;
 @end
 
 @implementation KBUnboxTest
@@ -23,7 +23,7 @@
     completion();
     return;
   }
-  _crypto = [[KBCrypto alloc] init];
+  _crypto = [[KBPGP alloc] init];
   
   GHWeakSelf blockSelf = self;
   KBKeyRingPasswordBlock passwordBlock = ^(NSArray *secretKeys, KBKeyRingPasswordCompletionBlock completion) {

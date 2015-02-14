@@ -1,6 +1,6 @@
 //
-//  KBKeyRings.h
-//  KBCrypto
+//  KBPGPJSKeyRing.h
+//  KBPGP
 //
 //  Created by Gabriel on 7/31/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -23,7 +23,7 @@ JSExportAs(fetch,
 /*!
  Crypto key ring implementation.
  */
-@interface KBCryptoKeyRing : NSObject <KBKeyRingsExport>
+@interface KBPGPJSKeyRing : NSObject <KBKeyRingsExport>
 
 @property dispatch_queue_t completionQueue;
 @property (copy) KBKeyRingPasswordBlock passwordBlock;

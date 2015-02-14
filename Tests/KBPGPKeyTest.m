@@ -1,6 +1,6 @@
 //
 //  KBPGPKeyTest.m
-//  KBCrypto
+//  KBPGP
 //
 //  Created by Gabriel on 9/8/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
@@ -9,10 +9,10 @@
 #import <GRUnit/GRUnit.h>
 
 #import "KBPGPKey.h"
-#import "KBCrypto.h"
+#import "KBPGP.h"
 
 @interface KBPGPKeyTest : GRTestCase
-@property KBCrypto *crypto;
+@property KBPGP *crypto;
 @end
 
 @implementation KBPGPKeyTest
@@ -25,7 +25,7 @@
 }
 
 - (void)setUp {
-  if (!_crypto) _crypto = [[KBCrypto alloc] init];
+  if (!_crypto) _crypto = [[KBPGP alloc] init];
 }
 
 - (void)testSerialize:(dispatch_block_t)completion {

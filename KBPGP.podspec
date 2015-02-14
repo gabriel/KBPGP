@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
 
-  s.name         = "KBCrypto"
+  s.name         = "KBPGP"
   s.version      = "0.1.1"
-  s.summary      = "PGP for iOS/OSX."
-  s.homepage     = "https://github.com/gabriel/KBCrypto"
+  s.summary      = "kbpgp for iOS/OSX."
+  s.homepage     = "https://github.com/gabriel/KBPGP"
   s.license      = { :type => "MIT" }
   s.author       = { "Gabriel Handford" => "gabrielh@gmail.com" }
-  s.source       = { :git => "https://github.com/gabriel/KBCrypto.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/gabriel/KBPGP.git", :tag => s.version.to_s }
   s.dependency 'NAChloride'
   s.dependency 'ObjectiveSugar'
   s.dependency 'GHKit'
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.dependency 'TSTripleSec'
   s.dependency 'GHBigNum'
   s.dependency 'KBKeybase/Core'
-  s.source_files = 'KBCrypto/**/*.{c,h,m}'
+  s.source_files = 'KBPGP/**/*.{c,h,m}'
   s.requires_arc = true
 
   s.resources = ["js/keybase*.js"]

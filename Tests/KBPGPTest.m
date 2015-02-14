@@ -1,14 +1,14 @@
 #import <GRUnit/GRUnit.h>
 
-#import "KBCrypto.h"
+#import "KBPGP.h"
 
 #import <GHKit/GHKit.h>
 
-@interface KBCryptoTest : GRTestCase
-@property KBCrypto *crypto;
+@interface KBPGPTest : GRTestCase
+@property KBPGP *crypto;
 @end
 
-@implementation KBCryptoTest
+@implementation KBPGPTest
 
 - (NSString *)loadFile:(NSString *)file {
   NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
@@ -22,7 +22,7 @@
     completion();
     return;
   }
-  _crypto = [[KBCrypto alloc] init];
+  _crypto = [[KBPGP alloc] init];
   
   GHWeakSelf blockSelf = self;
   KBPGPKeyRing *keyRing = [[KBPGPKeyRing alloc] init];
@@ -264,7 +264,7 @@
 //    [NSException raise:@"Fail" format:@"Should fail"];
 //  } failure:^(NSError *error) {
 //    GRTestLog(@"Failed ok: %@", error);
-//    GRAssertEquals(error.code, KBCryptoErrorCodeCancelled);
+//    GRAssertEquals(error.code, KBPGPErrorCodeCancelled);
 //    completion();
 //  }];
 //}

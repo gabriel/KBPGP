@@ -1,14 +1,14 @@
 //
-//  KBCryptoUtil.m
-//  KBCrypto
+//  KBPGPUtil.m
+//  KBPGP
 //
 //  Created by Gabriel on 10/7/14.
 //  Copyright (c) 2014 Gabriel Handford. All rights reserved.
 //
 
-#import "KBCryptoUtil.h"
+#import "KBPGPUtil.h"
 
-@implementation KBCryptoUtil
+@implementation KBPGPUtil
 
 + (NSString *)loadFile:(NSString *)file {
   NSString *path = [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];

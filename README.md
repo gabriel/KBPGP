@@ -1,23 +1,19 @@
-KBCrypto
+KBPGP
 ===========
 
-PGP for iOS/OSX, using [kbpgp](https://github.com/keybase/kbpgp). Requires >= iOS 8.0.
+PGP for iOS/OSX, using [kbpgp.js](https://github.com/keybase/kbpgp). Requires >= iOS 8.0.
 
-# Install
-
-[CocoaPods](http://cocoapods.org) is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries in your projects.
-
-## Podfile
+# Podfile
 
 ```ruby
 platform :ios, "8.0"
-pod "KBCrypto"
+pod "KBPGP"
 ```
 
 # Encrypt
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto encryptText:@"This is a secret message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
@@ -28,7 +24,7 @@ KBCrypto *crypto = [[KBCrypto alloc] init];
 # Encrypt & Sign
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto encryptText:@"This is a secret signed message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
@@ -39,7 +35,7 @@ KBCrypto *crypto = [[KBCrypto alloc] init];
 # Sign
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
   NSLog(@"%@", clearTextArmored);
 } failure:^(NSError *error) {
@@ -50,7 +46,7 @@ KBCrypto *crypto = [[KBCrypto alloc] init];
 # Unbox (Decrypt & Verify)
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto setKeyRing:... passwordBlock:...];
 
 [crypto unboxMessageArmored:messageArmored success:^(KBPGPMessage *message) {
@@ -91,7 +87,7 @@ A PGP key is a more detailed version of a key, which stores extra info such as t
 You can get a PGP key from a bundle:
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto PGPKeyForPublicKeyBundle:@"-----BEGIN PGP PUBLIC KEY..." success:^(KBPGPKey *PGPKey) { 
   // PGP key
 } failure:^(NSError *error) {
@@ -117,7 +113,7 @@ return keyRing;
 Generates RSA key pair with appropriate defaults (4096 key with subkeys).
 
 ```objc
-KBCrypto *crypto = [[KBCrypto alloc] init];
+KBPGP *crypto = [[KBPGP alloc] init];
 [crypto generateKeyWithUserIds:... keyAlgorithm:KBKeyAlgorithmRSA password:@"toomanysecrets" progress:^(KBKeyGenProgress *progress) {
   NSLog(@"Progress: %@", [progress progressDescription]);
   // Return NO to cancel, which will throw an "Aborted" error

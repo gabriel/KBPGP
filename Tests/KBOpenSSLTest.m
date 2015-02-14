@@ -1,6 +1,6 @@
 #import <GRUnit/GRUnit.h>
 
-#import "KBCrypto.h"
+#import "KBPGP.h"
 
 #import <GHKit/GHKit.h>
 

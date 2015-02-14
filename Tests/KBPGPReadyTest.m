@@ -1,17 +1,17 @@
 #import <GRUnit/GRUnit.h>
 
-#import "KBCrypto.h"
+#import "KBPGP.h"
 
 #import <GHKit/GHKit.h>
 
-@interface KBCryptoReadyTest : GRTestCase
-@property KBCrypto *crypto;
+@interface KBPGPReadyTest : GRTestCase
+@property KBPGP *crypto;
 @end
 
-@implementation KBCryptoReadyTest
+@implementation KBPGPReadyTest
 
 - (void)setUp:(dispatch_block_t)completion {
-  _crypto = [[KBCrypto alloc] init];
+  _crypto = [[KBPGP alloc] init];
   completion();
 }
 

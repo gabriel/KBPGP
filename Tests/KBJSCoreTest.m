@@ -3,7 +3,7 @@
 @interface KBJSCoreTest : GRTestCase
 @end
 
-#import "KBCrypto.h"
+#import "KBPGP.h"
 #import "KBJSCore.h"
 
 #import <GHKit/GHKit.h>
