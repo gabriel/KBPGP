@@ -28,7 +28,7 @@ pod "KBPGP"
 
 ```objc
 KBPGP *pgp = [[KBPGP alloc] init];
-  [pgp encryptText:@"This is a secret message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] success:^(NSString *messageArmored) {
+[pgp encryptText:@"This is a secret message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -39,7 +39,7 @@ KBPGP *pgp = [[KBPGP alloc] init];
 
 ```objc
 KBPGP *pgp = [[KBPGP alloc] init];
-  [pgp encryptText:@"This is a secret signed message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
+[pgp encryptText:@"This is a secret signed message" keyBundles:@[@"-----BEGIN PGP PUBLIC KEY..."] keyBundleForSign:@"-----BEGIN PGP PRIVATE KEY..." passwordForSign:@"toomanysecrets" success:^(NSString *messageArmored) {
   NSLog(@"%@", messageArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
@@ -50,7 +50,7 @@ KBPGP *pgp = [[KBPGP alloc] init];
 
 ```objc
 KBPGP *pgp = [[KBPGP alloc] init];
-  [pgp signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
+[pgp signText:@"This is a secret message" keyBundle:@"-----BEGIN PGP PRIVATE KEY..." password:@"toomanysecrets" success:^(NSString *clearTextArmored) {
   NSLog(@"%@", clearTextArmored);
 } failure:^(NSError *error) {
   NSLog(@"Error: %@", [error localizedDescription]);
