@@ -11,7 +11,7 @@ Some alternative methods I considered or am considering:
 
 - [ObjectivePGP](https://github.com/krzyzanowskim/ObjectivePGP)
 - A Java PGP library and use [java2objc](https://code.google.com/p/java2objc/)?
-- [GPG](https://www.gnupg.org/) ([but this](https://www.gnupg.org/faq/gnupg-faq.html#yes_gpgme))
+- [GPG](https://www.gnupg.org/) ([will never work on iOS or OSX sandbox](https://www.gnupg.org/faq/gnupg-faq.html#yes_gpgme)) and licensing
 - OpenPGP.js with JavaScriptCore
 - Using go pgp libraries ([on iOS](https://medium.com/using-go-in-mobile-apps/))
 
