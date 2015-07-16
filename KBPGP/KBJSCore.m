@@ -10,6 +10,7 @@
 
 #import <GHKit/GHKit.h>
 #import <NAChloride/NAChloride.h>
+#import <NACrypto/NACrypto.h>
 #import "GHBigNum.h"
 
 @implementation KBJSCore
@@ -55,8 +56,7 @@
     _context[@"jscore"] = @{};
     _context[@"jscore"][@"getRandomBase64String"] = ^(JSValue *numBytes) {
       //GHDebug(@"Random hex string of length: %d", [numBytes toUInt32]);
-      NSError *error = nil;
-      NSString *data = GHBase64StringFromNSData([NARandom randomData:[numBytes toUInt32] error:&error]);
+      NSString *data = GHBase64StringFromNSData([NARandom randomData:[numBytes toUInt32]]);
       if (!data) {
         [NSException raise:NSInternalInconsistencyException format:@"No random data available"];
       }
@@ -107,7 +107,7 @@
 }
 
 - (NSString *)randomHexString:(NSUInteger)numBytes {
-  return [[NARandom randomData:numBytes error:nil] na_hexString];
+  return [[NARandom randomData:numBytes] na_hexString];
 }
 
 @end
