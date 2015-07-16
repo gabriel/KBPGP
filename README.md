@@ -18,6 +18,10 @@ Some alternative methods I considered or am considering:
 - Using go pgp libraries ([on iOS](https://medium.com/using-go-in-mobile-apps/))
 - [unnetpgp](https://github.com/upnext/unnetpgp)
 
+# Keyup
+
+This library is used in [Keyup](https://rel.me/keyup).
+
 
 # Podfile
 
