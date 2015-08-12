@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "KBPGP"
-  s.version      = "0.1.2"
+  s.version      = "0.1.3"
   s.summary      = "kbpgp for iOS/OSX."
   s.homepage     = "https://github.com/gabriel/KBPGP"
   s.license      = { :type => "MIT" }
