@@ -20,7 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - GHBigNum (0.1.5):
+  - GHBigNum (0.1.7):
     - OpenSSL-Universal (~> 1.0.1k)
   - GHKit (2.0.0)
   - GHODictionary (1.0.8)
@@ -66,7 +66,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
-  GHBigNum: db4e325a1e19e0cc01f2831a6e2e9d240794f790
+  GHBigNum: c2d93343859aa9b7e19efed420917302a6ea454d
   GHKit: 29e5361c9d8a33343ae5ed4698057d1533ee590b
   GHODictionary: 4990d3fa008a11257ba54f52a3e95f90dd47ac1b
   GRUnit: 3a60546a0d42bc0edb83c4e755f9620517cd7af7
