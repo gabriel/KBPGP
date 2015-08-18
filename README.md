@@ -3,6 +3,8 @@ KBPGP
 
 PGP for iOS/OSX, using [kbpgp.js](https://github.com/keybase/kbpgp). Requires >= iOS 8.0.
 
+This library is mostly a proof of concept. I've stopped using it myself but am keeping it around in case others find it useful.
+
 # Why?
 
 The was no usable native library for PGP for iOS or OSX. Keybase uses [kbpgp](https://github.com/keybase/kbpgp) and iOS 8 provides a JavaScript runtime with JavaScriptCore.
