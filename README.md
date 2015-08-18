@@ -5,6 +5,8 @@ PGP for iOS/OSX, using [kbpgp.js](https://github.com/keybase/kbpgp). Requires >=
 
 This library is mostly a proof of concept. I've stopped using it myself but am keeping it around in case others find it useful.
 
+If you need to use PGP on iOS, I recommend trying to use the go pgp library, since go 1.5 fully supports iOS (arm64).
+
 # Why?
 
 The was no usable native library for PGP for iOS or OSX. Keybase uses [kbpgp](https://github.com/keybase/kbpgp) and iOS 8 provides a JavaScript runtime with JavaScriptCore.
@@ -17,10 +19,6 @@ Some alternative methods I considered or am considering:
 - OpenPGP.js with JavaScriptCore
 - Using go pgp libraries ([on iOS](https://medium.com/using-go-in-mobile-apps/))
 - [unnetpgp](https://github.com/upnext/unnetpgp)
-
-# Keyup
-
-This library is used in [Keyup](https://rel.me/keyup).
 
 
 # Podfile
